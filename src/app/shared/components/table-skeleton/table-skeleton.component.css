@@ -1,0 +1,36 @@
+.table-skeleton {
+  padding: 1rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.table-skeleton-header {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 5), 1fr);
+  gap: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.table-skeleton-row {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 5), 1fr);
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.table-skeleton-row:last-child {
+  border-bottom: none;
+}
+
+.skeleton-cell {
+  border-radius: 4px;
+}
+
+/* Match global --cols when set via host */
+:host {
+  display: block;
+}

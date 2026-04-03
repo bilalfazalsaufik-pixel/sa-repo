@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration, ChartData, registerables, TimeScale } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { StateTransitionDataPoint } from '../../../../shared/models/dashboard.model';
+import { getChartColor } from '../../../../shared/utils/chart-colors';
 
 Chart.register(...registerables, TimeScale);
 
@@ -15,9 +16,15 @@ type ChartPoint = { x: number | Date; y: number };
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<canvas #chartCanvas></canvas>`,
   styles: [`
-    canvas {
-      max-width: 100%;
+    :host {
+      display: block;
+      position: relative;
+      width: 100%;
       height: 300px;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
   `]
 })
@@ -111,8 +118,8 @@ export class StateTransitionChartComponent implements OnInit, OnChanges, OnDestr
     const datasets = Array.from(siteGroups.values()).map((group, index) => ({
       label: group.name,
       data: group.points.sort((a, b) => a.x.getTime() - b.x.getTime()),
-      borderColor: this.getColor(index),
-      backgroundColor: this.getColor(index, 0.1),
+      borderColor: getChartColor(index),
+      backgroundColor: getChartColor(index, 0.1),
       tension: 0,
       fill: false,
       stepped: 'after' as const
@@ -121,18 +128,6 @@ export class StateTransitionChartComponent implements OnInit, OnChanges, OnDestr
     return {
       datasets
     };
-  }
-
-  private getColor(index: number, alpha: number = 1): string {
-    const colors = [
-      `rgba(54, 162, 235, ${alpha})`,  // Blue
-      `rgba(255, 99, 132, ${alpha})`,  // Red
-      `rgba(75, 192, 192, ${alpha})`,  // Teal
-      `rgba(255, 206, 86, ${alpha})`,  // Yellow
-      `rgba(153, 102, 255, ${alpha})`, // Purple
-      `rgba(255, 159, 64, ${alpha})`   // Orange
-    ];
-    return colors[index % colors.length];
   }
 
   ngOnDestroy(): void {

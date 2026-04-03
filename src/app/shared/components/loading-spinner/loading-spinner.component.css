@@ -5,6 +5,13 @@
   justify-content: center;
   padding: 2rem;
   gap: 1rem;
+  /* Delay appearance so fast operations (filter searches < 200ms) never flash */
+  animation: spinnerFadeIn 0.1s ease 0.2s both;
+}
+
+@keyframes spinnerFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .loading-spinner.fullscreen {

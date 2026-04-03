@@ -15,11 +15,11 @@ export const environment = {
   environment: 'local',
   apiUrl: 'https://localhost:7000/api/v1',
   auth0: {
-    // Using local development values as default
-    // These will be replaced by environment.local.ts when using --configuration=development
-    domain: 'site-shield.us.auth0.com',
-    clientId: '2WvfIPxIVxRydjtorhJfaOP3gp2gpxmb',
-    audience: 'https://api.siteshield.com',
+    // SECURITY: Do not commit real credentials here. Copy environment.example.ts to
+    // environment.local.ts and set your actual values there (gitignored).
+    domain: 'YOUR_AUTH0_DOMAIN',
+    clientId: 'YOUR_AUTH0_CLIENT_ID',
+    audience: 'YOUR_AUTH0_AUDIENCE',
     redirectUri: window.location.origin
   },
   enableLogging: true,

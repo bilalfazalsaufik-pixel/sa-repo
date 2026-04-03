@@ -1,7 +1,14 @@
 <div class="site-detail">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a (click)="goBack()" (keydown.enter)="goBack()" tabindex="0">Dashboard</a>
+    <span class="sep">›</span>
+    <span class="current">{{ selectedSite()?.name || 'Site Details' }}</span>
+  </nav>
+
   <div class="site-detail-header">
-    <p-button 
-      icon="pi pi-arrow-left" 
+    <p-button
+      icon="pi pi-arrow-left"
       [text]="true"
       [rounded]="true"
       (onClick)="goBack()"
@@ -12,17 +19,28 @@
       <h1>{{ selectedSite()?.name || 'Site Details' }}</h1>
       <p-tag [value]="getSiteStatus()" [severity]="getStatusSeverity(getSiteStatus())"></p-tag>
     </div>
+    <div class="header-actions">
+      @if (lastUpdated()) {
+        <span class="last-updated">Updated {{ lastUpdated() | date:'HH:mm:ss' }}</span>
+      }
+      <button class="auto-refresh-toggle" [class.active]="autoRefresh.enabled()" (click)="toggleAutoRefresh()">
+        <i [class]="autoRefresh.enabled() ? 'pi pi-pause' : 'pi pi-play'"></i>
+        <span>{{ autoRefresh.enabled() ? 'Auto (30s)' : 'Paused' }}</span>
+      </button>
+    </div>
   </div>
 
   <!-- View Tabs -->
-  <p-tabView [(activeIndex)]="currentView" (onChange)="setView($event)">
+  <p-tabView [activeIndex]="currentView()" (onChange)="setView($event)">
     <p-tabPanel header="Engineering View">
       <div class="engineering-view">
         <!-- Site Selector and Time Range -->
         <div class="view-controls">
-          <p-dropdown 
+          <p-dropdown
+                appendTo="body"
             [options]="siteOptions()"
-            [(ngModel)]="siteId"
+            [ngModel]="siteId()"
+            (ngModelChange)="siteId.set($event)"
             (onChange)="onSiteChange($event)"
             placeholder="Select Site"
             optionLabel="label"
@@ -30,9 +48,11 @@
             class="w-300">
           </p-dropdown>
 
-          <p-dropdown 
+          <p-dropdown
+                appendTo="body"
             [options]="timeRangeOptions"
-            [(ngModel)]="timeRange"
+            [ngModel]="timeRange()"
+            (ngModelChange)="timeRange.set($event)"
             (onChange)="onTimeRangeSelect($event)"
             placeholder="Time Range"
             optionLabel="label"
@@ -50,19 +70,25 @@
                   <h3>Level</h3>
                   <div class="chart-controls">
                     <p-tag [value]="getCurrentLevelValue()" severity="info"></p-tag>
-                    <p-multiSelect 
+                    <p-multiSelect
                       [options]="levelSensorOptions()"
-                      [(ngModel)]="selectedLevelSensors"
+                      [ngModel]="selectedLevelSensors()"
+                      (ngModelChange)="selectedLevelSensors.set($event)"
                       (onChange)="onLevelSensorsSelect($event)"
                       placeholder="Sensors"
                       optionLabel="label"
                       optionValue="value"
+                      appendTo="body"
                       class="w-200-ml-1">
                     </p-multiSelect>
                   </div>
                 </div>
               </ng-template>
-              <app-level-chart [data]="filteredLevelChartData()" />
+              @if (loadingService.loading() && !dashboardData()) {
+                <div class="chart-skeleton"></div>
+              } @else {
+                <app-level-chart [data]="filteredLevelChartData()" />
+              }
             </p-card>
 
           <!-- AMPS Chart -->
@@ -72,19 +98,25 @@
                   <h3>AMPS</h3>
                   <div class="chart-controls">
                     <p-tag [value]="getCurrentAmpsValue()" severity="info"></p-tag>
-                    <p-multiSelect 
+                    <p-multiSelect
                       [options]="ampsSensorOptions()"
-                      [(ngModel)]="selectedAmpsSensors"
+                      [ngModel]="selectedAmpsSensors()"
+                      (ngModelChange)="selectedAmpsSensors.set($event)"
                       (onChange)="onAmpsSensorsSelect($event)"
                       placeholder="Sensors"
                       optionLabel="label"
                       optionValue="value"
+                      appendTo="body"
                       class="w-200-ml-1">
                     </p-multiSelect>
                   </div>
                 </div>
               </ng-template>
-              <app-amps-chart [data]="filteredAmpsChartData()" />
+              @if (loadingService.loading() && !dashboardData()) {
+                <div class="chart-skeleton"></div>
+              } @else {
+                <app-amps-chart [data]="filteredAmpsChartData()" />
+              }
             </p-card>
 
           <!-- State Transition Chart -->
@@ -92,9 +124,11 @@
               <ng-template pTemplate="header">
                 <div class="card-header chart-header">
                   <h3>State Transition</h3>
-                  <p-dropdown 
+                  <p-dropdown
+                appendTo="body"
                     [options]="stateVariableOptions"
-                    [(ngModel)]="selectedStateVariable"
+                    [ngModel]="selectedStateVariable()"
+                    (ngModelChange)="selectedStateVariable.set($event)"
                     placeholder="Variable"
                     optionLabel="label"
                     optionValue="value"
@@ -102,7 +136,11 @@
                   </p-dropdown>
                 </div>
               </ng-template>
-              <app-state-transition-chart [data]="stateTransitions()" />
+              @if (loadingService.loading() && !dashboardData()) {
+                <div class="chart-skeleton"></div>
+              } @else {
+                <app-state-transition-chart [data]="stateTransitions()" />
+              }
             </p-card>
 
           <!-- Events Chart -->
@@ -112,7 +150,11 @@
                   <h3>Events</h3>
                 </div>
               </ng-template>
-              <app-events-chart [data]="eventsChartData()" />
+              @if (loadingService.loading() && !dashboardData()) {
+                <div class="chart-skeleton"></div>
+              } @else {
+                <app-events-chart [data]="eventsChartData()" />
+              }
             </p-card>
         </div>
 
@@ -138,9 +180,11 @@
       <div class="operator-view">
         <!-- Simplified controls for Operator View -->
         <div class="view-controls">
-          <p-dropdown 
+          <p-dropdown
+                appendTo="body"
             [options]="siteOptions()"
-            [(ngModel)]="siteId"
+            [ngModel]="siteId()"
+            (ngModelChange)="siteId.set($event)"
             (onChange)="onSiteChange($event)"
             placeholder="Select Site"
             optionLabel="label"
@@ -148,9 +192,11 @@
             class="w-300">
           </p-dropdown>
 
-          <p-dropdown 
+          <p-dropdown
+                appendTo="body"
             [options]="timeRangeOptions"
-            [(ngModel)]="timeRange"
+            [ngModel]="timeRange()"
+            (ngModelChange)="timeRange.set($event)"
             (onChange)="onTimeRangeSelect($event)"
             placeholder="Time Range"
             optionLabel="label"
@@ -168,7 +214,11 @@
                   <p-tag [value]="getCurrentLevelValue()" severity="info"></p-tag>
                 </div>
               </ng-template>
-              <app-level-chart [data]="filteredLevelChartData()" />
+              @if (loadingService.loading() && !dashboardData()) {
+                <div class="chart-skeleton"></div>
+              } @else {
+                <app-level-chart [data]="filteredLevelChartData()" />
+              }
             </p-card>
 
           <p-card class="chart-card">
@@ -178,7 +228,11 @@
                   <p-tag [value]="getCurrentAmpsValue()" severity="info"></p-tag>
                 </div>
               </ng-template>
-              <app-amps-chart [data]="filteredAmpsChartData()" />
+              @if (loadingService.loading() && !dashboardData()) {
+                <div class="chart-skeleton"></div>
+              } @else {
+                <app-amps-chart [data]="filteredAmpsChartData()" />
+              }
             </p-card>
         </div>
       </div>

@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-export interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -48,28 +43,6 @@ export class ValidationService {
   }
 
   /**
-   * Validate all form controls and return errors
-   */
-  validateForm(controls: { [key: string]: AbstractControl | null }): ValidationResult {
-    const errors: string[] = [];
-    
-    Object.keys(controls).forEach(key => {
-      const control = controls[key];
-      if (control && control.invalid && control.touched) {
-        const error = this.getErrorMessage(control);
-        if (error) {
-          errors.push(`${this.formatFieldName(key)}: ${error}`);
-        }
-      }
-    });
-
-    return {
-      isValid: errors.length === 0,
-      errors
-    };
-  }
-
-  /**
    * Format field name for display (e.g., "firstName" -> "First Name")
    */
   formatFieldName(name: string): string {
@@ -92,28 +65,23 @@ export class ValidationService {
   }
 
   /**
-   * Custom validator: Must match another field
+   * Custom validator: Must match another field.
+   * Apply this validator to the form GROUP (not a single control) via AbstractControl.
+   * Returns a group-level error; mark the confirming control explicitly in the template.
    */
   mustMatch(controlName: string, matchingControlName: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const sourceControl = control.parent?.get(controlName);
-      const matchingControl = control.parent?.get(matchingControlName);
+      const sourceControl = control.get(controlName);
+      const matchingControl = control.get(matchingControlName);
 
       if (!sourceControl || !matchingControl) {
         return null;
       }
 
-      if (matchingControl.errors && !matchingControl.errors['mustMatch']) {
-        return null;
-      }
-
       if (sourceControl.value !== matchingControl.value) {
-        matchingControl.setErrors({ mustMatch: true });
         return { mustMatch: true };
-      } else {
-        matchingControl.setErrors(null);
-        return null;
       }
+      return null;
     };
   }
 

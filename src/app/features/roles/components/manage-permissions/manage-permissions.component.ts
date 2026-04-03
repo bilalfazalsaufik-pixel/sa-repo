@@ -72,13 +72,13 @@ export class ManagePermissionsComponent implements OnInit {
   }
 
   private loadRoleAndData(roleId: number): void {
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     this.rolesService.getRoleById(roleId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: role => this.roleName.set(role.name),
       error: e => {
-        this.loadingService.stopLoading();
+        this.loadingService.setLoading(false);
         this.errorService.setErrorFromHttp(e);
       }
     });
@@ -95,16 +95,16 @@ export class ManagePermissionsComponent implements OnInit {
                 access: (permMap.get(s.key) ?? 0) as ScreenAccessLevel
               }))
             );
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           },
           error: e => {
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
             this.errorService.setErrorFromHttp(e);
           }
         });
       },
       error: e => {
-        this.loadingService.stopLoading();
+        this.loadingService.setLoading(false);
         this.errorService.setErrorFromHttp(e);
       }
     });

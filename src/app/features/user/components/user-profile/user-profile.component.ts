@@ -36,6 +36,7 @@ import { LoadingSpinnerComponent } from '../../../../shared/components/loading-s
 export class UserProfileComponent implements OnInit {
   profile = signal<UserProfile | null>(null);
   defaultView = signal<string>('Engineering');
+  phoneNumber = signal<string>('');
   isEditing = signal(false);
 
   viewOptions = [
@@ -54,12 +55,25 @@ export class UserProfileComponent implements OnInit {
     return p ? `${p.firstName} ${p.lastName}` : '';
   });
 
+  // Show only "Manage X" when both "View X" and "Manage X" exist; otherwise show the permission as-is
+  filteredPermissions = computed(() => {
+    const permissions = this.profile()?.permissions ?? [];
+    const lowerSet = new Set(permissions.map(p => p.toLowerCase()));
+    return permissions.filter(p => {
+      if (p.toLowerCase().startsWith('view ')) {
+        const manageName = 'manage ' + p.toLowerCase().slice(5);
+        return !lowerSet.has(manageName);
+      }
+      return true;
+    });
+  });
+
   ngOnInit(): void {
     this.loadProfile();
   }
 
   loadProfile(): void {
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     this.userProfileService.getProfile()
@@ -68,12 +82,13 @@ export class UserProfileComponent implements OnInit {
         next: (profile) => {
           this.profile.set(profile);
           this.defaultView.set(profile.defaultView);
+          this.phoneNumber.set(profile.phoneNumber ?? '');
           this.isEditing.set(false);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
         }
       });
   }
@@ -87,15 +102,18 @@ export class UserProfileComponent implements OnInit {
     const profile = this.profile();
     if (profile) {
       this.defaultView.set(profile.defaultView);
+      this.phoneNumber.set(profile.phoneNumber ?? '');
     }
   }
 
   saveProfile(): void {
+    const phone = this.phoneNumber().trim();
     const request: UpdateUserProfileRequest = {
-      defaultView: this.defaultView()
+      defaultView: this.defaultView(),
+      phoneNumber: phone || null
     };
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     this.userProfileService.updateProfile(request)
@@ -106,7 +124,7 @@ export class UserProfileComponent implements OnInit {
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
         }
       });
   }

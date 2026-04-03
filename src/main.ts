@@ -19,10 +19,12 @@ import { environment } from './environments/environment';
 
 // Validate Auth0 configuration
 function validateAuth0Config() {
-  const hasPlaceholder = 
-    environment.auth0.domain.includes('your-auth0') ||
-    environment.auth0.clientId.includes('your-auth0') ||
-    environment.auth0.audience.includes('your-auth0');
+  // Match common placeholder patterns: 'your-auth0', 'YOUR_AUTH0', 'REPLACE_WITH_*'
+  const isPlaceholder = (v: string) => /your[-_]auth0/i.test(v) || /^REPLACE_WITH_/i.test(v);
+  const hasPlaceholder =
+    isPlaceholder(environment.auth0.domain) ||
+    isPlaceholder(environment.auth0.clientId) ||
+    isPlaceholder(environment.auth0.audience);
   
   if (hasPlaceholder) {
     const errorMsg = `
@@ -116,8 +118,7 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(
-      // SECURITY FIX: Add error interceptor to show user-friendly messages for 401 errors
-      // Order matters: error interceptor should be last to catch all errors
+      // Interceptor order: auth → tenant → retry → error
       withInterceptors([authInterceptor, tenantInterceptor, retryInterceptor, errorInterceptor])
     ),
     providePrimeNG({
@@ -143,9 +144,10 @@ bootstrapApplication(AppComponent, {
       // This gives us full control over token refresh behavior
       // Use localstorage in development for convenience (tokens persist across refreshes)
       // Use memory storage in production (more secure against XSS)
-      cacheLocation: environment.production ? 'memory' : 'localstorage',
-      
-      // Use refresh tokens to maintain session across page refreshes
+      cacheLocation: 'localstorage',
+
+      // Use refresh tokens for silent auth renewal (more reliable than iframes in production;
+      // modern browsers block third-party cookies which breaks iframe-based silent auth)
       useRefreshTokens: true
     })
   ]

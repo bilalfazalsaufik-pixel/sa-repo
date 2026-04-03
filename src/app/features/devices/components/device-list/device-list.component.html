@@ -20,95 +20,97 @@
     <app-error-message [onDismiss]="clearError" />
     <app-loading-spinner />
 
-    @if (!loadingService.loading()) {
-      <p-table [value]="devices()" dataKey="id" [rowTrackBy]="trackByDeviceId" [paginator]="true" [rows]="10" [first]="tableFirst()"
-               [showCurrentPageReport]="true" [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-               [sortField]="sortField()" [sortOrder]="sortOrder()"
-               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-               [rowsPerPageOptions]="[10, 25, 50]">
-        <ng-template pTemplate="header">
-          <tr>
-            <th [pSortableColumn]="'name'">
-              Name
-              <p-sortIcon [field]="'name'" />
-            </th>
-            <th [pSortableColumn]="'ip'">
-              IP Address
-              <p-sortIcon [field]="'ip'" />
-            </th>
-            <th [pSortableColumn]="'siteName'">
-              Site
-              <p-sortIcon [field]="'siteName'" />
-            </th>
-            <th [pSortableColumn]="'zoneName'">
-              Zone
-              <p-sortIcon [field]="'zoneName'" />
-            </th>
-            @if (canManageDevices()) {
-              <th>Actions</th>
-            }
-          </tr>
-          <tr class="filter-row">
-            <th>
-              <input type="text" pInputText [(ngModel)]="filterName" (input)="onFilterChange()" placeholder="Filter name" class="filter-input" />
-            </th>
-            <th>
-              <input type="text" pInputText [(ngModel)]="filterIp" (input)="onFilterChange()" placeholder="Filter IP" class="filter-input" />
-            </th>
-            <th>
-              <p-dropdown
-                [options]="siteFilterOptions()"
-                [(ngModel)]="siteFilterValue"
-                (onChange)="onFilterChange()"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="All sites"
-                [showClear]="false"
-                class="filter-dropdown-inline">
-              </p-dropdown>
-            </th>
+    <p-table [value]="devices()" dataKey="id" [rowTrackBy]="trackByDeviceId" [paginator]="true" [rows]="10" [first]="tableFirst()"
+             [showCurrentPageReport]="true" [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
+             [sortField]="sortField()" [sortOrder]="sortOrder()"
+             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
+             styleClass="enterprise-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th [pSortableColumn]="'name'">
+            Name
+            <p-sortIcon [field]="'name'" />
+          </th>
+          <th [pSortableColumn]="'ip'">
+            IP Address
+            <p-sortIcon [field]="'ip'" />
+          </th>
+          <th [pSortableColumn]="'siteName'">
+            Site
+            <p-sortIcon [field]="'siteName'" />
+          </th>
+          <th [pSortableColumn]="'zoneName'">
+            Zone
+            <p-sortIcon [field]="'zoneName'" />
+          </th>
+          @if (canManageDevices()) {
+            <th>Actions</th>
+          }
+        </tr>
+        <tr class="filter-row">
+          <th>
+            <input type="text" pInputText [(ngModel)]="filterName" (input)="onFilterChange()" placeholder="Filter name" class="filter-input" />
+          </th>
+          <th>
+            <input type="text" pInputText [(ngModel)]="filterIp" (input)="onFilterChange()" placeholder="Filter IP" class="filter-input" />
+          </th>
+          <th>
+            <p-dropdown
+              appendTo="body"
+              [options]="siteFilterOptions()"
+              [(ngModel)]="siteFilterValue"
+              (onChange)="onFilterChange()"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="All sites"
+              [showClear]="false"
+              class="filter-dropdown-inline">
+            </p-dropdown>
+          </th>
+          <th></th>
+          @if (canManageDevices()) {
             <th></th>
-            @if (canManageDevices()) {
-              <th></th>
-            }
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-device>
-          <tr>
-            <td>{{ device.name }}</td>
-            <td>{{ device.ip || '-' }}</td>
-            <td>{{ device.siteName }}</td>
-            <td>{{ device.zoneName }}</td>
-            @if (canManageDevices()) {
-              <td>
-                <p-button 
-                  icon="pi pi-pencil" 
-                  [text]="true" 
-                  [rounded]="true"
-                  severity="info"
-                  (onClick)="editDevice(device)"
-                  pTooltip="Edit"
-                  tooltipPosition="top">
-                </p-button>
-                <p-button 
-                  icon="pi pi-trash" 
-                  [text]="true" 
-                  [rounded]="true"
-                  severity="danger"
-                  (onClick)="deleteDevice(device.id)"
-                  pTooltip="Delete"
-                  tooltipPosition="top">
-                </p-button>
-              </td>
-            }
-          </tr>
-        </ng-template>
-      </p-table>
-    }
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-device>
+        <tr>
+          <td>{{ device.name }}</td>
+          <td>{{ device.ip || '-' }}</td>
+          <td>{{ device.siteName }}</td>
+          <td>{{ device.zoneName }}</td>
+          @if (canManageDevices()) {
+            <td>
+              <p-button
+                icon="pi pi-pencil"
+                [text]="true"
+                [rounded]="true"
+                severity="info"
+                (onClick)="editDevice(device)"
+                pTooltip="Edit"
+                tooltipPosition="top"
+                ariaLabel="Edit device">
+              </p-button>
+              <p-button
+                icon="pi pi-trash"
+                [text]="true"
+                [rounded]="true"
+                severity="danger"
+                (onClick)="deleteDevice(device.id)"
+                pTooltip="Delete"
+                tooltipPosition="top"
+                ariaLabel="Delete device">
+              </p-button>
+            </td>
+          }
+        </tr>
+      </ng-template>
+    </p-table>
     @if (!loadingService.loading() && devices().length === 0) {
       <div class="empty-state">
-        <i class="pi pi-inbox" style="font-size: 3rem; color: #999;"></i>
-        <p>No devices found. Create your first device!</p>
+        <i class="pi pi-inbox" aria-hidden="true"></i>
+        <p>No devices found. Create your first device to get started.</p>
       </div>
     }
   </p-card>
@@ -143,7 +145,8 @@
 
       <div class="p-field">
         <label for="siteId">Site *</label>
-        <p-dropdown 
+        <p-dropdown
+                appendTo="body" 
           id="siteId"
           [options]="siteOptions()" 
           [(ngModel)]="formData.siteId" 

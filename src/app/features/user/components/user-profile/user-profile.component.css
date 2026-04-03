@@ -11,7 +11,7 @@
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #0f172a;
+  color: #ffffff;
 }
 
 .info-grid {
@@ -28,7 +28,7 @@
 
 .info-item label {
   font-weight: 600;
-  color: #64748b;
+  color: rgba(0, 217, 163, 0.7);
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -36,7 +36,7 @@
 
 .info-item .value {
   font-size: 16px;
-  color: #0f172a;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .tags-list {
@@ -46,6 +46,6 @@
 }
 
 .text-muted {
-  color: #94a3b8;
+  color: rgba(255, 255, 255, 0.35);
   font-style: italic;
 }

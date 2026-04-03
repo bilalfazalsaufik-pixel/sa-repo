@@ -1,0 +1,74 @@
+.sites-map-container {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #f1f5f9;
+}
+
+.sites-map {
+  width: 100%;
+  height: 320px;
+  min-height: 320px;
+}
+
+/* Minimal OSM attribution (required by OSM terms); subtle so it doesn’t distract clients */
+.sites-map-attribution {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 10px;
+  color: #94a3b8;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.sites-map-attribution:hover {
+  color: #64748b;
+  text-decoration: underline;
+}
+
+.sites-map-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.9375rem;
+}
+
+/* Status markers: remove Leaflet default icon styling */
+:host ::ng-deep .site-marker-wrapper {
+  background: none !important;
+  border: none !important;
+}
+
+:host ::ng-deep .site-marker-dot {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+:host ::ng-deep .marker-status-green {
+  background: #22c55e;
+}
+
+:host ::ng-deep .marker-status-yellow {
+  background: #eab308;
+}
+
+:host ::ng-deep .marker-status-red {
+  background: #ef4444;
+}
+
+:host ::ng-deep .marker-status-default {
+  background: #64748b;
+}

@@ -7,6 +7,7 @@ export interface UserProfile {
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber?: string;
   defaultView: string;
   roles: string[];
   permissions: string[];
@@ -14,6 +15,7 @@ export interface UserProfile {
 
 export interface UpdateUserProfileRequest {
   defaultView: string;
+  phoneNumber: string | null;
 }
 
 @Injectable({

@@ -33,6 +33,21 @@
               <input pInputText [value]="userProfile.email" readonly class="full-width" />
             </div>
             <div class="p-field">
+              <label>Phone Number</label>
+              @if (isEditing()) {
+                <input pInputText
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  [ngModel]="phoneNumber()"
+                  (ngModelChange)="phoneNumber.set($event)"
+                  placeholder="+1 555 000 0000"
+                  class="full-width" />
+                <small>Used for SMS notifications.</small>
+              } @else {
+                <input pInputText [value]="userProfile.phoneNumber || '—'" readonly class="full-width" />
+              }
+            </div>
+            <div class="p-field">
               <label>User ID</label>
               <input pInputText [value]="userProfile.userId" readonly class="full-width" />
             </div>
@@ -50,10 +65,12 @@
             <form (ngSubmit)="saveProfile()">
               <div class="p-field">
                 <label for="defaultView">Default View *</label>
-                <p-dropdown 
+                <p-dropdown
+                appendTo="body"
                   id="defaultView"
-                  [options]="viewOptions" 
-                  [(ngModel)]="defaultView" 
+                  [options]="viewOptions"
+                  [ngModel]="defaultView()"
+                  (onChange)="defaultView.set($event.value)"
                   name="defaultView"
                   optionLabel="label"
                   optionValue="value"
@@ -111,8 +128,8 @@
             <div class="p-field">
               <label>Permissions</label>
               <div class="tags-list">
-                @if (userProfile.permissions.length > 0) {
-                  @for (permission of userProfile.permissions; track permission) {
+                @if (filteredPermissions().length > 0) {
+                  @for (permission of filteredPermissions(); track permission) {
                     <p-tag [value]="permission" severity="info"></p-tag>
                   }
                 } @else {

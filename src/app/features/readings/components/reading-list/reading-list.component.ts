@@ -19,6 +19,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
+import { ReadingChartComponent } from '../reading-chart/reading-chart.component';
 
 @Component({
   selector: 'app-reading-list',
@@ -33,8 +34,9 @@ import { LoadingSpinnerComponent } from '../../../../shared/components/loading-s
     CalendarModule,
     TagModule,
     TooltipModule,
-    ErrorMessageComponent, 
-    LoadingSpinnerComponent
+    ErrorMessageComponent,
+    LoadingSpinnerComponent,
+    ReadingChartComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './reading-list.component.html',
@@ -124,7 +126,7 @@ export class ReadingListComponent implements OnInit {
     
     this.lastLoadParams = currentParams;
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     const params: GetReadingsQueryParams = {
@@ -146,7 +148,7 @@ export class ReadingListComponent implements OnInit {
         next: (readings) => {
           this.readings.set(readings.items);
           this.totalRecords.set(readings.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           if (readings.items.length > 0) {
             this.loadLatestReading(sensorId);
@@ -156,7 +158,7 @@ export class ReadingListComponent implements OnInit {
         },
         error: (error) => {
           this.errorService.setError('Failed to load readings: ' + (error.message || 'Unknown error'));
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           // Clear lastLoadParams on error so retry can work
           this.lastLoadParams = null;

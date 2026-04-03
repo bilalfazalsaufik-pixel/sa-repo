@@ -6,6 +6,14 @@
           <h2>Roles</h2>
           <p class="subtitle">Manage roles and their screen permissions</p>
         </div>
+        @if (canManageRoles()) {
+          <p-button
+            label="Add Role"
+            icon="pi pi-plus"
+            (onClick)="showCreateForm()"
+            class="ml-auto">
+          </p-button>
+        }
       </div>
     </ng-template>
 
@@ -17,18 +25,22 @@
       dataKey="id"
       [rowTrackBy]="trackByRoleId"
       [paginator]="true"
-      [rows]="50"
-      [first]="tableFirst()"
+      [rows]="10"
       [showCurrentPageReport]="true"
       [lazy]="true"
       (onLazyLoad)="onLazyLoad($event)"
       [totalRecords]="totalRecords()"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      [loading]="loadingService.loading()">
+      [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
+      styleClass="enterprise-table">
       <ng-template pTemplate="header">
         <tr>
-          <th>Name</th>
+          <th [pSortableColumn]="'name'">
+            <div class="flex align-items-center">
+              Name
+              <p-sortIcon [field]="'name'"></p-sortIcon>
+            </div>
+          </th>
           <th>Description</th>
           <th>Scope</th>
           <th>Type</th>
@@ -41,21 +53,109 @@
         <tr>
           <td>{{ role.name }}</td>
           <td>{{ role.description || '-' }}</td>
-          <td>{{ role.isSystemWide ? 'System-wide' : (role.tenantName ?? 'Tenant') }}</td>
-          <td>{{ role.isSystemRole ? 'System' : 'Custom' }}</td>
+          <td>
+            <p-tag [value]="role.isSystemWide ? 'System-wide' : (role.tenantName ?? 'Tenant')"
+                   [severity]="role.isSystemWide ? 'info' : 'success'">
+            </p-tag>
+          </td>
+          <td>
+            <p-tag [value]="role.isSystemRole ? 'System' : 'Custom'"
+                   [severity]="role.isSystemRole ? 'warn' : 'info'">
+            </p-tag>
+          </td>
           @if (canManagePermissions()) {
             <td>
               <a
                 pButton
                 icon="pi pi-key"
                 pTooltip="Manage permissions"
+                aria-label="Manage permissions"
                 class="p-button-text p-button-sm"
                 [routerLink]="['/roles', 'permissions', role.id]">
               </a>
+              @if (canManageRoles() && !role.isSystemRole) {
+                <p-button
+                  icon="pi pi-pencil"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="info"
+                  (onClick)="editRole(role)"
+                  pTooltip="Edit"
+                  tooltipPosition="top"
+                  ariaLabel="Edit role">
+                </p-button>
+                <p-button
+                  icon="pi pi-trash"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="danger"
+                  (onClick)="deleteRole(role)"
+                  pTooltip="Delete"
+                  tooltipPosition="top"
+                  ariaLabel="Delete role">
+                </p-button>
+              }
             </td>
           }
         </tr>
       </ng-template>
     </p-table>
+    @if (!loadingService.loading() && roles().length === 0) {
+      <div class="empty-state">
+        <i class="pi pi-inbox" aria-hidden="true"></i>
+        <p>No roles found. Create your first role to get started.</p>
+      </div>
+    }
   </p-card>
 </div>
+
+@if (showModal()) {
+  <app-modal [isOpen]="showModal()" [title]="editingRole() ? 'Edit Role' : 'Create Role'" (close)="closeModal()">
+    <form (ngSubmit)="saveRole()">
+      <div class="p-field">
+        <label for="roleName">Name *</label>
+        <input
+          id="roleName"
+          type="text"
+          pInputText
+          [(ngModel)]="formData.name"
+          name="name"
+          required
+          class="full-width" />
+      </div>
+
+      <div class="p-field">
+        <label for="roleDescription">Description</label>
+        <textarea
+          id="roleDescription"
+          pTextarea
+          [(ngModel)]="formData.description"
+          name="description"
+          rows="3"
+          class="full-width">
+        </textarea>
+      </div>
+
+      @if (!editingRole()) {
+        <div class="p-field-checkbox">
+          <p-checkbox [(ngModel)]="formData.isSystemWide" name="isSystemWide" [binary]="true" inputId="isSystemWide"></p-checkbox>
+          <label for="isSystemWide">System-wide role</label>
+        </div>
+      }
+
+      <div class="form-actions">
+        <p-button
+          label="Cancel"
+          [text]="true"
+          (onClick)="closeModal()"
+          type="button">
+        </p-button>
+        <p-button
+          label="Save"
+          type="submit"
+          [style]="{'margin-left': '0.5rem'}">
+        </p-button>
+      </div>
+    </form>
+  </app-modal>
+}

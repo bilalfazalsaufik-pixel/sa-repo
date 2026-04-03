@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
 import { LayoutComponent } from './layout/layout.component';
 import { AuthService } from './core/services/auth.service';
 import { PermissionService } from './core/services/permission.service';
@@ -18,10 +19,9 @@ import { of } from 'rxjs';
   `
 })
 export class AppComponent implements OnInit {
-  title = 'SS Dashboard';
-  
   private authService = inject(AuthService);
   private permissionService = inject(PermissionService);
+  private titleService = inject(Title);
   private logger = inject(LoggerService);
   private destroyRef = inject(DestroyRef);
 
@@ -49,7 +49,8 @@ export class AppComponent implements OnInit {
           if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)) {
             return of(null);
           }
-          if (!error?.message?.includes('Consent required')) {
+          if (!error?.message?.includes('Consent required') &&
+              !error?.message?.includes('Missing Refresh Token')) {
             this.logger.errorWithPrefix('AppComponent', 'Failed to sync user', error);
           }
           return of(null);
@@ -63,6 +64,13 @@ export class AppComponent implements OnInit {
           }
           if (response?.roles) {
             this.permissionService.setRoles(response.roles);
+          }
+          if (response?.tenantName) {
+            this.permissionService.setTenantName(response.tenantName);
+            this.titleService.setTitle(`${response.tenantName} Dashboard`);
+          }
+          if (response?.userId) {
+            this.permissionService.setCurrentUserId(response.userId);
           }
         }
       });

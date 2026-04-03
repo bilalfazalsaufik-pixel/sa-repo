@@ -1,5 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, inject, DestroyRef, signal, computed } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, inject, DestroyRef, Injector, signal, computed } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { filter, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,6 +18,10 @@ import { LoadingService } from '../../../../core/services/loading.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
+import { SitesMapComponent } from '../../../../shared/components/sites-map/sites-map.component';
+import { SiteMapItem } from '../../../../shared/models/site-map.model';
+import { AutoRefreshService } from '../../../../shared/services/auto-refresh.service';
+import { getStatusSeverity } from '../../../../shared/utils/site-status';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,16 +35,19 @@ import { LoadingSpinnerComponent } from '../../../../shared/components/loading-s
     TagModule,
     TooltipModule,
     ErrorMessageComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    SitesMapComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  providers: [AutoRefreshService]
 })
 export class DashboardComponent implements OnInit {
   dashboardData = signal<DashboardData | null>(null);
-  
+  lastUpdated = signal<Date | null>(null);
+
   // Site Overview pagination
   currentPage = signal<number>(0);
   itemsPerPage = signal<number>(10);
@@ -54,6 +62,8 @@ export class DashboardComponent implements OnInit {
   errorService = inject(ErrorService);
   loadingService = inject(LoadingService);
   private destroyRef = inject(DestroyRef);
+  private injector = inject(Injector);
+  autoRefresh = inject(AutoRefreshService);
 
   // Permission checks
   canViewDashboard = computed(() => this.permissionService.hasPermission('View Sites'));
@@ -66,9 +76,42 @@ export class DashboardComponent implements OnInit {
   normalSites = computed(() => this.summary()?.greenSites ?? 0);
   alarmedSites = computed(() => (this.summary()?.redSites ?? 0) + (this.summary()?.yellowSites ?? 0));
 
+  // Map data: cross-join sites (lat/lon) with dashboard overview (status)
+  siteMapItems = computed((): SiteMapItem[] => {
+    const statusMap = new Map(this.siteOverview().map(o => [o.siteId, o.status]));
+    return this.sites()
+      .filter(s => s.latitude != null && s.longitude != null)
+      .map(s => ({
+        siteId: s.id,
+        name: s.name,
+        latitude: s.latitude!,
+        longitude: s.longitude!,
+        status: statusMap.get(s.id)
+      }));
+  });
+
   ngOnInit(): void {
-    this.loadSites();
-    this.loadDashboardData();
+    // Both loadSites() and loadDashboardData() require the user to exist in the database.
+    // For a brand-new user, the database record is created by AppComponent's syncUser() call,
+    // which sets permissionsLoaded to true when it completes. Waiting here prevents a race
+    // where loadSites() fires before sync finishes, causing 401 "User not found in system"
+    // → error interceptor → redirect to /login → infinite loop.
+    if (this.permissionService.permissionsLoaded()) {
+      this.loadSites();
+      this.loadDashboardData();
+    } else {
+      toObservable(this.permissionService.permissionsLoaded, { injector: this.injector })
+        .pipe(filter(loaded => loaded), take(1), takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          this.loadSites();
+          this.loadDashboardData();
+        });
+    }
+
+    this.autoRefresh.start(
+      () => { if (!this.loadingService.loading()) this.loadDashboardData(); },
+      60_000
+    );
   }
 
   loadSites(): void {
@@ -88,7 +131,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     const params: GetDashboardDataParams = {};
@@ -98,11 +141,12 @@ export class DashboardComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.dashboardData.set(data);
-          this.loadingService.stopLoading();
+          this.lastUpdated.set(new Date());
+          this.loadingService.setLoading(false);
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
         }
       });
   }
@@ -114,18 +158,11 @@ export class DashboardComponent implements OnInit {
 
   // Pagination
   onPageChange(event: any): void {
-    this.currentPage.set(event.page);
-    this.itemsPerPage.set(event.rows);
+    this.currentPage.set(event.page ?? 0);
+    this.itemsPerPage.set(event.rows ?? 10);
   }
 
-  getStatusSeverity(status: string): 'success' | 'warn' | 'danger' | 'info' {
-    switch (status) {
-      case 'Green': return 'success';
-      case 'Yellow': return 'warn';
-      case 'Red': return 'danger';
-      default: return 'info';
-    }
-  }
+  getStatusSeverity = getStatusSeverity;
 
   getStatusIcon(status: string): string {
     switch (status) {
@@ -144,6 +181,10 @@ export class DashboardComponent implements OnInit {
 
   trackBySiteId(index: number, site: SiteOverview): number {
     return site.siteId;
+  }
+
+  toggleAutoRefresh(): void {
+    this.autoRefresh.toggle();
   }
 
   clearError = (): void => {

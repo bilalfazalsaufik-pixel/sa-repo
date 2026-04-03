@@ -69,6 +69,7 @@ export class DeviceListComponent implements OnInit {
     nameSearch?: string;
     ipSearch?: string;
   } | null = null;
+  private filterDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   private deviceService = inject(DeviceService);
   private siteService = inject(SiteService);
@@ -132,9 +133,12 @@ export class DeviceListComponent implements OnInit {
   }
 
   onFilterChange(): void {
-    this.tableFirst.set(0);
-    this.lastLoadParams = null;
-    this.loadDevices(1, this.pageSize());
+    if (this.filterDebounceTimer) clearTimeout(this.filterDebounceTimer);
+    this.filterDebounceTimer = setTimeout(() => {
+      this.tableFirst.set(0);
+      this.lastLoadParams = null;
+      this.loadDevices(1, this.pageSize());
+    }, 300);
   }
 
   loadDevices(pageNumber: number, pageSize: number): void {
@@ -158,7 +162,7 @@ export class DeviceListComponent implements OnInit {
 
     this.lastLoadParams = { pageNumber, pageSize, siteId, zoneId, sortField: sf, sortOrder: so, nameSearch, ipSearch };
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     this.deviceService.getDevices({
@@ -176,12 +180,12 @@ export class DeviceListComponent implements OnInit {
         next: (result) => {
           this.devices.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           this.lastLoadParams = null;
         }
@@ -191,14 +195,12 @@ export class DeviceListComponent implements OnInit {
   showCreateForm(): void {
     this.editingDevice.set(null);
     this.formData = { name: '', siteId: null };
-    this.loadSites(); // Load sites when opening modal
     this.showModal.set(true);
   }
 
   editDevice(device: Device): void {
     this.editingDevice.set(device);
     this.formData = { name: device.name, ip: device.ip || '', siteId: device.siteId };
-    this.loadSites(); // Load sites when opening modal
     this.showModal.set(true);
   }
 
@@ -208,13 +210,19 @@ export class DeviceListComponent implements OnInit {
     this.formData = { name: '', siteId: null };
   }
 
+  private static readonly IP_PATTERN = /^([0-9]{1,3}\.){3}[0-9]{1,3}$|^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+
   saveDevice(): void {
     if (!this.formData.name.trim() || !this.formData.siteId) {
       this.errorService.setError('Name and Site are required');
       return;
     }
+    if (this.formData.ip && !DeviceListComponent.IP_PATTERN.test(this.formData.ip)) {
+      this.errorService.setError('IP address must be a valid IPv4 or IPv6 address');
+      return;
+    }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     if (this.editingDevice()) {
@@ -228,13 +236,14 @@ export class DeviceListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Device updated successfully.');
             this.lastLoadParams = null;
             this.loadDevices(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     } else {
@@ -247,13 +256,14 @@ export class DeviceListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Device created successfully.');
             this.lastLoadParams = null;
             this.loadDevices(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     }
@@ -265,18 +275,19 @@ export class DeviceListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
         this.deviceService.deleteDevice(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('Device deleted successfully.');
               this.lastLoadParams = null;
               this.loadDevices(1, this.pageSize());
             },
             error: (err) => {
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }

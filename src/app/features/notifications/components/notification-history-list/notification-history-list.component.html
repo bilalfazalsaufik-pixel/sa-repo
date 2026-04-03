@@ -1,0 +1,141 @@
+<div class="notification-history-list">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <div>
+          <h2>Notification History</h2>
+          <p class="subtitle">Audit of sent notifications: when an event triggered a rule, who was notified, and via which channel</p>
+        </div>
+        <p-button
+          label="Notification Rules"
+          icon="pi pi-list"
+          [outlined]="true"
+          routerLink="/notifications"
+          pTooltip="Manage notification rules">
+        </p-button>
+      </div>
+    </ng-template>
+
+    <app-error-message [onDismiss]="clearError" />
+
+    <div class="filters">
+      <p-calendar
+                appendTo="body"
+        [(ngModel)]="fromDate"
+        (onSelect)="applyFilters()"
+        placeholder="From date"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [style]="{'width': '160px'}">
+      </p-calendar>
+      <p-calendar
+                appendTo="body"
+        [(ngModel)]="toDate"
+        (onSelect)="applyFilters()"
+        placeholder="To date"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [style]="{'width': '160px'}">
+      </p-calendar>
+      <p-dropdown
+                appendTo="body"
+        [options]="ruleOptions()"
+        [(ngModel)]="filterRuleId"
+        (onChange)="applyFilters()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Rule"
+        [showClear]="true"
+        [style]="{'width': '180px'}">
+      </p-dropdown>
+      <p-dropdown
+                appendTo="body"
+        [options]="recipientOptions()"
+        [(ngModel)]="filterRecipientUserId"
+        (onChange)="applyFilters()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Recipient"
+        [showClear]="true"
+        [style]="{'width': '180px'}">
+      </p-dropdown>
+      <p-dropdown
+                appendTo="body"
+        [options]="channelOptions"
+        [(ngModel)]="filterChannel"
+        (onChange)="applyFilters()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Channel"
+        [showClear]="true"
+        [style]="{'width': '140px'}">
+      </p-dropdown>
+      <p-dropdown
+                appendTo="body"
+        [options]="statusFilterOptions"
+        [(ngModel)]="filterStatus"
+        (onChange)="applyFilters()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Status"
+        [showClear]="true"
+        [style]="{'width': '140px'}">
+      </p-dropdown>
+      <p-button label="Apply" icon="pi pi-filter" (onClick)="applyFilters()"></p-button>
+      <p-button label="Clear" icon="pi pi-filter-slash" severity="secondary" (onClick)="clearFilters()"></p-button>
+    </div>
+
+    @if (loadingService.loading()) {
+      <app-table-skeleton [rowCount]="10" [columnCount]="7" />
+    } @else if (history().length > 0) {
+      <p-table
+        [value]="history()"
+        dataKey="id"
+        [rowTrackBy]="trackById"
+        [paginator]="true"
+        [rows]="pageSize()"
+        [first]="tableFirst()"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="onLazyLoad($event)"
+        [totalRecords]="totalRecords()"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [paginatorDropdownAppendTo]="'body'"
+        [scrollable]="true"
+        scrollHeight="600px"
+        styleClass="enterprise-table">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Sent At</th>
+            <th>Rule</th>
+            <th>Trigger</th>
+            <th>Event</th>
+            <th>Recipient</th>
+            <th>Channel</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>{{ item.sentAt | date:'dd MMM yyyy, HH:mm' }}</td>
+            <td>{{ item.ruleName }}</td>
+            <td>{{ item.channel }}</td>
+            <td>{{ item.subject || '—' }}</td>
+            <td>{{ item.recipientUserName }}</td>
+            <td>{{ item.channel }}</td>
+            <td>
+              <p-tag [value]="item.status" [severity]="getStatusSeverity(item.status)"></p-tag>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    } @else {
+      <div class="empty-state">
+        <i class="pi pi-history" style="font-size: 3rem; color: #64748b;"></i>
+        <p>No notification history found.</p>
+        <p class="empty-state-hint">History will appear here once a sensor threshold breach triggers a notification rule. Ensure notification rules are configured and sensors have sent readings.</p>
+      </div>
+    }
+  </p-card>
+</div>

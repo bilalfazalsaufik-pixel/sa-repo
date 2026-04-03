@@ -7,6 +7,19 @@
         <p class="page-subtitle">Real-time monitoring and analytics</p>
       </div>
       <div class="header-actions">
+        @if (lastUpdated()) {
+          <span class="last-updated">
+            <i class="pi pi-clock"></i>
+            Updated {{ lastUpdated() | date:'HH:mm:ss' }}
+          </span>
+        }
+        <button class="action-button auto-refresh-btn"
+                [class.active]="autoRefresh.enabled()"
+                (click)="toggleAutoRefresh()"
+                [title]="autoRefresh.enabled() ? 'Auto-refresh ON (60s)' : 'Auto-refresh OFF'">
+          <i class="pi pi-sync" [class.spinning]="autoRefresh.enabled()"></i>
+          <span>Auto</span>
+        </button>
         <button class="action-button refresh-btn" (click)="loadDashboardData()" title="Refresh Data">
           <i class="pi pi-refresh"></i>
           <span>Refresh</span>
@@ -24,18 +37,17 @@
       <div class="stats-grid">
         <!-- Normal Sites Card -->
         <div class="stat-card success">
-          <div class="stat-card-header">
+          <div class="stat-main">
             <div class="stat-icon-wrapper success">
               <i class="pi pi-check-circle stat-icon"></i>
+            </div>
+            <div class="stat-info">
+              <h2 class="stat-value">{{ normalSites() }}</h2>
+              <p class="stat-label">Normal Sites</p>
             </div>
             <div class="stat-trend positive">
               <i class="pi pi-arrow-up"></i>
             </div>
-          </div>
-          <div class="stat-card-body">
-            <h2 class="stat-value">{{ normalSites() }}</h2>
-            <p class="stat-label">Normal Sites</p>
-            <p class="stat-description">Operating within parameters</p>
           </div>
           <div class="stat-card-footer">
             <i class="pi pi-circle-fill status-indicator"></i>
@@ -45,18 +57,17 @@
 
         <!-- Alarmed Sites Card -->
         <div class="stat-card danger">
-          <div class="stat-card-header">
+          <div class="stat-main">
             <div class="stat-icon-wrapper danger">
               <i class="pi pi-exclamation-triangle stat-icon"></i>
+            </div>
+            <div class="stat-info">
+              <h2 class="stat-value">{{ alarmedSites() }}</h2>
+              <p class="stat-label">Alarmed Sites</p>
             </div>
             <div class="stat-trend negative">
               <i class="pi pi-arrow-down"></i>
             </div>
-          </div>
-          <div class="stat-card-body">
-            <h2 class="stat-value">{{ alarmedSites() }}</h2>
-            <p class="stat-label">Alarmed Sites</p>
-            <p class="stat-description">Requires immediate attention</p>
           </div>
           <div class="stat-card-footer">
             <i class="pi pi-circle-fill status-indicator"></i>
@@ -66,15 +77,14 @@
 
         <!-- Total Sites Card -->
         <div class="stat-card info">
-          <div class="stat-card-header">
+          <div class="stat-main">
             <div class="stat-icon-wrapper info">
               <i class="pi pi-building stat-icon"></i>
             </div>
-          </div>
-          <div class="stat-card-body">
-            <h2 class="stat-value">{{ normalSites() + alarmedSites() }}</h2>
-            <p class="stat-label">Total Sites</p>
-            <p class="stat-description">Across all regions</p>
+            <div class="stat-info">
+              <h2 class="stat-value">{{ normalSites() + alarmedSites() }}</h2>
+              <p class="stat-label">Total Sites</p>
+            </div>
           </div>
           <div class="stat-card-footer">
             <i class="pi pi-circle-fill status-indicator"></i>
@@ -84,15 +94,14 @@
 
         <!-- Performance Metric Card -->
         <div class="stat-card primary">
-          <div class="stat-card-header">
+          <div class="stat-main">
             <div class="stat-icon-wrapper primary">
               <i class="pi pi-chart-line stat-icon"></i>
             </div>
-          </div>
-          <div class="stat-card-body">
-            <h2 class="stat-value">{{ getHealthPercentage() }}%</h2>
-            <p class="stat-label">System Health</p>
-            <p class="stat-description">Overall performance metric</p>
+            <div class="stat-info">
+              <h2 class="stat-value">{{ getHealthPercentage() }}%</h2>
+              <p class="stat-label">System Health</p>
+            </div>
           </div>
           <div class="stat-card-footer">
             <i class="pi pi-circle-fill status-indicator"></i>
@@ -100,6 +109,25 @@
           </div>
         </div>
       </div>
+
+      <!-- Sites Map -->
+      @if (siteMapItems().length > 0) {
+        <div class="data-section">
+          <div class="section-header">
+            <div class="section-header-left">
+              <h2 class="section-title">
+                <i class="pi pi-map section-icon"></i>
+                Site Locations
+              </h2>
+              <p class="section-subtitle">Geographic overview of all monitored sites</p>
+            </div>
+          </div>
+          <app-sites-map
+            [siteMapItems]="siteMapItems()"
+            (siteClick)="viewSiteDetails($event)">
+          </app-sites-map>
+        </div>
+      }
 
       <!-- Site Overview Section -->
       <div class="data-section">
@@ -126,6 +154,7 @@
               [rows]="itemsPerPage()"
               [first]="currentPage() * itemsPerPage()"
               [rowsPerPageOptions]="[10, 25, 50]"
+              [paginatorDropdownAppendTo]="'body'"
               [showCurrentPageReport]="true"
               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
               (onPage)="onPageChange($event)"
@@ -178,8 +207,7 @@
                   <td>
                     <p-tag
                       [value]="site.status"
-                      [severity]="getStatusSeverity(site.status)"
-                      [icon]="getStatusIcon(site.status)">
+                      [severity]="getStatusSeverity(site.status)">
                     </p-tag>
                   </td>
                   <td>

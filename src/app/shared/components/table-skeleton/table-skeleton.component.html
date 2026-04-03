@@ -1,0 +1,14 @@
+<div class="table-skeleton" [style.--cols]="columnCount" role="status" aria-busy="true" aria-label="Loading content">
+  <div class="table-skeleton-header">
+    @for (c of headerColumns(); track c) {
+      <p-skeleton width="100%" height="1.25rem" styleClass="skeleton-cell" />
+    }
+  </div>
+  @for (row of rows(); track row) {
+    <div class="table-skeleton-row">
+      @for (w of bodyColumns(); track $index) {
+        <p-skeleton [width]="w" height="1rem" styleClass="skeleton-cell" borderRadius="4px" />
+      }
+    </div>
+  }
+</div>

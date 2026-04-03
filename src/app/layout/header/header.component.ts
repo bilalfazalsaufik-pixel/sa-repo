@@ -1,36 +1,65 @@
 import { Component, ChangeDetectionStrategy, ViewEncapsulation, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { ToolbarModule } from 'primeng/toolbar';
-import { ButtonModule } from 'primeng/button';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { MenuModule } from 'primeng/menu';
-import { BadgeModule } from 'primeng/badge';
 import { AuthService } from '../../core/services/auth.service';
 import { SidebarService } from '../services/sidebar.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MenuItem } from 'primeng/api';
+import { filter, map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
-    ToolbarModule,
-    ButtonModule,
+    CommonModule,
+    RouterModule,
     MenuModule,
-    BadgeModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
+const ROUTE_TITLES: Record<string, string> = {
+  '/dashboard': 'Dashboard',
+  '/devices': 'Devices',
+  '/zones': 'Zones',
+  '/sites': 'Sites',
+  '/sensors': 'Sensors',
+  '/readings': 'Readings',
+  '/events': 'Events',
+  '/maintenance': 'Maintenance',
+  '/users': 'Users',
+  '/roles': 'Roles',
+  '/tenants': 'Tenants',
+  '/notifications': 'Notifications',
+  '/profile': 'My Profile',
+  '/settings': 'Settings',
+  '/support': 'Support',
+};
+
 export class HeaderComponent {
   private authService = inject(AuthService);
+  private router = inject(Router);
   protected sidebarService = inject(SidebarService);
 
   private user$ = toSignal(this.authService.user$, { initialValue: null });
+
+  private currentUrl$ = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      map((e) => (e as NavigationEnd).urlAfterRedirects),
+      startWith(this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  pageTitle = computed(() => {
+    const url = this.currentUrl$() ?? '';
+    const segment = '/' + (url.split('/')[1] ?? '');
+    return ROUTE_TITLES[segment] ?? 'Dashboard';
+  });
   
   user = computed(() => {
     const authUser = this.user$();
@@ -57,21 +86,6 @@ export class HeaderComponent {
       command: () => this.logout()
     }
   ]);
-
-  headerStyle = computed(() => ({
-    position: 'relative',
-    top: '0',
-    left: '0',
-    right: '0',
-    height: '64px',
-    'z-index': '999',
-    transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    'padding-left': '1.5rem',
-    'padding-right': '1.5rem',
-    display: 'flex',
-    'align-items': 'center',
-    'justify-content': 'space-between'
-  }));
 
   logout(): void {
     this.authService.logout();

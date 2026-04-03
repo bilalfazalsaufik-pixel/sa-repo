@@ -59,6 +59,7 @@ export class SensorListComponent implements OnInit {
     { name: '', deviceId: null, regTypeId: null };
   private isLoading = false;
   private lastLoadParams: { pageNumber: number; pageSize: number; sortField?: string | null; sortOrder?: number; nameSearch?: string; deviceId?: number | null } | null = null;
+  private filterDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   private sensorService = inject(SensorService);
   private deviceService = inject(DeviceService);
@@ -89,9 +90,12 @@ export class SensorListComponent implements OnInit {
   }
 
   onFilterChange(): void {
-    this.tableFirst.set(0);
-    this.lastLoadParams = null;
-    this.loadSensors(1, this.pageSize());
+    if (this.filterDebounceTimer) clearTimeout(this.filterDebounceTimer);
+    this.filterDebounceTimer = setTimeout(() => {
+      this.tableFirst.set(0);
+      this.lastLoadParams = null;
+      this.loadSensors(1, this.pageSize());
+    }, 300);
   }
 
   loadDevices(): void {
@@ -129,7 +133,7 @@ export class SensorListComponent implements OnInit {
 
     this.lastLoadParams = { pageNumber, pageSize, sortField: sf, sortOrder: so, nameSearch, deviceId: deviceId ?? null };
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     this.sensorService.getSensors({ deviceId, sortField: sf ?? undefined, sortOrder: so, nameSearch, pageNumber, pageSize })
@@ -138,12 +142,12 @@ export class SensorListComponent implements OnInit {
         next: (result) => {
           this.sensors.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           this.lastLoadParams = null;
         }
@@ -153,23 +157,21 @@ export class SensorListComponent implements OnInit {
   showCreateForm(): void {
     this.editingSensor.set(null);
     this.formData = { name: '', deviceId: null, regTypeId: null };
-    this.loadDevices(); // Load devices when opening modal
-    this.loadRegTypes(); // Load regTypes when opening modal
+    this.loadRegTypes(); // Lazy-load reg types on first modal open
     this.showModal.set(true);
   }
 
   editSensor(sensor: Sensor): void {
     this.editingSensor.set(sensor);
-    this.formData = { 
-      name: sensor.name, 
-      address: sensor.address || '', 
+    this.formData = {
+      name: sensor.name,
+      address: sensor.address || '',
       threshold: sensor.threshold || undefined,
       clearThreshold: sensor.clearThreshold || undefined,
       deviceId: sensor.deviceId,
       regTypeId: sensor.regTypeId
     };
-    this.loadDevices(); // Load devices when opening modal
-    this.loadRegTypes(); // Load regTypes when opening modal
+    this.loadRegTypes(); // Lazy-load reg types on first modal open
     this.showModal.set(true);
   }
 
@@ -184,8 +186,16 @@ export class SensorListComponent implements OnInit {
       this.errorService.setError('Name, Device, and RegType are required');
       return;
     }
+    if (this.formData.threshold !== undefined && this.formData.threshold < 0) {
+      this.errorService.setError('Threshold must be a non-negative number');
+      return;
+    }
+    if (this.formData.clearThreshold !== undefined && this.formData.clearThreshold < 0) {
+      this.errorService.setError('Clear threshold must be a non-negative number');
+      return;
+    }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     if (this.editingSensor()) {
@@ -202,13 +212,14 @@ export class SensorListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Sensor updated successfully.');
             this.lastLoadParams = null;
             this.loadSensors(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     } else {
@@ -224,13 +235,14 @@ export class SensorListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Sensor created successfully.');
             this.lastLoadParams = null;
             this.loadSensors(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     }
@@ -242,18 +254,19 @@ export class SensorListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
         this.sensorService.deleteSensor(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('Sensor deleted successfully.');
               this.lastLoadParams = null;
               this.loadSensors(1, this.pageSize());
             },
             error: (err) => {
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }

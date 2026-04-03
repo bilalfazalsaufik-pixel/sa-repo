@@ -1,64 +1,58 @@
-import { HttpInterceptorFn, HttpErrorResponse, HttpRequest } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
-import { catchError, switchMap, take, throwError, of, shareReplay, Observable } from 'rxjs';
+import { catchError, switchMap, take, throwError, shareReplay, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 // Global token refresh lock to prevent multiple simultaneous refresh attempts
 let tokenRefreshInProgress: Observable<string> | null = null;
 let lastRefreshError: { timestamp: number; error: any } | null = null;
-const REFRESH_ERROR_COOLDOWN = 5000; // Don't retry refresh for 5 seconds after a failure
+const REFRESH_ERROR_COOLDOWN = 5000;
 
 /**
- * Error Interceptor to handle HTTP errors and display user-friendly messages.
- * FIX: Handles 401 errors by retrying the request with a fresh token when user is authenticated.
- * Uses a global lock to prevent multiple simultaneous token refresh attempts.
+ * Error Interceptor: handles 401 token-refresh logic and re-throws all errors
+ * so component error handlers (via ErrorService) show exactly ONE toast per failure.
+ *
+ * - 401 (authenticated, first try): attempt silent token refresh and retry once.
+ * - 401 (can't refresh / already retried): redirect to /login.
+ * - 403 / 500 / 0 / other: re-throw — component calls setErrorFromHttp() which
+ *   deduplicates and shows a single toast via ErrorMessageComponent.
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  // Only intercept requests to our API
   if (!req.url.startsWith(environment.apiUrl)) {
     return next(req);
   }
 
-  const messageService = inject(MessageService);
   const authService = inject(AuthService);
-  
-  // Check if this request has already been retried (using a custom header)
+  const router = inject(Router);
+
   const hasRetried = req.headers.has('X-Retry-Attempt');
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Handle 401 Unauthorized errors
       if (error.status === 401) {
-        // Check if user is authenticated - if authenticated but got 401, token may be expired
+        // Log the backend's 401 reason to the browser console so it is visible
+        // in DevTools without needing access to the server log stream.
+        const body = error.error;
+        const reason = (typeof body === 'object' && body?.message) ? body.message : JSON.stringify(body);
+        console.error(`[401 Unauthorized] ${req.method} ${req.url.split('?')[0]}\n  Backend reason: ${reason}`);
+
         return authService.isAuthenticated$.pipe(
           take(1),
           switchMap(isAuthenticated => {
             if (isAuthenticated && !hasRetried) {
-              // User is authenticated but got 401 - token expired
-              // FIX: Use a global lock to prevent multiple simultaneous token refresh attempts
-              
-              // Check if we recently failed to refresh (cooldown period)
+              // Check cooldown after a recent refresh failure
               if (lastRefreshError && Date.now() - lastRefreshError.timestamp < REFRESH_ERROR_COOLDOWN) {
-                // Too soon after last failure, don't retry
-                messageService.add({
-                  severity: 'warn',
-                  summary: 'Authentication Required',
-                  detail: 'Your session has expired. Please log in again.',
-                  life: 5000
-                });
+                router.navigate(['/login'], { replaceUrl: true });
                 return throwError(() => error);
               }
-              
-              // If a refresh is already in progress, reuse it
+
+              // Start or reuse an in-progress token refresh
               if (!tokenRefreshInProgress) {
-                // Start a new token refresh
                 tokenRefreshInProgress = authService.getAccessTokenSilently({
-                  authorizationParams: {
-                    audience: environment.auth0.audience
-                  },
-                  cacheMode: 'off' // Force token refresh - bypass cache completely
+                  authorizationParams: { audience: environment.auth0.audience },
+                  cacheMode: 'off'
                 }).pipe(
                   take(1),
                   shareReplay(1),
@@ -69,26 +63,18 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                   })
                 );
               }
-              
+
               return tokenRefreshInProgress.pipe(
                 switchMap(token => {
-                  // Clear the lock on success
                   tokenRefreshInProgress = null;
                   lastRefreshError = null;
-                  
+
                   if (!token) {
-                    // If we can't get a fresh token, refresh token may have expired
-                    messageService.add({
-                      severity: 'warn',
-                      summary: 'Authentication Required',
-                      detail: 'Your session has expired. Please log in again.',
-                      life: 5000
-                    });
+                    router.navigate(['/login'], { replaceUrl: true });
                     return throwError(() => error);
                   }
-                  
-                  // Retry the original request with the fresh token
-                  // Mark this as a retry attempt to prevent infinite loops
+
+                  // Retry with fresh token
                   const cloned = req.clone({
                     setHeaders: {
                       Authorization: `Bearer ${token}`,
@@ -98,61 +84,21 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                   return next(cloned);
                 }),
                 catchError(() => {
-                  // If token refresh fails, show error
-                  messageService.add({
-                    severity: 'warn',
-                    summary: 'Authentication Required',
-                    detail: 'Your session has expired. Please log in again.',
-                    life: 5000
-                  });
+                  router.navigate(['/login'], { replaceUrl: true });
                   return throwError(() => error);
                 })
               );
-            } else if (isAuthenticated && hasRetried) {
-              // Already retried once, token refresh didn't help - show error
-              messageService.add({
-                severity: 'warn',
-                summary: 'Authentication Required',
-                detail: 'Your session has expired. Please log in again.',
-                life: 5000
-              });
-              return throwError(() => error);
             } else {
-              // If not authenticated, 401 is expected during auth flow - don't show error
+              // Already retried OR not authenticated — redirect to login
+              router.navigate(['/login'], { replaceUrl: true });
               return throwError(() => error);
             }
           })
         );
       }
-      // Handle 403 Forbidden errors
-      else if (error.status === 403) {
-        messageService.add({
-          severity: 'error',
-          summary: 'Access Denied',
-          detail: 'You do not have permission to perform this action.',
-          life: 5000
-        });
-      }
-      // Handle 500+ server errors
-      else if (error.status >= 500) {
-        messageService.add({
-          severity: 'error',
-          summary: 'Server Error',
-          detail: 'An error occurred on the server. Please try again later.',
-          life: 5000
-        });
-      }
-      // Handle network errors
-      else if (error.status === 0) {
-        messageService.add({
-          severity: 'error',
-          summary: 'Network Error',
-          detail: 'Unable to connect to the server. Please check your connection.',
-          life: 5000
-        });
-      }
 
-      // Re-throw error so calling code can handle it
+      // For all other errors (403, 500, 0, etc.) just re-throw.
+      // Component error handlers call setErrorFromHttp() → ErrorService deduplicates → one toast.
       return throwError(() => error);
     })
   );

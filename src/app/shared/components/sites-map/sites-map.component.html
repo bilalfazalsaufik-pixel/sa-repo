@@ -1,0 +1,23 @@
+<div class="sites-map-container">
+  @if (siteMapItems.length > 0) {
+    <div
+      leaflet
+      [leafletOptions]="options"
+      [leafletFitBounds]="boundsForMap()"
+      [leafletLayers]="layers()"
+      class="sites-map">
+    </div>
+    <a
+      class="sites-map-attribution"
+      href="https://www.openstreetmap.org/copyright"
+      target="_blank"
+      rel="noopener noreferrer"
+      title="OpenStreetMap copyright">
+      © OpenStreetMap
+    </a>
+  } @else {
+    <div class="sites-map-empty" role="status">
+      <span>No sites with location data to display.</span>
+    </div>
+  }
+</div>

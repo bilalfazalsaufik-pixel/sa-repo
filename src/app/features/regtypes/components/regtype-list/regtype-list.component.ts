@@ -84,7 +84,7 @@ export class RegTypeListComponent implements OnInit {
     
     this.lastLoadParams = { pageNumber, pageSize };
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     this.regTypeService.getRegTypes(pageNumber, pageSize)
@@ -93,12 +93,12 @@ export class RegTypeListComponent implements OnInit {
         next: (result) => {
           this.regTypes.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           // Clear lastLoadParams on error so retry can work
           this.lastLoadParams = null;
@@ -139,7 +139,7 @@ export class RegTypeListComponent implements OnInit {
       return;
     }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     if (this.editingRegType()) {
@@ -153,13 +153,14 @@ export class RegTypeListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('RegType updated successfully.');
             this.lastLoadParams = null;
             this.loadRegTypes(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     } else {
@@ -172,13 +173,14 @@ export class RegTypeListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('RegType created successfully.');
             this.lastLoadParams = null;
             this.loadRegTypes(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     }
@@ -190,18 +192,19 @@ export class RegTypeListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
         this.regTypeService.deleteRegType(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('RegType deleted successfully.');
               this.lastLoadParams = null;
               this.loadRegTypes(1, this.pageSize());
             },
             error: (err) => {
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }

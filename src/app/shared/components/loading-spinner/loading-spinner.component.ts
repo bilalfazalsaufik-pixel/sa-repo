@@ -10,7 +10,7 @@ import { LoadingService } from '../../../core/services/loading.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (loadingService.loading()) {
-      <div class="loading-spinner" [class.fullscreen]="fullscreen">
+      <div class="loading-spinner" [class.fullscreen]="fullscreen" role="status" aria-live="polite" aria-label="Loading">
         <p-progressSpinner [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
         @if (message) {
           <p class="message">{{ message }}</p>

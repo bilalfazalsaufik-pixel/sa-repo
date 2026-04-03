@@ -1,0 +1,28 @@
+.support-page {
+  padding: 0;
+}
+
+/* Use global .card-header, .subtitle from styles.css */
+
+.support-page .placeholder-content {
+  padding: 1rem 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.support-page .placeholder-content p {
+  margin: 0 0 1rem 0;
+}
+
+.support-page .placeholder-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: #64748b;
+  margin-top: 1.5rem;
+}
+
+.support-page .placeholder-note i {
+  font-size: 1.25rem;
+}

@@ -13,6 +13,11 @@ export interface Maintenance {
   createdDate: string;
 }
 
+export interface UpdateMaintenanceRequest {
+  id: number;
+  message: string;
+}
+
 export interface GetMaintenancesQueryParams {
   [key: string]: string | number | boolean | Date | null | undefined;
   sensorId?: number;

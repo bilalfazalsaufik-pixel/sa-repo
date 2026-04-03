@@ -85,7 +85,7 @@ export class EventTypeListComponent implements OnInit {
     
     this.lastLoadParams = { pageNumber, pageSize };
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
     
     this.eventTypeService.getEventTypes(pageNumber, pageSize)
@@ -94,12 +94,12 @@ export class EventTypeListComponent implements OnInit {
         next: (result) => {
           this.eventTypes.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           // Clear lastLoadParams on error so retry can work
           this.lastLoadParams = null;
@@ -136,7 +136,7 @@ export class EventTypeListComponent implements OnInit {
       return;
     }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     if (this.editingEventType()) {
@@ -151,13 +151,14 @@ export class EventTypeListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Event type updated successfully.');
             this.lastLoadParams = null;
             this.loadEventTypes(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     } else {
@@ -171,13 +172,14 @@ export class EventTypeListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Event type created successfully.');
             this.lastLoadParams = null;
             this.loadEventTypes(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     }
@@ -189,18 +191,19 @@ export class EventTypeListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
         this.eventTypeService.deleteEventType(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('Event type deleted successfully.');
               this.lastLoadParams = null;
               this.loadEventTypes(1, this.pageSize());
             },
             error: (err) => {
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }

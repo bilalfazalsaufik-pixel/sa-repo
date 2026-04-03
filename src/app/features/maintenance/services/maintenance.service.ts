@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { Maintenance, GetMaintenancesQueryParams } from '../../../shared/models/maintenance.model';
+import { Maintenance, GetMaintenancesQueryParams, UpdateMaintenanceRequest } from '../../../shared/models/maintenance.model';
 import { PagedResult } from '../../../shared/models/paged-result.model';
 
 @Injectable({
@@ -22,9 +22,11 @@ export class MaintenanceService {
     return this.api.post<Maintenance>('maintenance', { sensorId, userId, message });
   }
 
+  updateMaintenance(request: UpdateMaintenanceRequest): Observable<Maintenance> {
+    return this.api.put<Maintenance>(`maintenance/${request.id}`, request);
+  }
+
   deleteMaintenance(id: number): Observable<void> {
     return this.api.delete<void>(`maintenance/${id}`);
   }
-
-  // Query params are passed directly to ApiService
 }

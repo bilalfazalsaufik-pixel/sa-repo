@@ -14,11 +14,12 @@ import { ConfirmationService } from 'primeng/api';
 import { NotificationService } from '../../services/notification.service';
 import {
   NotificationRule,
+  NotificationValue,
   CreateNotificationRuleRequest,
   UpdateNotificationRuleRequest
 } from '../../../../shared/models/notification.model';
-import { EventTypeService } from '../../../eventtypes/services/eventtype.service';
-import { EventType } from '../../../../shared/models/eventtype.model';
+import { ZoneService } from '../../../zones/services/zone.service';
+import { Zone } from '../../../../shared/models/zone.model';
 import { UsersService } from '../../../users/services/users.service';
 import { UserListItem } from '../../../users/models/user-list-item.model';
 import { ErrorService } from '../../../../core/services/error.service';
@@ -57,57 +58,38 @@ export class NotificationListComponent implements OnInit {
   showModal = signal(false);
   editingRule = signal<NotificationRule | null>(null);
   formData: {
-    name: string;
-    triggerType: string;
-    eventTypeId: number | undefined;
-    channel: string;
-    recipientUserId: number | undefined;
-    isActive: boolean;
+    userId: number | undefined;
+    zoneId: number | undefined;
+    timeframe: string;
+    notificationValueId: number | undefined;
+    active: boolean;
   } = {
-    name: '',
-    triggerType: 'EventCreated',
-    eventTypeId: undefined,
-    channel: 'Email',
-    recipientUserId: undefined,
-    isActive: true
+    userId: undefined,
+    zoneId: undefined,
+    timeframe: '',
+    notificationValueId: undefined,
+    active: true
   };
 
-  nameSearch = signal('');
-  triggerTypeFilter = signal<string | undefined>(undefined);
-  isActiveFilter = signal<boolean | undefined>(undefined);
+  timeframeSearch = signal('');
+  activeFilter = signal<boolean | undefined>(undefined);
   private isLoading = false;
   private lastLoadParams: {
     pageNumber: number;
     pageSize: number;
-    nameSearch?: string;
-    triggerType?: string;
-    isActive?: boolean;
+    timeframeSearch?: string;
+    active?: boolean;
   } | null = null;
 
-  eventTypes = signal<EventType[]>([]);
+  notificationValues = signal<NotificationValue[]>([]);
+  zones = signal<Zone[]>([]);
   users = signal<UserListItem[]>([]);
 
-  triggerTypeOptions = [
-    { label: 'Event Created', value: 'EventCreated' },
-    { label: 'Event Unresolved', value: 'EventUnresolved' }
-  ];
-  channelOptions = [
-    { label: 'Email', value: 'Email' },
-    { label: 'In-App', value: 'InApp' }
-  ];
-  filterTriggerOptions = [
-    { label: 'All', value: undefined },
-    { label: 'Event Created', value: 'EventCreated' },
-    { label: 'Event Unresolved', value: 'EventUnresolved' }
-  ];
-  filterActiveOptions = [
-    { label: 'All', value: undefined },
-    { label: 'Active', value: true },
-    { label: 'Inactive', value: false }
-  ];
-
-  eventTypeOptions = computed(() =>
-    this.eventTypes().map(et => ({ label: et.name, value: et.id }))
+  notificationValueOptions = computed(() =>
+    this.notificationValues().map(nv => ({ label: nv.name, value: nv.id }))
+  );
+  zoneOptions = computed(() =>
+    this.zones().map(z => ({ label: z.name, value: z.id }))
   );
   userOptions = computed(() =>
     this.users().map(u => ({
@@ -116,8 +98,14 @@ export class NotificationListComponent implements OnInit {
     }))
   );
 
+  filterActiveOptions = [
+    { label: 'All', value: undefined },
+    { label: 'Active', value: true },
+    { label: 'Inactive', value: false }
+  ];
+
   private notificationService = inject(NotificationService);
-  private eventTypeService = inject(EventTypeService);
+  private zoneService = inject(ZoneService);
   private usersService = inject(UsersService);
   private permissionService = inject(PermissionService);
   private confirmationService = inject(ConfirmationService);
@@ -129,57 +117,80 @@ export class NotificationListComponent implements OnInit {
   canManageNotifications = computed(() => this.permissionService.hasPermission('Manage Notifications'));
 
   ngOnInit(): void {
-    this.loadEventTypes();
+    this.loadNotificationValues();
+    this.loadZones();
     this.loadUsers();
   }
 
-  loadEventTypes(): void {
-    this.eventTypeService.getEventTypes(1, 500).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: r => this.eventTypes.set(r.items),
-      error: () => this.eventTypes.set([])
-    });
+  loadNotificationValues(): void {
+    this.notificationService.getNotificationValues()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: values => this.notificationValues.set(values),
+        error: () => {
+          this.notificationValues.set([]);
+          this.errorService.setError('Failed to load notification channels. Please refresh the page.');
+        }
+      });
+  }
+
+  loadZones(): void {
+    this.zoneService.getZones({ pageSize: 500 })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: r => this.zones.set(r.items),
+        error: () => {
+          this.zones.set([]);
+          this.errorService.setError('Failed to load zones. Please refresh the page.');
+        }
+      });
   }
 
   loadUsers(): void {
-    this.usersService.getUsers(1, 500).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: r => this.users.set(r.items),
-      error: () => this.users.set([])
-    });
+    // Load up to 100 users for the recipient dropdown. If the tenant has more,
+    // a server-side search endpoint should be added for scalability.
+    this.usersService.getUsers({ pageNumber: 1, pageSize: 100 })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: r => this.users.set(r.items),
+        error: () => {
+          this.users.set([]);
+          this.errorService.setError('Failed to load users. Please refresh the page.');
+        }
+      });
   }
 
   loadRules(pageNumber: number, pageSize: number): void {
     if (this.isLoading) return;
-    const nameSearch = this.nameSearch().trim() || undefined;
-    const triggerType = this.triggerTypeFilter();
-    const isActive = this.isActiveFilter();
+    const timeframeSearch = this.timeframeSearch().trim() || undefined;
+    const active = this.activeFilter();
     if (
       this.lastLoadParams &&
       this.lastLoadParams.pageNumber === pageNumber &&
       this.lastLoadParams.pageSize === pageSize &&
-      this.lastLoadParams.nameSearch === nameSearch &&
-      this.lastLoadParams.triggerType === triggerType &&
-      this.lastLoadParams.isActive === isActive
+      this.lastLoadParams.timeframeSearch === timeframeSearch &&
+      this.lastLoadParams.active === active
     ) {
       return;
     }
-    this.lastLoadParams = { pageNumber, pageSize, nameSearch, triggerType, isActive };
+    this.lastLoadParams = { pageNumber, pageSize, timeframeSearch, active };
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     this.notificationService
-      .getNotificationRules({ nameSearch, triggerType, isActive, pageNumber, pageSize })
+      .getNotificationRules({ timeframeSearch, active, pageNumber, pageSize })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: result => {
           this.rules.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: err => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           this.lastLoadParams = null;
         }
@@ -192,9 +203,8 @@ export class NotificationListComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.nameSearch.set('');
-    this.triggerTypeFilter.set(undefined);
-    this.isActiveFilter.set(undefined);
+    this.timeframeSearch.set('');
+    this.activeFilter.set(undefined);
     this.lastLoadParams = null;
     this.loadRules(1, this.pageSize());
   }
@@ -202,12 +212,11 @@ export class NotificationListComponent implements OnInit {
   showCreateForm(): void {
     this.editingRule.set(null);
     this.formData = {
-      name: '',
-      triggerType: 'EventCreated',
-      eventTypeId: undefined,
-      channel: 'Email',
-      recipientUserId: undefined,
-      isActive: true
+      userId: undefined,
+      zoneId: undefined,
+      timeframe: '',
+      notificationValueId: undefined,
+      active: true
     };
     this.showModal.set(true);
   }
@@ -215,12 +224,11 @@ export class NotificationListComponent implements OnInit {
   editRule(rule: NotificationRule): void {
     this.editingRule.set(rule);
     this.formData = {
-      name: rule.name,
-      triggerType: rule.triggerType,
-      eventTypeId: rule.eventTypeId ?? undefined,
-      channel: rule.channel,
-      recipientUserId: rule.recipientUserId,
-      isActive: rule.isActive
+      userId: rule.userId,
+      zoneId: rule.zoneId,
+      timeframe: rule.timeframe,
+      notificationValueId: rule.notificationValueId,
+      active: rule.active
     };
     this.showModal.set(true);
   }
@@ -231,64 +239,72 @@ export class NotificationListComponent implements OnInit {
   }
 
   saveRule(): void {
-    if (!this.formData.name.trim()) {
-      this.errorService.setError('Name is required');
+    if (!this.formData.userId) {
+      this.errorService.setError('Recipient user is required');
       return;
     }
-    if (this.formData.recipientUserId == null || this.formData.recipientUserId <= 0) {
-      this.errorService.setError('Recipient is required');
+    if (!this.formData.zoneId) {
+      this.errorService.setError('Zone is required');
+      return;
+    }
+    if (!this.formData.timeframe.trim()) {
+      this.errorService.setError('Timeframe is required (e.g. 8:00 pm-5:00 am)');
+      return;
+    }
+    if (!this.formData.notificationValueId) {
+      this.errorService.setError('Notification channel is required');
       return;
     }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     const editing = this.editingRule();
     if (editing) {
       const request: UpdateNotificationRuleRequest = {
         id: editing.id,
-        name: this.formData.name.trim(),
-        triggerType: this.formData.triggerType,
-        eventTypeId: this.formData.eventTypeId,
-        channel: this.formData.channel,
-        recipientUserId: this.formData.recipientUserId,
-        isActive: this.formData.isActive
+        userId: this.formData.userId,
+        zoneId: this.formData.zoneId,
+        timeframe: this.formData.timeframe.trim(),
+        notificationValueId: this.formData.notificationValueId,
+        active: this.formData.active
       };
       this.notificationService
         .updateNotificationRule(request)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Notification rule updated successfully.');
             this.lastLoadParams = null;
             this.loadRules(1, this.pageSize());
             this.closeModal();
           },
           error: err => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     } else {
       const request: CreateNotificationRuleRequest = {
-        name: this.formData.name.trim(),
-        triggerType: this.formData.triggerType,
-        eventTypeId: this.formData.eventTypeId,
-        channel: this.formData.channel,
-        recipientUserId: this.formData.recipientUserId,
-        isActive: this.formData.isActive
+        userId: this.formData.userId,
+        zoneId: this.formData.zoneId,
+        timeframe: this.formData.timeframe.trim(),
+        notificationValueId: this.formData.notificationValueId,
+        active: this.formData.active
       };
       this.notificationService
         .createNotificationRule(request)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Notification rule created successfully.');
             this.lastLoadParams = null;
             this.loadRules(1, this.pageSize());
             this.closeModal();
           },
           error: err => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     }
@@ -300,19 +316,20 @@ export class NotificationListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
         this.notificationService
           .deleteNotificationRule(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('Notification rule deleted successfully.');
               this.lastLoadParams = null;
               this.loadRules(1, this.pageSize());
             },
             error: err => {
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }

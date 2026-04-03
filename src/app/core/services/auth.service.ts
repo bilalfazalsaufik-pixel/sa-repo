@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService as Auth0Service } from '@auth0/auth0-angular';
-import { Observable, of, timer, throwError } from 'rxjs';
-import { switchMap, take, catchError, retryWhen } from 'rxjs/operators';
+import { Observable, of, timer, throwError, retry } from 'rxjs';
+import { switchMap, take, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { PermissionService } from './permission.service';
 import { LoggerService } from './logger.service';
@@ -24,6 +24,7 @@ export interface SyncUserResponse {
   roles: string[];
   permissions: string[];
   isNewUser: boolean;
+  tenantName: string;
 }
 
 export interface Auth0User {
@@ -55,9 +56,11 @@ export class AuthService {
   get accessToken$(): Observable<string | null> {
     return this.auth0.getAccessTokenSilently().pipe(
       catchError((error) => {
-        // Don't log consent errors - they're part of normal Auth0 flow
-        // User will be redirected to consent screen automatically
-        if (!error?.message?.includes('Consent required')) {
+        // Don't log expected Auth0 flow errors:
+        // - Consent required: user will be redirected to consent screen automatically
+        // - Missing Refresh Token: expected on first load before a refresh token is cached
+        if (!error?.message?.includes('Consent required') &&
+            !error?.message?.includes('Missing Refresh Token')) {
           this.logger.errorWithPrefix('Auth Service', 'Failed to get access token', error);
         }
         return of(null);
@@ -113,26 +116,26 @@ export class AuthService {
           }
         }).pipe(
           // Retry up to 3 times with exponential backoff if token retrieval fails
-          retryWhen(errors => 
-            errors.pipe(
-              switchMap((error, index) => {
-                // Don't retry on consent errors - these require user interaction
-                if (error?.message?.includes('Consent required')) {
-                  return throwError(() => error);
-                }
-                // Don't retry on 401/403 - these indicate auth/authorization issues
-                if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)) {
-                  return throwError(() => error);
-                }
-                // Retry up to 3 times with increasing delay (1s, 2s, 3s)
-                if (index < 3) {
-                  const delayMs = Math.min(1000 * (index + 1), 3000);
-                  return timer(delayMs);
-                }
+          retry({
+            count: 3,
+            delay: (error: any, retryCount: number) => {
+              // Don't retry on consent errors - these require user interaction
+              if (error?.message?.includes('Consent required')) {
                 return throwError(() => error);
-              })
-            )
-          ),
+              }
+              // Don't retry on missing refresh token - fallback to iframe is handled by SDK
+              if (error?.message?.includes('Missing Refresh Token')) {
+                return throwError(() => error);
+              }
+              // Don't retry on 401/403 - these indicate auth/authorization issues
+              if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)) {
+                return throwError(() => error);
+              }
+              // Exponential backoff: 1s, 2s, 3s
+              const delayMs = Math.min(1000 * retryCount, 3000);
+              return timer(delayMs);
+            }
+          }),
           switchMap((token) => {
             // Ensure we have a token before making the request
             if (!token) {
@@ -141,24 +144,14 @@ export class AuthService {
             // Token is available - interceptor will attach it, but we've ensured it's ready
             return this.apiService.post<SyncUserResponse>('Auth/sync', request);
           }),
-          catchError((tokenError) => {
-            // Don't log consent errors - they're part of normal Auth0 flow
-            // User will be redirected to consent screen automatically
-            if (!tokenError?.message?.includes('Consent required')) {
-              // Only log if it's not a 401/403 (those are expected during auth flow)
-              if (!(tokenError instanceof HttpErrorResponse && (tokenError.status === 401 || tokenError.status === 403))) {
-                this.logger.errorWithPrefix('Auth Service', 'Failed to get access token for sync', tokenError);
-              }
-            }
-            // Don't proceed with request if token retrieval failed - throw the error
-            throw tokenError;
-          }),
           catchError(error => {
-            // Don't log 401/403 errors - they're expected if user isn't authenticated, needs consent, or has authorization issues
-            if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)) {
-              throw error;
+            const isConsent = error?.message?.includes('Consent required');
+            const isMissingToken = error?.message?.includes('Missing Refresh Token');
+            const isAuthError = error instanceof HttpErrorResponse &&
+              (error.status === 401 || error.status === 403);
+            if (!isConsent && !isMissingToken && !isAuthError) {
+              this.logger.errorWithPrefix('Auth Service', 'Sync user error', error);
             }
-            this.logger.errorWithPrefix('Auth Service', 'Sync user API error', error);
             throw error;
           })
         );

@@ -15,15 +15,6 @@ export class LoggerService {
   private readonly enableLogging = environment.enableLogging ?? !this.isProduction;
 
   /**
-   * Logs a debug message (only in non-production)
-   */
-  debug(message: string, ...args: any[]): void {
-    if (this.enableLogging) {
-      console.debug(`[DEBUG] ${message}`, ...args);
-    }
-  }
-
-  /**
    * Logs an informational message (only in non-production)
    */
   log(message: string, ...args: any[]): void {
@@ -53,15 +44,6 @@ export class LoggerService {
   }
 
   /**
-   * Logs with a custom prefix (only in non-production)
-   */
-  logWithPrefix(prefix: string, message: string, ...args: any[]): void {
-    if (this.enableLogging) {
-      console.log(`[${prefix}] ${message}`, ...args);
-    }
-  }
-
-  /**
    * Logs an error with a custom prefix (only in non-production)
    */
   errorWithPrefix(prefix: string, message: string, ...args: any[]): void {
@@ -70,28 +52,4 @@ export class LoggerService {
     }
   }
 
-  /**
-   * Groups console logs together (only in non-production)
-   */
-  group(label: string): void {
-    if (this.enableLogging) {
-      console.group(label);
-    }
-  }
-
-  /**
-   * Ends a console group (only in non-production)
-   */
-  groupEnd(): void {
-    if (this.enableLogging) {
-      console.groupEnd();
-    }
-  }
-
-  /**
-   * Checks if logging is enabled
-   */
-  isLoggingEnabled(): boolean {
-    return this.enableLogging;
-  }
 }

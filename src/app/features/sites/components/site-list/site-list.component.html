@@ -20,103 +20,106 @@
     <app-error-message [onDismiss]="clearError" />
     <app-loading-spinner />
 
-    @if (!loadingService.loading()) {
-      <p-table [value]="sites()" dataKey="id" [rowTrackBy]="trackBySiteId" [paginator]="true" [rows]="10" [first]="tableFirst()"
-               [showCurrentPageReport]="true" [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-               [sortField]="sortField()" [sortOrder]="sortOrder()"
-               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-               [rowsPerPageOptions]="[10, 25, 50]">
-        <ng-template pTemplate="header">
-          <tr>
-            <th [pSortableColumn]="'name'">Name <p-sortIcon [field]="'name'" /></th>
-            <th [pSortableColumn]="'zoneName'">Zone <p-sortIcon [field]="'zoneName'" /></th>
-            <th [pSortableColumn]="'status'">Status <p-sortIcon [field]="'status'" /></th>
-            <th>Location</th>
-            @if (canManageSites()) {
-              <th>Actions</th>
-            }
-          </tr>
-          <tr class="filter-row">
-            <th>
-              <input type="text" pInputText [(ngModel)]="filterName" (input)="onFilterChange()" placeholder="Filter name" class="filter-input" />
-            </th>
-            <th>
-              <p-dropdown
-                [options]="zoneFilterOptions()"
-                [(ngModel)]="zoneFilterValue"
-                (onChange)="onFilterChange()"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="All zones"
-                [showClear]="true"
-                class="filter-dropdown-inline">
-              </p-dropdown>
-            </th>
-            <th>
-              <p-dropdown
-                [options]="statusFilterOptions"
-                [(ngModel)]="statusFilterValue"
-                (onChange)="onFilterChange()"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="All statuses"
-                [showClear]="true"
-                class="filter-dropdown-inline">
-              </p-dropdown>
-            </th>
+    <p-table [value]="sites()" dataKey="id" [rowTrackBy]="trackBySiteId" [paginator]="true" [rows]="10" [first]="tableFirst()"
+             [showCurrentPageReport]="true" [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
+             [sortField]="sortField()" [sortOrder]="sortOrder()"
+             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
+             styleClass="enterprise-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th [pSortableColumn]="'name'">Name <p-sortIcon [field]="'name'" /></th>
+          <th [pSortableColumn]="'zoneName'">Zone <p-sortIcon [field]="'zoneName'" /></th>
+          <th [pSortableColumn]="'status'">Status <p-sortIcon [field]="'status'" /></th>
+          <th>Location</th>
+          @if (canManageSites()) {
+            <th>Actions</th>
+          }
+        </tr>
+        <tr class="filter-row">
+          <th>
+            <input type="text" pInputText [(ngModel)]="filterName" (input)="onFilterChange()" placeholder="Filter name" class="filter-input" />
+          </th>
+          <th>
+            <p-dropdown
+              appendTo="body"
+              [options]="zoneFilterOptions()"
+              [(ngModel)]="zoneFilterValue"
+              (onChange)="onFilterChange()"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="All zones"
+              [showClear]="true"
+              class="filter-dropdown-inline">
+            </p-dropdown>
+          </th>
+          <th>
+            <p-dropdown
+              appendTo="body"
+              [options]="statusFilterOptions"
+              [(ngModel)]="statusFilterValue"
+              (onChange)="onFilterChange()"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="All statuses"
+              [showClear]="true"
+              class="filter-dropdown-inline">
+            </p-dropdown>
+          </th>
+          <th></th>
+          @if (canManageSites()) {
             <th></th>
-            @if (canManageSites()) {
-              <th></th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-site>
+        <tr>
+          <td>{{ site.name }}</td>
+          <td>{{ site.zoneName }}</td>
+          <td>
+            <p-tag
+              [value]="site.siteStatus?.currentStatus || 'Green'"
+              [severity]="getStatusSeverity(site.siteStatus?.currentStatus || 'Green')">
+            </p-tag>
+          </td>
+          <td>
+            @if (site.latitude && site.longitude) {
+              <span>{{ site.latitude }}, {{ site.longitude }}</span>
+            } @else {
+              <span>-</span>
             }
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-site>
-          <tr>
-            <td>{{ site.name }}</td>
-            <td>{{ site.zoneName }}</td>
+          </td>
+          @if (canManageSites()) {
             <td>
-              <p-tag 
-                [value]="site.siteStatus?.currentStatus || 'Green'" 
-                [severity]="getStatusSeverity(site.siteStatus?.currentStatus || 'Green')">
-              </p-tag>
+              <p-button
+                icon="pi pi-pencil"
+                [text]="true"
+                [rounded]="true"
+                severity="info"
+                (onClick)="editSite(site)"
+                pTooltip="Edit"
+                tooltipPosition="top"
+                ariaLabel="Edit site">
+              </p-button>
+              <p-button
+                icon="pi pi-trash"
+                [text]="true"
+                [rounded]="true"
+                severity="danger"
+                (onClick)="deleteSite(site.id)"
+                pTooltip="Delete"
+                tooltipPosition="top"
+                ariaLabel="Delete site">
+              </p-button>
             </td>
-            <td>
-              @if (site.latitude && site.longitude) {
-                <span>{{ site.latitude }}, {{ site.longitude }}</span>
-              } @else {
-                <span>-</span>
-              }
-            </td>
-            @if (canManageSites()) {
-              <td>
-                <p-button 
-                  icon="pi pi-pencil" 
-                  [text]="true" 
-                  [rounded]="true"
-                  severity="info"
-                  (onClick)="editSite(site)"
-                  pTooltip="Edit"
-                  tooltipPosition="top">
-                </p-button>
-                <p-button 
-                  icon="pi pi-trash" 
-                  [text]="true" 
-                  [rounded]="true"
-                  severity="danger"
-                  (onClick)="deleteSite(site.id)"
-                  pTooltip="Delete"
-                  tooltipPosition="top">
-                </p-button>
-              </td>
-            }
-          </tr>
-        </ng-template>
-      </p-table>
-    }
+          }
+        </tr>
+      </ng-template>
+    </p-table>
     @if (!loadingService.loading() && sites().length === 0) {
       <div class="empty-state">
-        <i class="pi pi-inbox" style="font-size: 3rem; color: #999;"></i>
-        <p>No sites found. Create your first site!</p>
+        <i class="pi pi-inbox" aria-hidden="true"></i>
+        <p>No sites found. Create your first site to get started.</p>
       </div>
     }
   </p-card>
@@ -140,7 +143,8 @@
 
       <div class="p-field">
         <label for="zoneId">Zone *</label>
-        <p-dropdown 
+        <p-dropdown
+                appendTo="body" 
           id="zoneId"
           [options]="zoneOptions()" 
           [(ngModel)]="formData.zoneId" 

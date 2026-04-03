@@ -6,6 +6,14 @@
           <h2>{{ pageTitle() }}</h2>
           <p class="subtitle">{{ pageSubtitle() }}</p>
         </div>
+        @if (canManageUsers()) {
+          <p-button
+            label="Create User"
+            icon="pi pi-plus"
+            (onClick)="showCreateForm()"
+            class="ml-auto">
+          </p-button>
+        }
       </div>
     </ng-template>
 
@@ -13,39 +21,177 @@
     <app-loading-spinner />
 
     @if (canViewUsers()) {
-      @if (!loadingService.loading()) {
-        <p-table
-          [value]="users()"
-          dataKey="userId"
-          [rowTrackBy]="trackByUserId"
-          [paginator]="true"
-          [rows]="10"
-          [showCurrentPageReport]="true"
-          [lazy]="true"
-          (onLazyLoad)="onLazyLoad($event)"
-          [totalRecords]="totalRecords()"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-          [rowsPerPageOptions]="[10, 25, 50]">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-user>
-            <tr>
-              <td>{{ displayName(user) }}</td>
-              <td>{{ user.email }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
-      }
+      <p-table
+        [value]="users()"
+        dataKey="userId"
+        [rowTrackBy]="trackByUserId"
+        [paginator]="true"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="onLazyLoad($event)"
+        [totalRecords]="totalRecords()"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
+        styleClass="enterprise-table">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Roles</th>
+            @if (isSuperAdmin()) {
+              <th>Tenant</th>
+            }
+            @if (canManageUsers()) { <th>Actions</th> }
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <td>{{ displayName(user) }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phoneNumber || '-' }}</td>
+            <td>{{ rolesDisplay(user) }}</td>
+            @if (isSuperAdmin()) {
+              <td>{{ getTenantLabel(user.tenantId) }}</td>
+            }
+            @if (canManageUsers()) {
+              <td>
+                @if (canActOnUser(user)) {
+                  <p-button
+                    icon="pi pi-pencil"
+                    [text]="true"
+                    [rounded]="true"
+                    severity="info"
+                    (onClick)="editUser(user)"
+                    pTooltip="Edit"
+                    tooltipPosition="top"
+                    ariaLabel="Edit user">
+                  </p-button>
+                  @if (!isCurrentUser(user)) {
+                    <p-button
+                      icon="pi pi-trash"
+                      [text]="true"
+                      [rounded]="true"
+                      severity="danger"
+                      (onClick)="deleteUser(user.userId)"
+                      pTooltip="Delete"
+                      tooltipPosition="top"
+                      ariaLabel="Delete user">
+                    </p-button>
+                  }
+                }
+              </td>
+            }
+          </tr>
+        </ng-template>
+      </p-table>
       @if (!loadingService.loading() && users().length === 0) {
         <div class="empty-state">
-          <i class="pi pi-users" style="font-size: 3rem; color: #999;"></i>
-          <p>No users found.</p>
+          <i class="pi pi-users" aria-hidden="true"></i>
+          <p>No users found. Create your first user to get started.</p>
         </div>
       }
     }
   </p-card>
+
+  <app-modal
+    [isOpen]="showModal()"
+    [title]="editingUser() ? 'Edit User' : 'Create User'"
+    (close)="closeModal()">
+    <form (ngSubmit)="saveUser()">
+      <div class="p-field">
+        <label for="firstName">First Name *</label>
+        <input
+          id="firstName"
+          type="text"
+          pInputText
+          [(ngModel)]="formData.firstName"
+          name="firstName"
+          required
+          class="full-width" />
+      </div>
+
+      <div class="p-field">
+        <label for="lastName">Last Name *</label>
+        <input
+          id="lastName"
+          type="text"
+          pInputText
+          [(ngModel)]="formData.lastName"
+          name="lastName"
+          required
+          class="full-width" />
+      </div>
+
+      <div class="p-field">
+        <label for="email">Email *</label>
+        <input
+          id="email"
+          type="email"
+          pInputText
+          [(ngModel)]="formData.email"
+          name="email"
+          required
+          class="full-width" />
+      </div>
+
+      <div class="p-field">
+        <label for="phoneNumber">Phone Number</label>
+        <input
+          id="phoneNumber"
+          type="text"
+          pInputText
+          [(ngModel)]="formData.phoneNumber"
+          name="phoneNumber"
+          class="full-width" />
+      </div>
+
+      <div class="p-field">
+        <label for="roleIds">Roles *</label>
+        <p-multiSelect
+          id="roleIds"
+          [options]="roleOptions()"
+          [(ngModel)]="formData.roleIds"
+          name="roleIds"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select Roles"
+          appendTo="body"
+          class="full-width">
+        </p-multiSelect>
+      </div>
+
+      @if (isSuperAdmin() && !editingUser()) {
+        <div class="p-field">
+          <label for="tenantId">Tenant *</label>
+          <p-dropdown
+                appendTo="body"
+            id="tenantId"
+            [options]="tenantOptions()"
+            [(ngModel)]="formData.tenantId"
+            name="tenantId"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select Tenant"
+            class="full-width">
+          </p-dropdown>
+        </div>
+      }
+
+      <div class="form-actions">
+        <p-button
+          label="Cancel"
+          [text]="true"
+          (onClick)="closeModal()"
+          type="button">
+        </p-button>
+        <p-button
+          label="Save"
+          type="submit"
+          [style]="{'margin-left': '0.5rem'}">
+        </p-button>
+      </div>
+    </form>
+  </app-modal>
 </div>

@@ -5,11 +5,24 @@
         <div>
           <h2>Events</h2>
         </div>
-        @if (unresolvedCount() > 0) {
-          <p-badge [value]="unresolvedCount().toString()" severity="warn">
-            <span style="margin-left: 0.5rem;">Unresolved</span>
-          </p-badge>
-        }
+        <div class="header-actions">
+          @if (lastUpdated()) {
+            <span class="last-updated">
+              <i class="pi pi-clock"></i>
+              Updated {{ lastUpdated() | date:'HH:mm:ss' }}
+            </span>
+          }
+          @if (unresolvedCount() > 0) {
+            <span class="unresolved-badge">
+              <i class="pi pi-exclamation-triangle"></i>
+              {{ unresolvedCount() }} Unresolved
+            </span>
+          }
+          <button class="auto-refresh-toggle" [class.active]="autoRefreshEnabled()" (click)="toggleAutoRefresh()">
+            <i [class]="autoRefreshEnabled() ? 'pi pi-pause' : 'pi pi-play'"></i>
+            <span>{{ autoRefreshEnabled() ? 'Auto (30s)' : 'Paused' }}</span>
+          </button>
+        </div>
       </div>
     </ng-template>
 
@@ -18,17 +31,19 @@
 
     <!-- Filters -->
     <div class="filters">
-      <p-dropdown 
+      <p-dropdown
+                appendTo="body"
         [options]="statusOptions"
         [(ngModel)]="filterResolved"
         (onChange)="applyFilters()"
         placeholder="Status"
         optionLabel="label"
         optionValue="value"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-dropdown>
 
-      <p-dropdown 
+      <p-dropdown
+                appendTo="body"
         [options]="sensorOptions()"
         [(ngModel)]="selectedSensorId"
         (onChange)="applyFilters()"
@@ -36,10 +51,11 @@
         optionLabel="label"
         optionValue="value"
         [showClear]="true"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-dropdown>
 
-      <p-dropdown 
+      <p-dropdown
+                appendTo="body"
         [options]="eventTypeOptions()"
         [(ngModel)]="selectedEventTypeId"
         (onChange)="applyFilters()"
@@ -47,112 +63,122 @@
         optionLabel="label"
         optionValue="value"
         [showClear]="true"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-dropdown>
 
-      <p-calendar 
+      <p-calendar
+                appendTo="body"
         [(ngModel)]="startDate"
         (onSelect)="applyFilters()"
         placeholder="Start Date"
         dateFormat="yy-mm-dd"
         [showIcon]="true"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-calendar>
 
-      <p-calendar 
+      <p-calendar
+                appendTo="body"
         [(ngModel)]="endDate"
         (onSelect)="applyFilters()"
         placeholder="End Date"
         dateFormat="yy-mm-dd"
         [showIcon]="true"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-calendar>
 
-      <p-button 
-        label="Clear Filters" 
+      <p-button
+        label="Clear Filters"
         icon="pi pi-filter-slash"
         severity="secondary"
         (onClick)="clearFilters()">
       </p-button>
     </div>
 
-    @if (!loadingService.loading()) {
-      <p-table [value]="events()" dataKey="id" [rowTrackBy]="trackByEventId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true" 
-               [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-               [rowsPerPageOptions]="[10, 25, 50]"
-               [scrollable]="true"
-               scrollHeight="600px">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Time Raised</th>
-            <th>Sensor</th>
-            <th>Device</th>
-            <th>Site</th>
-            <th>Zone</th>
-            <th>Event Type</th>
-            <th>Severity</th>
-            <th>Message</th>
-            <th>Status</th>
-            <th>Resolved By</th>
-            <th>Resolved At</th>
-            @if (canResolveEvents() || canManageEvents()) {
-              <th>Actions</th>
+    <p-table [value]="events()" dataKey="id" [rowTrackBy]="trackByEventId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+             [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
+             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
+             styleClass="enterprise-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Time Raised</th>
+          <th>Sensor / Device</th>
+          <th>Site / Zone</th>
+          <th>Event Type</th>
+          <th>Severity</th>
+          <th>Message</th>
+          <th>Status</th>
+          <th>Resolution</th>
+          @if (canResolveEvents() || canManageEvents()) {
+            <th>Actions</th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-event>
+        <tr>
+          <td style="white-space:nowrap">{{ event.timeRaised | date:'dd MMM yyyy, HH:mm' }}</td>
+          <td>
+            <div>{{ event.sensorName }}</div>
+            <div class="cell-sub">{{ event.deviceName }}</div>
+          </td>
+          <td>
+            <div>{{ event.siteName }}</div>
+            <div class="cell-sub">{{ event.zoneName }}</div>
+          </td>
+          <td>{{ event.eventTypeName }}</td>
+          <td>
+            <p-tag [value]="event.eventTypeSeverity" [severity]="getSeverityBadge(event.eventTypeSeverity)"></p-tag>
+          </td>
+          <td class="msg-cell" [pTooltip]="event.message" tooltipPosition="top">{{ event.message }}</td>
+          <td>
+            <p-tag [value]="event.resolved ? 'Resolved' : 'Unresolved'"
+                   [severity]="event.resolved ? 'success' : 'warn'">
+            </p-tag>
+          </td>
+          <td>
+            @if (event.resolved) {
+              <div>
+                <div>{{ event.resolvedByName }}</div>
+                <div class="cell-sub">{{ event.resolvedAt | date:'dd MMM yyyy, HH:mm' }}</div>
+              </div>
+            } @else {
+              <span class="cell-empty">—</span>
             }
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-event>
-          <tr>
-            <td>{{ event.timeRaised | date:'short' }}</td>
-            <td>{{ event.sensorName }}</td>
-            <td>{{ event.deviceName }}</td>
-            <td>{{ event.siteName }}</td>
-            <td>{{ event.zoneName }}</td>
-            <td>{{ event.eventTypeName }}</td>
+          </td>
+          @if (canResolveEvents() || canManageEvents()) {
             <td>
-              <p-tag [value]="event.eventTypeSeverity" [severity]="getSeveritySeverity(event.eventTypeSeverity)"></p-tag>
+              @if (canResolveEvents() && !event.resolved) {
+                <p-button
+                  label="Resolve"
+                  icon="pi pi-check-circle"
+                  severity="success"
+                  [size]="'small'"
+                  (onClick)="showResolveForm(event)"
+                  [style]="{'margin-right': '0.5rem'}"
+                  ariaLabel="Resolve event">
+                </p-button>
+              }
+              @if (canManageEvents()) {
+                <p-button
+                  icon="pi pi-trash"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="danger"
+                  (onClick)="deleteEvent(event.id)"
+                  pTooltip="Delete Event"
+                  tooltipPosition="top"
+                  ariaLabel="Delete event">
+                </p-button>
+              }
             </td>
-            <td>{{ event.message }}</td>
-            <td>
-              <p-tag [value]="event.resolved ? 'Resolved' : 'Unresolved'" 
-                     [severity]="event.resolved ? 'success' : 'warn'">
-              </p-tag>
-            </td>
-            <td>{{ event.resolvedByName || '-' }}</td>
-            <td>{{ event.resolvedAt ? (event.resolvedAt | date:'short') : '-' }}</td>
-            @if (canResolveEvents() || canManageEvents()) {
-              <td>
-                @if (canResolveEvents() && !event.resolved) {
-                  <p-button 
-                    label="Resolve" 
-                    icon="pi pi-check-circle"
-                    severity="success"
-                    [size]="'small'"
-                    (onClick)="showResolveForm(event)"
-                    [style]="{'margin-right': '0.5rem'}">
-                  </p-button>
-                }
-                @if (canManageEvents()) {
-                  <p-button 
-                    icon="pi pi-trash" 
-                    [text]="true" 
-                    [rounded]="true"
-                    severity="danger"
-                    (onClick)="deleteEvent(event.id)"
-                    pTooltip="Delete Event"
-                    tooltipPosition="top">
-                  </p-button>
-                }
-              </td>
-            }
-          </tr>
-        </ng-template>
-      </p-table>
-    }
+          }
+        </tr>
+      </ng-template>
+    </p-table>
     @if (!loadingService.loading() && events().length === 0) {
       <div class="empty-state">
-        <i class="pi pi-inbox" style="font-size: 3rem; color: #999;"></i>
-        <p>No events found.</p>
+        <i class="pi pi-inbox" aria-hidden="true"></i>
+        <p>No events found matching your filters.</p>
       </div>
     }
   </p-card>

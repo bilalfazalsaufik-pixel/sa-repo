@@ -14,7 +14,8 @@
 
     <!-- Filters -->
     <div class="filters">
-      <p-dropdown 
+      <p-dropdown
+                appendTo="body"
         [options]="sensorOptions()"
         [(ngModel)]="selectedSensorId"
         (onChange)="applyFilters()"
@@ -22,71 +23,132 @@
         optionLabel="label"
         optionValue="value"
         [showClear]="true"
-        [style]="{'width': '300px'}">
+        styleClass="filter-item">
       </p-dropdown>
 
-      <p-calendar 
+      <p-calendar
+                appendTo="body"
         [(ngModel)]="startDate"
         (onSelect)="applyFilters()"
         placeholder="Start Date"
         dateFormat="yy-mm-dd"
         [showIcon]="true"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-calendar>
 
-      <p-calendar 
+      <p-calendar
+                appendTo="body"
         [(ngModel)]="endDate"
         (onSelect)="applyFilters()"
         placeholder="End Date"
         dateFormat="yy-mm-dd"
         [showIcon]="true"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-calendar>
 
-      <p-button 
-        label="Clear Filters" 
+      <p-button
+        label="Clear Filters"
         icon="pi pi-filter-slash"
         severity="secondary"
         (onClick)="clearFilters()">
       </p-button>
     </div>
 
-    @if (!loadingService.loading()) {
-      <p-table [value]="maintenances()" dataKey="id" [rowTrackBy]="trackByMaintenanceId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true" 
-               [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-               [rowsPerPageOptions]="[10, 25, 50]"
-               [scrollable]="true"
-               scrollHeight="600px">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Sensor</th>
-            <th>Device</th>
-            <th>Site</th>
-            <th>Zone</th>
-            <th>User</th>
-            <th>Message</th>
-            <th>Date</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-maintenance>
-          <tr>
-            <td>{{ maintenance.sensorName }}</td>
-            <td>{{ maintenance.deviceName }}</td>
-            <td>{{ maintenance.siteName }}</td>
-            <td>{{ maintenance.zoneName }}</td>
-            <td>{{ maintenance.userName }}</td>
-            <td>{{ maintenance.message }}</td>
-            <td>{{ maintenance.createdDate | date:'short' }}</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    }
+    <p-table [value]="maintenances()" dataKey="id" [rowTrackBy]="trackByMaintenanceId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+             [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
+             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
+             styleClass="enterprise-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Sensor</th>
+          <th>Device</th>
+          <th>Site</th>
+          <th>Zone</th>
+          <th>User</th>
+          <th>Message</th>
+          <th>Date</th>
+          @if (canManageMaintenance()) {
+            <th>Actions</th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-maintenance>
+        <tr>
+          <td>{{ maintenance.sensorName }}</td>
+          <td>{{ maintenance.deviceName }}</td>
+          <td>{{ maintenance.siteName }}</td>
+          <td>{{ maintenance.zoneName }}</td>
+          <td>{{ maintenance.userName }}</td>
+          <td>{{ maintenance.message }}</td>
+          <td>{{ maintenance.createdDate | date:'dd MMM yyyy, HH:mm' }}</td>
+          @if (canManageMaintenance()) {
+            <td>
+              <p-button
+                icon="pi pi-pencil"
+                [text]="true"
+                [rounded]="true"
+                severity="info"
+                (onClick)="showEditForm(maintenance)"
+                pTooltip="Edit"
+                tooltipPosition="top"
+                ariaLabel="Edit maintenance record">
+              </p-button>
+              <p-button
+                icon="pi pi-trash"
+                [text]="true"
+                [rounded]="true"
+                severity="danger"
+                (onClick)="deleteMaintenance(maintenance.id)"
+                pTooltip="Delete"
+                tooltipPosition="top"
+                ariaLabel="Delete maintenance record">
+              </p-button>
+            </td>
+          }
+        </tr>
+      </ng-template>
+    </p-table>
     @if (!loadingService.loading() && maintenances().length === 0) {
       <div class="empty-state">
-        <i class="pi pi-inbox" style="font-size: 3rem; color: #999;"></i>
+        <i class="pi pi-inbox" aria-hidden="true"></i>
         <p>No maintenance records found.</p>
       </div>
     }
   </p-card>
+
+  <app-modal
+    [isOpen]="showModal()"
+    title="Edit Maintenance"
+    (close)="closeModal()">
+    <form (ngSubmit)="saveMaintenance()">
+      <div class="p-field">
+        <label for="editMessage">Message *</label>
+        <textarea
+          id="editMessage"
+          rows="4"
+          pTextarea
+          [(ngModel)]="editMessage"
+          name="editMessage"
+          required
+          maxlength="1000"
+          class="full-width">
+        </textarea>
+      </div>
+
+      <div class="form-actions">
+        <p-button
+          label="Cancel"
+          [text]="true"
+          (onClick)="closeModal()"
+          type="button">
+        </p-button>
+        <p-button
+          label="Save"
+          type="submit"
+          [style]="{'margin-left': '0.5rem'}">
+        </p-button>
+      </div>
+    </form>
+  </app-modal>
 </div>

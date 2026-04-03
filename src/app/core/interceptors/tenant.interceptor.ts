@@ -45,6 +45,15 @@ export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
                   'X-Tenant-Id': tenantId.toString()
                 }
               });
+            } else {
+              // No tenant claim found in Auth0 token.
+              // The backend resolves the tenant from the authenticated user — this is safe,
+              // but log a warning in non-production so missing Action config is caught early.
+              logger.warn(
+                'TenantInterceptor: No tenantId claim found in user token. ' +
+                'Backend will resolve tenant from authenticated user. ' +
+                'If this is unexpected, check your Auth0 Action configuration.'
+              );
             }
           }
           return next(req);

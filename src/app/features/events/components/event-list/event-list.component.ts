@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject, DestroyRef, signal, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -49,7 +49,7 @@ import { ConfirmationService } from 'primeng/api';
   templateUrl: './event-list.component.html',
   styleUrls: ['./event-list.component.css']
 })
-export class EventListComponent implements OnInit {
+export class EventListComponent implements OnInit, OnDestroy {
   events = signal<Event[]>([]);
   unresolvedCount = signal<number>(0);
   totalRecords = signal(0);
@@ -78,8 +78,13 @@ export class EventListComponent implements OnInit {
     {label: 'Resolved Only', value: 'resolved'}
   ];
   
+  lastUpdated = signal<Date | null>(null);
+  autoRefreshEnabled = signal(true);
+  private autoRefreshInterval: ReturnType<typeof setInterval> | null = null;
+  private readonly AUTO_REFRESH_MS = 30_000;
+
   private isLoading = false;
-  private lastLoadParams: { 
+  private lastLoadParams: {
     pageNumber: number; 
     pageSize: number; 
     sensorId?: number; 
@@ -108,6 +113,11 @@ export class EventListComponent implements OnInit {
     this.loadEventTypes();
     this.loadSensors();
     this.loadUnresolvedCount();
+    this.startAutoRefresh();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoRefresh();
   }
 
   loadEvents(pageNumber: number, pageSize: number): void {
@@ -146,7 +156,7 @@ export class EventListComponent implements OnInit {
     
     this.lastLoadParams = currentParams;
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     const params: GetEventsQueryParams = {};
@@ -175,12 +185,13 @@ export class EventListComponent implements OnInit {
         next: (result) => {
           this.events.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.lastUpdated.set(new Date());
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           // Clear lastLoadParams on error so retry can work
           this.lastLoadParams = null;
@@ -264,7 +275,7 @@ export class EventListComponent implements OnInit {
     const event = this.resolvingEvent();
     if (!event) return;
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     const request: ResolveEventRequest = {
@@ -275,6 +286,7 @@ export class EventListComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
+          this.errorService.setSuccess('Event resolved successfully.');
           this.lastLoadParams = null;
           this.loadEvents(1, this.pageSize());
           this.loadUnresolvedCount();
@@ -282,7 +294,7 @@ export class EventListComponent implements OnInit {
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
         }
       });
   }
@@ -293,27 +305,28 @@ export class EventListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
 
         this.eventService.deleteEvent(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('Event deleted successfully.');
               this.lastLoadParams = null;
               this.loadEvents(1, this.pageSize());
               this.loadUnresolvedCount();
             },
             error: (err) => {
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }
     });
   }
 
-  getSeveritySeverity(severity: string): 'success' | 'warn' | 'danger' | 'info' {
+  getSeverityBadge(severity: string): 'success' | 'warn' | 'danger' | 'info' {
     switch (severity?.toLowerCase()) {
       case 'critical':
       case 'high':
@@ -337,6 +350,36 @@ export class EventListComponent implements OnInit {
 
   trackByEventId(index: number, event: Event): number {
     return event.id;
+  }
+
+  toggleAutoRefresh(): void {
+    if (this.autoRefreshEnabled()) {
+      this.stopAutoRefresh();
+      this.autoRefreshEnabled.set(false);
+    } else {
+      this.autoRefreshEnabled.set(true);
+      this.startAutoRefresh();
+    }
+  }
+
+  private startAutoRefresh(): void {
+    this.stopAutoRefresh();
+    this.autoRefreshInterval = setInterval(() => {
+      // Guard both calls behind isLoading so a slow loadEvents cannot overlap
+      // with the next interval tick triggering a second concurrent fetch.
+      if (this.autoRefreshEnabled() && !this.isLoading) {
+        this.lastLoadParams = null;
+        this.loadEvents(1, this.pageSize());
+        this.loadUnresolvedCount();
+      }
+    }, this.AUTO_REFRESH_MS);
+  }
+
+  private stopAutoRefresh(): void {
+    if (this.autoRefreshInterval !== null) {
+      clearInterval(this.autoRefreshInterval);
+      this.autoRefreshInterval = null;
+    }
   }
 
   clearError = (): void => {

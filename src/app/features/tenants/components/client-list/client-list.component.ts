@@ -11,13 +11,13 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
-import { filter, take } from 'rxjs/operators';
+
 import { TenantService } from '../../services/tenant.service';
 import { Tenant, CreateTenantRequest, UpdateTenantRequest } from '../../../../shared/models/tenant.model';
 import { ErrorService } from '../../../../core/services/error.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { AuthService } from '../../../../core/services/auth.service';
+
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
@@ -56,7 +56,6 @@ export class TenantListComponent implements OnInit {
   private lastLoadParams: { pageNumber: number; pageSize: number } | null = null;
 
   private tenantService = inject(TenantService);
-  private authService = inject(AuthService);
   private permissionService = inject(PermissionService);
   private logger = inject(LoggerService);
   private confirmationService = inject(ConfirmationService);
@@ -78,16 +77,7 @@ export class TenantListComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // Wait for authentication before loading tenants
-    this.authService.isAuthenticated$
-      .pipe(
-        filter(isAuthenticated => isAuthenticated),
-        take(1),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
-        // Initial load is handled by p-table lazy loading
-      });
+    // Initial load is handled by p-table lazy loading
   }
 
   loadTenants(pageNumber: number, pageSize: number): void {
@@ -110,7 +100,7 @@ export class TenantListComponent implements OnInit {
     
     this.lastLoadParams = { pageNumber, pageSize };
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     this.tenantService.getTenants(pageNumber, pageSize)
@@ -119,13 +109,13 @@ export class TenantListComponent implements OnInit {
         next: (result) => {
           this.tenants.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.logger.errorWithPrefix('TenantListComponent', 'Error loading tenants', err);
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           // Clear lastLoadParams on error so retry can work
           this.lastLoadParams = null;
@@ -157,7 +147,7 @@ export class TenantListComponent implements OnInit {
       return;
     }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     const tenant = this.editingTenant();
@@ -174,6 +164,7 @@ export class TenantListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Tenant updated successfully.');
             this.closeModal();
             // Clear lastLoadParams to force reload
             this.lastLoadParams = null;
@@ -181,7 +172,7 @@ export class TenantListComponent implements OnInit {
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     } else {
@@ -195,6 +186,7 @@ export class TenantListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Tenant created successfully.');
             this.closeModal();
             // Clear lastLoadParams to force reload
             this.lastLoadParams = null;
@@ -202,7 +194,7 @@ export class TenantListComponent implements OnInit {
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     }
@@ -214,13 +206,14 @@ export class TenantListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
 
         this.tenantService.deleteTenant(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('Tenant deleted successfully.');
               // Clear lastLoadParams to force reload
               this.lastLoadParams = null;
               this.loadTenants(1, this.pageSize());
@@ -228,7 +221,7 @@ export class TenantListComponent implements OnInit {
             error: (err) => {
               this.logger.errorWithPrefix('TenantListComponent', 'Error deleting tenant', err);
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }

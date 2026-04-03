@@ -27,3 +27,15 @@ export interface ScreenPermissionDto {
   screenKey: string;
   access: ScreenAccessLevel;
 }
+
+export interface CreateRoleRequest {
+  name: string;
+  description: string;
+  isSystemWide: boolean;
+}
+
+export interface UpdateRoleRequest {
+  id: number;
+  name: string;
+  description: string;
+}

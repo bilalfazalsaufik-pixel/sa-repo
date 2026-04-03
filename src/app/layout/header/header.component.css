@@ -1,131 +1,186 @@
 /* ============================================
-   ENTERPRISE HEADER - BLUE THEME
+   ENTERPRISE HEADER - DARK THEME
    ============================================ */
 
-app-header p-toolbar,
-app-header .p-toolbar {
-      background: #ffffff;
-    border: 0;
+app-header .app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  background: rgba(10, 25, 41, 0.97);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-app-header .p-toolbar-group-start {
+app-header .header-start {
   display: flex;
   align-items: center;
   flex: 1;
-  padding-left: 1.5rem;
 }
 
 app-header .header-title {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #0f172a;
+  color: rgba(255, 255, 255, 0.85);
   letter-spacing: -0.01em;
 }
 
-app-header .p-toolbar-group-end {
+app-header .header-end {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-left: auto;
-  padding-right: 1.5rem;
+  gap: 0.75rem;
 }
 
-app-header p-toolbar .p-button,
-app-header .p-toolbar .p-button,
-app-header .user-menu-button {
-  color: #0f172a;
+/* ---- User button ---- */
+app-header .user-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
   transition: all 0.2s ease;
-  background: transparent;
-  border: none;
-  font-size: 0.9375rem;
+  font-family: inherit;
+  white-space: nowrap;
 }
 
-app-header .user-menu-button.loading {
-  color: rgba(255, 255, 255, 0.7);
+app-header .user-btn:hover {
+  background: rgba(0, 217, 163, 0.1);
+  border-color: rgba(0, 217, 163, 0.35);
+  color: #00d9a3;
+  box-shadow: 0 4px 16px rgba(0, 217, 163, 0.25);
 }
 
-app-header p-toolbar .p-button:hover,
-app-header .p-toolbar .p-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  /* color: #ffffff; */
+app-header .user-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
-app-header p-toolbar .p-button:active,
-app-header .p-toolbar .p-button:active {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+app-header .user-avatar {
+  width: 26px;
+  height: 26px;
+  background: rgba(0, 217, 163, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  color: #00d9a3;
+  flex-shrink: 0;
 }
 
-app-header p-toolbar .p-button:disabled,
-app-header .p-toolbar .p-button:disabled {
-  color: rgba(255, 255, 255, 0.5);
-  opacity: 0.6;
+app-header .user-name {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* User Menu Dropdown - PrimeNG Menu Popup */
-app-header .p-menu,
-app-header .p-menu.p-menu-overlay {
+app-header .user-chevron {
+  font-size: 0.65rem;
+  opacity: 0.55;
+}
+
+/* ---- Dropdown menu — dark theme ---- */
+.p-menu.p-menu-overlay {
   margin-top: 0.5rem !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  border-radius: 8px !important;
-  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55) !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   min-width: 200px !important;
   overflow: hidden !important;
-  background: #ffffff !important;
-  z-index: 1100 !important;
-  position: absolute !important;
+  background: #0d1f2d !important;
+  z-index: 1200 !important;
 }
 
-/* Menu list inside popup */
-app-header .p-menu .p-menu-list,
-app-header .p-menu.p-menu-overlay .p-menu-list {
-  padding: 0.5rem !important;
-  margin: 0 !important;
+.p-menu.p-menu-overlay .p-menu-list {
+  padding: 0.4rem !important;
   background: transparent !important;
 }
 
-/* Menu item links */
-app-header .p-menu .p-menuitem-link,
-app-header .p-menu .p-menu-item,
-app-header .p-menu.p-menu-overlay .p-menuitem-link,
-app-header .p-menu.p-menu-overlay .p-menu-item {
-  padding: 0.75rem 1rem !important;
-  transition: all 0.2s ease !important;
-  color: #334155 !important;
-  font-weight: 500 !important;
+.p-menu.p-menu-overlay .p-menuitem > .p-menuitem-content {
   border-radius: 6px !important;
-  margin: 0.25rem !important;
+  margin: 0.15rem 0 !important;
+}
+
+.p-menu.p-menu-overlay .p-menuitem > .p-menuitem-content a,
+.p-menu.p-menu-overlay .p-menuitem-link {
+  padding: 0.65rem 0.875rem !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 500 !important;
   display: flex !important;
   align-items: center !important;
-  gap: 0.75rem !important;
+  gap: 0.625rem !important;
   text-decoration: none !important;
-  cursor: pointer !important;
+  border-radius: 6px !important;
 }
 
-app-header .p-menu .p-menuitem-link:hover,
-app-header .p-menu .p-menu-item:hover,
-app-header .p-menu.p-menu-overlay .p-menuitem-link:hover,
-app-header .p-menu.p-menu-overlay .p-menu-item:hover {
-  background: #f1f5f9 !important;
-  color: #0f172a !important;
+.p-menu.p-menu-overlay .p-menuitem > .p-menuitem-content:hover a,
+.p-menu.p-menu-overlay .p-menuitem-link:hover {
+  background: rgba(0, 217, 163, 0.1) !important;
+  color: #00d9a3 !important;
 }
 
-/* Menu item icons */
-app-header .p-menu .p-menuitem-icon,
-app-header .p-menu .p-menu-item i,
-app-header .p-menu.p-menu-overlay .p-menuitem-icon {
+.p-menu.p-menu-overlay .p-menuitem:last-child > .p-menuitem-content:hover a {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}
+
+.p-menu.p-menu-overlay .p-menuitem-icon {
   color: inherit !important;
-  font-size: 1rem !important;
+  font-size: 0.875rem !important;
 }
 
-/* Menu separator */
-app-header .p-menu .p-menuitem-separator,
-app-header .p-menu.p-menu-overlay .p-menuitem-separator {
-  border-top: 1px solid #e2e8f0 !important;
-  margin: 0.5rem 0 !important;
-  height: 1px !important;
-  background: #e2e8f0 !important;
+.p-menu.p-menu-overlay .p-menuitem-separator {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin: 0.3rem 0 !important;
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+html.light-theme app-header .app-header {
+  background: rgba(248, 250, 252, 0.97);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+html.light-theme app-header .header-title {
+  color: #1e293b;
+}
+
+html.light-theme app-header .user-btn {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #1e293b;
+}
+
+html.light-theme .p-menu.p-menu-overlay {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay .p-menuitem > .p-menuitem-content a,
+html.light-theme .p-menu.p-menu-overlay .p-menuitem-link {
+  color: #1e293b !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay .p-menuitem > .p-menuitem-content:hover a,
+html.light-theme .p-menu.p-menu-overlay .p-menuitem-link:hover {
+  background: rgba(0, 145, 110, 0.08) !important;
+  color: #00916e !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay .p-menuitem-separator {
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration, ChartData, ChartDataset, registerables, TimeScale } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { EventsChartDataPoint } from '../../../../shared/models/dashboard.model';
+import { getChartColor } from '../../../../shared/utils/chart-colors';
 
 Chart.register(...registerables, TimeScale);
 
@@ -15,9 +16,15 @@ type ChartPoint = { x: number | Date; y: number };
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<canvas #chartCanvas></canvas>`,
   styles: [`
-    canvas {
-      max-width: 100%;
+    :host {
+      display: block;
+      position: relative;
+      width: 100%;
       height: 300px;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
   `]
 })
@@ -118,8 +125,8 @@ export class EventsChartComponent implements OnInit, OnChanges, OnDestroy {
         datasets.push({
           label: `${eventType} (Unresolved)`,
           data: this.aggregateByDate(group.unresolved),
-          backgroundColor: this.getColor(colorIndex, 0.7),
-          borderColor: this.getColor(colorIndex),
+          backgroundColor: getChartColor(colorIndex, 0.7),
+          borderColor: getChartColor(colorIndex),
           borderWidth: 1
         });
         colorIndex++;
@@ -128,8 +135,8 @@ export class EventsChartComponent implements OnInit, OnChanges, OnDestroy {
         datasets.push({
           label: `${eventType} (Resolved)`,
           data: this.aggregateByDate(group.resolved),
-          backgroundColor: this.getColor(colorIndex, 0.5),
-          borderColor: this.getColor(colorIndex),
+          backgroundColor: getChartColor(colorIndex, 0.5),
+          borderColor: getChartColor(colorIndex),
           borderWidth: 1
         });
         colorIndex++;
@@ -152,18 +159,6 @@ export class EventsChartComponent implements OnInit, OnChanges, OnDestroy {
       x: new Date(dateStr),
       y: count
     })).sort((a, b) => a.x.getTime() - b.x.getTime());
-  }
-
-  private getColor(index: number, alpha: number = 1): string {
-    const colors = [
-      `rgba(54, 162, 235, ${alpha})`,  // Blue
-      `rgba(255, 99, 132, ${alpha})`,  // Red
-      `rgba(75, 192, 192, ${alpha})`,  // Teal
-      `rgba(255, 206, 86, ${alpha})`,  // Yellow
-      `rgba(153, 102, 255, ${alpha})`, // Purple
-      `rgba(255, 159, 64, ${alpha})`   // Orange
-    ];
-    return colors[index % colors.length];
   }
 
   ngOnDestroy(): void {

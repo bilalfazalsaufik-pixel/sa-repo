@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { Role, ScreenDto, ScreenPermissionDto } from '../../../shared/models/role.model';
+import { Role, ScreenDto, ScreenPermissionDto, CreateRoleRequest, UpdateRoleRequest } from '../../../shared/models/role.model';
 import { PagedResult } from '../../../shared/models/paged-result.model';
 
 @Injectable({ providedIn: 'root' })
@@ -19,6 +19,18 @@ export class RolesService {
 
   getRoleById(id: number): Observable<Role> {
     return this.api.get<Role>(`role/${id}`);
+  }
+
+  createRole(request: CreateRoleRequest): Observable<Role> {
+    return this.api.post<Role>('role', request);
+  }
+
+  updateRole(request: UpdateRoleRequest): Observable<Role> {
+    return this.api.put<Role>(`role/${request.id}`, request);
+  }
+
+  deleteRole(id: number): Observable<void> {
+    return this.api.delete<void>(`role/${id}`);
   }
 
   getScreens(): Observable<ScreenDto[]> {

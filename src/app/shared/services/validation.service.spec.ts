@@ -43,14 +43,19 @@ describe('ValidationService', () => {
   });
 
   it('should validate mustMatch', () => {
-    const formGroup = new FormGroup({
-      password: new FormControl('abc'),
-      confirmPassword: new FormControl('xyz')
-    });
-
     const validator = service.mustMatch('password', 'confirmPassword');
-    const error = validator(formGroup.get('confirmPassword')!);
-    expect(error).toEqual({ mustMatch: true });
+
+    const mismatch = new FormGroup(
+      { password: new FormControl('abc'), confirmPassword: new FormControl('xyz') },
+      { validators: validator }
+    );
+    expect(mismatch.errors).toEqual({ mustMatch: true });
+
+    const match = new FormGroup(
+      { password: new FormControl('abc'), confirmPassword: new FormControl('abc') },
+      { validators: validator }
+    );
+    expect(match.errors).toBeNull();
   });
 
   it('should validate email format', () => {

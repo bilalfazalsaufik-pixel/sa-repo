@@ -8,6 +8,8 @@ import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { TooltipModule } from 'primeng/tooltip';
+import { TextareaModule } from 'primeng/textarea';
+import { ConfirmationService } from 'primeng/api';
 import { MaintenanceService } from '../../services/maintenance.service';
 import { SensorService } from '../../../sensors/services/sensor.service';
 import { Maintenance, GetMaintenancesQueryParams } from '../../../../shared/models/maintenance.model';
@@ -15,6 +17,7 @@ import { Sensor } from '../../../../shared/models/sensor.model';
 import { ErrorService } from '../../../../core/services/error.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { PermissionService } from '../../../../core/services/permission.service';
+import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
@@ -22,15 +25,17 @@ import { LoadingSpinnerComponent } from '../../../../shared/components/loading-s
   selector: 'app-maintenance-list',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
+    CommonModule,
+    FormsModule,
     CardModule,
     TableModule,
     ButtonModule,
     DropdownModule,
     CalendarModule,
     TooltipModule,
-    ErrorMessageComponent, 
+    TextareaModule,
+    ModalComponent,
+    ErrorMessageComponent,
     LoadingSpinnerComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,7 +46,7 @@ export class MaintenanceListComponent implements OnInit {
   maintenances = signal<Maintenance[]>([]);
   totalRecords = signal(0);
   pageSize = signal(10);
-  
+
   // Filter options
   selectedSensorId = signal<number | undefined>(undefined);
   startDate = signal<Date | null>(null);
@@ -52,13 +57,19 @@ export class MaintenanceListComponent implements OnInit {
 
   // Computed dropdown options
   sensorOptions = computed(() => this.sensors().map(s => ({label: s.name + ' (' + s.deviceName + ')', value: s.id})));
-  
+
+  // Edit modal state
+  showModal = signal(false);
+  editingMaintenance = signal<Maintenance | null>(null);
+  editMessage = '';
+
   private isLoading = false;
   private lastLoadParams: { pageNumber: number; pageSize: number; sensorId?: number; startDate?: string; endDate?: string } | null = null;
 
   private maintenanceService = inject(MaintenanceService);
   private sensorService = inject(SensorService);
   private permissionService = inject(PermissionService);
+  private confirmationService = inject(ConfirmationService);
   errorService = inject(ErrorService);
   loadingService = inject(LoadingService);
   private destroyRef = inject(DestroyRef);
@@ -100,20 +111,20 @@ export class MaintenanceListComponent implements OnInit {
     if (this.isLoading) {
       return;
     }
-    
+
     // Prevent loading the same page with same filters again (avoid infinite loops)
-    if (this.lastLoadParams && 
-        this.lastLoadParams.pageNumber === currentParams.pageNumber && 
+    if (this.lastLoadParams &&
+        this.lastLoadParams.pageNumber === currentParams.pageNumber &&
         this.lastLoadParams.pageSize === currentParams.pageSize &&
         this.lastLoadParams.sensorId === currentParams.sensorId &&
         this.lastLoadParams.startDate === currentParams.startDate &&
         this.lastLoadParams.endDate === currentParams.endDate) {
       return;
     }
-    
+
     this.lastLoadParams = currentParams;
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     const params: GetMaintenancesQueryParams = {};
@@ -135,12 +146,12 @@ export class MaintenanceListComponent implements OnInit {
         next: (result) => {
           this.maintenances.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           // Clear lastLoadParams on error so retry can work
           this.lastLoadParams = null;
@@ -149,6 +160,10 @@ export class MaintenanceListComponent implements OnInit {
   }
 
   applyFilters(): void {
+    if (this.startDate() && this.endDate() && this.startDate()! > this.endDate()!) {
+      this.errorService.setError('Start date must be on or before end date.');
+      return;
+    }
     // Clear lastLoadParams when filters change to force reload
     this.lastLoadParams = null;
     this.loadMaintenances(1, this.pageSize());
@@ -164,6 +179,71 @@ export class MaintenanceListComponent implements OnInit {
     this.loadMaintenances(1, this.pageSize());
   }
 
+  showEditForm(maintenance: Maintenance): void {
+    this.editingMaintenance.set(maintenance);
+    this.editMessage = maintenance.message;
+    this.showModal.set(true);
+  }
+
+  closeModal(): void {
+    this.showModal.set(false);
+    this.editingMaintenance.set(null);
+    this.editMessage = '';
+  }
+
+  saveMaintenance(): void {
+    if (!this.editMessage.trim()) {
+      this.errorService.setError('Message is required.');
+      return;
+    }
+
+    const editing = this.editingMaintenance();
+    if (!editing) return;
+
+    this.loadingService.setLoading(true);
+    this.errorService.clearError();
+
+    this.maintenanceService.updateMaintenance({ id: editing.id, message: this.editMessage })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.errorService.setSuccess('Maintenance updated successfully.');
+          this.lastLoadParams = null;
+          this.loadMaintenances(1, this.pageSize());
+          this.closeModal();
+        },
+        error: (err) => {
+          this.errorService.setErrorFromHttp(err);
+          this.loadingService.setLoading(false);
+        }
+      });
+  }
+
+  deleteMaintenance(id: number): void {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this maintenance record?',
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.loadingService.setLoading(true);
+        this.errorService.clearError();
+        this.maintenanceService.deleteMaintenance(id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.errorService.setSuccess('Maintenance record deleted successfully.');
+              this.lastLoadParams = null;
+              this.loadMaintenances(1, this.pageSize());
+            },
+            error: (err) => {
+              this.errorService.setErrorFromHttp(err);
+              this.loadingService.setLoading(false);
+            }
+          });
+      }
+    });
+  }
+
   clearError = (): void => {
     this.errorService.clearError();
   };
@@ -172,12 +252,12 @@ export class MaintenanceListComponent implements OnInit {
     const pageSize = event.rows ?? 10;
     const first = event.first ?? 0;
     const pageNumber = Math.floor(first / pageSize) + 1;
-    
+
     // Only update pageSize if it changed to avoid unnecessary re-renders
     if (this.pageSize() !== pageSize) {
       this.pageSize.set(pageSize);
     }
-    
+
     // Always load when lazy load is triggered (filters might have changed)
     this.loadMaintenances(pageNumber, pageSize);
   }

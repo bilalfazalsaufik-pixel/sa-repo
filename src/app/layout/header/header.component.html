@@ -1,26 +1,21 @@
-<p-toolbar [style]="headerStyle()">
-  <div class="p-toolbar-group-start">
-    <span class="header-title">Dashboard</span>
+<header class="app-header">
+  <div class="header-start">
+    <span class="header-title">{{ pageTitle() }}</span>
   </div>
-  <div class="p-toolbar-group-end">
+
+  <div class="header-end">
+    <p-menu #userMenu [model]="userMenuItems()" [popup]="true" [appendTo]="'body'" [baseZIndex]="1200"></p-menu>
     @if (user(); as currentUser) {
-      <p-menu #userMenu [model]="userMenuItems()" [popup]="true" [appendTo]="'body'" [baseZIndex]="1200"></p-menu>
-      <p-button 
-        [label]="currentUser.name"
-        icon="pi pi-user"
-        [text]="true"
-        [rounded]="true"
-        (onClick)="userMenu.toggle($event)"
-        class="user-menu-button">
-      </p-button>
+      <button class="user-btn" (click)="userMenu.toggle($event)">
+        <span class="user-avatar"><i class="pi pi-user"></i></span>
+        <span class="user-name">{{ currentUser.name }}</span>
+        <i class="pi pi-chevron-down user-chevron"></i>
+      </button>
     } @else {
-      <p-button 
-        label="Loading..."
-        icon="pi pi-spin pi-spinner"
-        [text]="true"
-        [disabled]="true"
-        class="user-menu-button loading">
-      </p-button>
+      <button class="user-btn" disabled>
+        <i class="pi pi-spin pi-spinner"></i>
+        <span class="user-name">Loading...</span>
+      </button>
     }
   </div>
-</p-toolbar>
+</header>

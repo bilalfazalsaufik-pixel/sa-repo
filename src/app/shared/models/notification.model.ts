@@ -1,32 +1,64 @@
 export interface NotificationRule {
   id: number;
-  name: string;
-  triggerType: string;
-  eventTypeId?: number;
-  eventTypeName?: string;
-  channel: string;
-  recipientUserId: number;
-  recipientUserName: string;
-  isActive: boolean;
+  userId: number;
+  userName: string;
+  zoneId: number;
+  zoneName: string;
+  timeframe: string;
+  notificationValueId: number;
+  notificationValueName: string; // "Email" | "SMS" | "Both" | "None"
+  active: boolean;
   createdDate: string;
   lastModifiedDate?: string;
 }
 
-export interface CreateNotificationRuleRequest {
+export interface NotificationValue {
+  id: number;
   name: string;
-  triggerType: string;
-  eventTypeId?: number;
+}
+
+export interface NotificationHistoryItem {
+  id: number;
+  eventId: number;
+  userId: number;
+  userName: string;
+  recipientUserName: string;
+  notificationRuleId: number;
+  ruleName: string;
   channel: string;
-  recipientUserId: number;
-  isActive?: boolean;
+  recipient: string;
+  subject: string;
+  body: string;
+  success: boolean;
+  status: string;
+  errorMessage?: string;
+  sentAt: string;
+}
+
+export interface GetNotificationHistoryParams {
+  fromDate?: string;
+  toDate?: string;
+  ruleId?: number;
+  recipientUserId?: number;
+  channel?: string;
+  status?: string;
+  pageNumber?: number;
+  pageSize?: number;
+}
+
+export interface CreateNotificationRuleRequest {
+  userId: number;
+  zoneId: number;
+  timeframe: string;
+  notificationValueId: number;
+  active?: boolean;
 }
 
 export interface UpdateNotificationRuleRequest {
   id: number;
-  name: string;
-  triggerType: string;
-  eventTypeId?: number;
-  channel: string;
-  recipientUserId: number;
-  isActive: boolean;
+  userId: number;
+  zoneId: number;
+  timeframe: string;
+  notificationValueId: number;
+  active: boolean;
 }

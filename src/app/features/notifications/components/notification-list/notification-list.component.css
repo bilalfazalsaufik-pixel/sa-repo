@@ -1,27 +1,6 @@
-.notification-list {
-  padding: 0;
-}
-
-.notification-list .filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-  margin-bottom: 1rem;
-}
+/* Component-specific styles only — shared styles in styles.css */
 
 .notification-list .p-field label {
   display: block;
   margin-bottom: 0.25rem;
-}
-
-.notification-list .full-width {
-  width: 100%;
-}
-
-.notification-list .form-actions {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
 }

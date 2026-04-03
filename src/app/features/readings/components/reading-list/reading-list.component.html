@@ -14,7 +14,8 @@
 
     <!-- Filters -->
     <div class="filters">
-      <p-dropdown 
+      <p-dropdown
+                appendTo="body"
         [options]="sensorOptions()"
         [(ngModel)]="selectedSensorId"
         (onChange)="applyFilters()"
@@ -22,25 +23,27 @@
         optionLabel="label"
         optionValue="value"
         [showClear]="true"
-        [style]="{'width': '300px'}">
+        styleClass="filter-item">
       </p-dropdown>
 
-      <p-calendar 
+      <p-calendar
+                appendTo="body"
         [(ngModel)]="startDate"
         (onSelect)="applyFilters()"
         placeholder="Start Date"
         dateFormat="yy-mm-dd"
         [showIcon]="true"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-calendar>
 
-      <p-calendar 
+      <p-calendar
+                appendTo="body"
         [(ngModel)]="endDate"
         (onSelect)="applyFilters()"
         placeholder="End Date"
         dateFormat="yy-mm-dd"
         [showIcon]="true"
-        [style]="{'width': '200px'}">
+        styleClass="filter-item">
       </p-calendar>
 
       <p-button 
@@ -64,7 +67,7 @@
           </div>
           <div class="summary-item">
             <span class="label">Timestamp:</span>
-            <span class="value">{{ latestReading()!.timestamp | date:'short' }}</span>
+            <span class="value">{{ latestReading()!.timestamp | date:'dd MMM yyyy, HH:mm' }}</span>
           </div>
           <div class="summary-item">
             <span class="label">Values:</span>
@@ -78,12 +81,26 @@
       </p-card>
     }
 
+    <!-- Readings Chart -->
+    @if (!loadingService.loading() && readings().length > 0) {
+      <p-card class="readings-chart-card">
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <h3>Value Trend</h3>
+            <span class="chart-count">{{ readings().length }} readings shown</span>
+          </div>
+        </ng-template>
+        <app-reading-chart [readings]="readings()"></app-reading-chart>
+      </p-card>
+    }
+
     <!-- Readings Table -->
     @if (!loadingService.loading() && selectedSensorId()) {
-      <p-table [value]="readings()" dataKey="id" [rowTrackBy]="trackByReadingId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true" 
+      <p-table [value]="readings()" dataKey="id" [rowTrackBy]="trackByReadingId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
                [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-               [rowsPerPageOptions]="[10, 25, 50]">
+               [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
+               styleClass="enterprise-table">
         <ng-template pTemplate="header">
           <tr>
             <th>Timestamp</th>
@@ -93,7 +110,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-reading>
           <tr>
-            <td>{{ reading.timestamp | date:'short' }}</td>
+            <td>{{ reading.timestamp | date:'dd MMM yyyy, HH:mm' }}</td>
             <td>{{ reading.sensorName }}</td>
             <td>
               <div class="values-list">
@@ -107,12 +124,12 @@
       </p-table>
     } @else if (!loadingService.loading() && readings().length === 0 && selectedSensorId()) {
       <div class="empty-state">
-        <i class="pi pi-inbox" style="font-size: 3rem; color: #999;"></i>
+        <i class="pi pi-inbox" aria-hidden="true"></i>
         <p>No readings found for the selected sensor and date range.</p>
       </div>
     } @else if (!loadingService.loading() && !selectedSensorId()) {
       <div class="empty-state">
-        <i class="pi pi-info-circle" style="font-size: 3rem; color: #999;"></i>
+        <i class="pi pi-info-circle" aria-hidden="true"></i>
         <p>Please select a sensor to view readings.</p>
       </div>
     }

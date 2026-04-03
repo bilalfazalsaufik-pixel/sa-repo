@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, ChangeDe
 import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import { CategoryBreakdown } from '../../../../shared/models/dashboard.model';
+import { getChartColor } from '../../../../shared/utils/chart-colors';
 
 Chart.register(...registerables);
 
@@ -95,19 +96,7 @@ export class CategoryBreakdownChartComponent implements OnInit, OnChanges, OnDes
       'Low': `rgba(40, 167, 69, 0.7)`         // Green
     };
 
-    return severityColors[severity] || this.getColor(index, 0.7);
-  }
-
-  private getColor(index: number, alpha: number = 1): string {
-    const colors = [
-      `rgba(54, 162, 235, ${alpha})`,  // Blue
-      `rgba(255, 99, 132, ${alpha})`,  // Red
-      `rgba(75, 192, 192, ${alpha})`,  // Teal
-      `rgba(255, 206, 86, ${alpha})`,  // Yellow
-      `rgba(153, 102, 255, ${alpha})`, // Purple
-      `rgba(255, 159, 64, ${alpha})`   // Orange
-    ];
-    return colors[index % colors.length];
+    return severityColors[severity] || getChartColor(index, 0.7);
   }
 
   ngOnDestroy(): void {

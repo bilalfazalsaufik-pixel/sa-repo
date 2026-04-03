@@ -58,6 +58,7 @@ export class SiteListComponent implements OnInit {
   formData: { name: string; zoneId: number | null; latitude?: number; longitude?: number } = { name: '', zoneId: null };
   private isLoading = false;
   private lastLoadParams: { pageNumber: number; pageSize: number; sortField?: string | null; sortOrder?: number; nameSearch?: string; zoneId?: number | null; statusFilter?: string | null } | null = null;
+  private filterDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   private siteService = inject(SiteService);
   private zoneService = inject(ZoneService);
@@ -97,9 +98,12 @@ export class SiteListComponent implements OnInit {
   }
 
   onFilterChange(): void {
-    this.tableFirst.set(0);
-    this.lastLoadParams = null;
-    this.loadSites(1, this.pageSize());
+    if (this.filterDebounceTimer) clearTimeout(this.filterDebounceTimer);
+    this.filterDebounceTimer = setTimeout(() => {
+      this.tableFirst.set(0);
+      this.lastLoadParams = null;
+      this.loadSites(1, this.pageSize());
+    }, 300);
   }
 
   loadSites(pageNumber: number, pageSize: number): void {
@@ -121,7 +125,7 @@ export class SiteListComponent implements OnInit {
     }
     this.lastLoadParams = { pageNumber, pageSize, sortField: sf, sortOrder: so, nameSearch, zoneId: zoneId ?? null, statusFilter: statusFilter ?? null };
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
     this.siteService.getSites({ zoneId, sortField: sf ?? undefined, sortOrder: so, nameSearch, statusFilter, pageNumber, pageSize })
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -129,12 +133,12 @@ export class SiteListComponent implements OnInit {
         next: (result) => {
           this.sites.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           this.lastLoadParams = null;
         }
@@ -167,7 +171,7 @@ export class SiteListComponent implements OnInit {
       return;
     }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     if (this.editingSite()) {
@@ -182,13 +186,14 @@ export class SiteListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Site updated successfully.');
             this.lastLoadParams = null;
             this.loadSites(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     } else {
@@ -202,13 +207,14 @@ export class SiteListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Site created successfully.');
             this.lastLoadParams = null;
             this.loadSites(1, this.pageSize());
             this.closeModal();
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     }
@@ -220,18 +226,19 @@ export class SiteListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
         this.siteService.deleteSite(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('Site deleted successfully.');
               this.lastLoadParams = null;
               this.loadSites(1, this.pageSize());
             },
             error: (err) => {
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }

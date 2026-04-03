@@ -1,12 +1,1 @@
-.role-list .card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.role-list .subtitle {
-  margin: 0.25rem 0 0;
-  color: var(--p-text-muted-color);
-  font-size: 0.9rem;
-}
+/* Component-specific styles only — shared styles in styles.css */

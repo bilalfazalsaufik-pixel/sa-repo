@@ -9,13 +9,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
-import { filter, take } from 'rxjs/operators';
+
 import { ZoneService } from '../../services/zone.service';
 import { Zone, CreateZoneRequest, UpdateZoneRequest } from '../../../../shared/models/zone.model';
 import { ErrorService } from '../../../../core/services/error.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { AuthService } from '../../../../core/services/auth.service';
+
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
@@ -54,9 +54,10 @@ export class ZoneListComponent implements OnInit {
   formData: { name: string; description?: string } = { name: '', description: '' };
   private isLoading = false;
   private lastLoadParams: { pageNumber: number; pageSize: number; sortField?: string | null; sortOrder?: number; nameSearch?: string } | null = null;
+  private filterDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   private zoneService = inject(ZoneService);
-  private authService = inject(AuthService);
+
   private permissionService = inject(PermissionService);
   private logger = inject(LoggerService);
   private confirmationService = inject(ConfirmationService);
@@ -68,22 +69,16 @@ export class ZoneListComponent implements OnInit {
   canManageZones = computed(() => this.permissionService.hasPermission('Manage Zones'));
 
   ngOnInit(): void {
-    // Wait for authentication before loading zones
-    this.authService.isAuthenticated$
-      .pipe(
-        filter(isAuthenticated => isAuthenticated),
-        take(1),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
-        // Initial load is handled by p-table lazy loading
-      });
+    // Initial load is handled by p-table lazy loading
   }
 
   onFilterChange(): void {
-    this.tableFirst.set(0);
-    this.lastLoadParams = null;
-    this.loadZones(1, this.pageSize());
+    if (this.filterDebounceTimer) clearTimeout(this.filterDebounceTimer);
+    this.filterDebounceTimer = setTimeout(() => {
+      this.tableFirst.set(0);
+      this.lastLoadParams = null;
+      this.loadZones(1, this.pageSize());
+    }, 300);
   }
 
   loadZones(pageNumber: number, pageSize: number): void {
@@ -101,7 +96,7 @@ export class ZoneListComponent implements OnInit {
     }
     this.lastLoadParams = { pageNumber, pageSize, sortField: sf, sortOrder: so, nameSearch };
     this.isLoading = true;
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
     this.zoneService.getZones({ sortField: sf ?? undefined, sortOrder: so, nameSearch, pageNumber, pageSize })
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -109,13 +104,13 @@ export class ZoneListComponent implements OnInit {
         next: (result) => {
           this.zones.set(result.items);
           this.totalRecords.set(result.totalCount);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
         },
         error: (err) => {
           this.logger.errorWithPrefix('ZoneListComponent', 'Error', err);
           this.errorService.setErrorFromHttp(err);
-          this.loadingService.stopLoading();
+          this.loadingService.setLoading(false);
           this.isLoading = false;
           this.lastLoadParams = null;
         }
@@ -146,7 +141,7 @@ export class ZoneListComponent implements OnInit {
       return;
     }
 
-    this.loadingService.startLoading();
+    this.loadingService.setLoading(true);
     this.errorService.clearError();
 
     const zone = this.editingZone();
@@ -162,13 +157,14 @@ export class ZoneListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Zone updated successfully.');
             this.closeModal();
             this.lastLoadParams = null;
             this.loadZones(1, this.pageSize());
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     } else {
@@ -181,13 +177,14 @@ export class ZoneListComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
+            this.errorService.setSuccess('Zone created successfully.');
             this.closeModal();
             this.lastLoadParams = null;
             this.loadZones(1, this.pageSize());
           },
           error: (err) => {
             this.errorService.setErrorFromHttp(err);
-            this.loadingService.stopLoading();
+            this.loadingService.setLoading(false);
           }
         });
     }
@@ -199,20 +196,21 @@ export class ZoneListComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.loadingService.startLoading();
+        this.loadingService.setLoading(true);
         this.errorService.clearError();
 
         this.zoneService.deleteZone(id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
+              this.errorService.setSuccess('Zone deleted successfully.');
               this.lastLoadParams = null;
               this.loadZones(1, this.pageSize());
             },
             error: (err) => {
               this.logger.errorWithPrefix('ZoneListComponent', 'Error', err);
               this.errorService.setErrorFromHttp(err);
-              this.loadingService.stopLoading();
+              this.loadingService.setLoading(false);
             }
           });
       }

@@ -11,14 +11,6 @@ export class LoadingService {
     this._loading.set(loading);
   }
 
-  startLoading(): void {
-    this._loading.set(true);
-  }
-
-  stopLoading(): void {
-    this._loading.set(false);
-  }
-
   isLoading(): boolean {
     return this._loading();
   }

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { permissionGuard } from './core/guards/permission.guard';
 import { RedirectToDashboardComponent } from './core/components/redirect-to-dashboard.component';
 
 export const routes: Routes = [
@@ -66,26 +67,31 @@ export const routes: Routes = [
   {
     path: 'users',
     loadComponent: () => import('./features/users/components/user-list/user-list.component').then(m => m.UserListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard, permissionGuard('View Users', 'Manage Users')]
   },
   {
     path: 'roles',
     loadComponent: () => import('./features/roles/components/role-list/role-list.component').then(m => m.RoleListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard, permissionGuard('View Roles', 'Manage Roles')]
   },
   {
     path: 'roles/permissions/:roleId',
     loadComponent: () => import('./features/roles/components/manage-permissions/manage-permissions.component').then(m => m.ManagePermissionsComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard, permissionGuard('Manage Roles')]
   },
   {
     path: 'tenants',
     loadComponent: () => import('./features/tenants/components/client-list/client-list.component').then(m => m.TenantListComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard, permissionGuard('View Tenants', 'Manage Tenants')]
   },
   {
     path: 'notifications',
     loadComponent: () => import('./features/notifications/components/notification-list/notification-list.component').then(m => m.NotificationListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'notification-history',
+    loadComponent: () => import('./features/notifications/components/notification-history-list/notification-history-list.component').then(m => m.NotificationHistoryListComponent),
     canActivate: [authGuard]
   },
   {

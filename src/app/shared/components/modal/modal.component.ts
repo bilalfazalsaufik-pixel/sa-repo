@@ -9,12 +9,13 @@ import { ButtonModule } from 'primeng/button';
   imports: [CommonModule, DialogModule, ButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <p-dialog 
+    <p-dialog
       [(visible)]="isOpen"
       [modal]="true"
-      [style]="{width: '500px'}"
+      [style]="dialogStyle"
       [draggable]="false"
       [resizable]="false"
+      appendTo="body"
       (onHide)="onClose()">
       <ng-template pTemplate="header">
         <span class="p-text-bold">{{ title }}</span>
@@ -33,6 +34,8 @@ export class ModalComponent {
   @Input() isOpen = false;
   @Input() title = '';
   @Input() showFooter = true;
+  /** Override default dialog dimensions. Callers can pass e.g. {'max-width': '800px'} for wider forms. */
+  @Input() dialogStyle: Record<string, string> = { width: '90vw', 'max-width': '500px' };
   @Output() close = new EventEmitter<void>();
 
   onClose(): void {

@@ -1,0 +1,126 @@
+# ============================================================
+# ETSW Frontend CI/CD Pipeline
+# Target: etsw-frontend-prod (Azure App Service, Linux, Node 22)
+#
+# Required pipeline variables (set in Azure DevOps → Pipelines → Variables,
+# mark all as secret):
+#   PROD_API_URL       – https://etsw-endpoints-prod-hxhjbdc7e6gfhwds.southcentralus-01.azurewebsites.net/api/v1  (must include /v1)
+#   AUTH0_DOMAIN       – your Auth0 tenant domain (e.g. your-tenant.auth0.com)
+#   AUTH0_CLIENT_ID    – Auth0 production application Client ID
+#   AUTH0_AUDIENCE     – Auth0 API audience identifier
+#   FRONTEND_URL       – https://etsw-frontend-prod-a0fghna3bhcugsbm.southcentralus-01.azurewebsites.net
+#
+# Required service connection (Azure DevOps → Project Settings → Service connections):
+#   Name: azure-etsw-prod
+#   Type: Azure Resource Manager, scope: subscription 9a9e88a3-d8a8-469e-bcb6-55071d2156fb
+# ============================================================
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - SS-FrontendSPA/**
+      - azure-pipeline-frontend.yml
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - SS-FrontendSPA/**
+
+variables:
+  nodeVersion: '22.x'
+  outputDir: 'dist/ss-frontend-spa'
+
+stages:
+# ── BUILD ────────────────────────────────────────────────────
+- stage: Build
+  displayName: 'Build Angular App'
+  jobs:
+  - job: BuildJob
+    displayName: 'npm ci → substitute env → ng build'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - task: NodeTool@0
+      displayName: 'Use Node $(nodeVersion)'
+      inputs:
+        versionSpec: '$(nodeVersion)'
+
+    - script: npm ci
+      displayName: 'Install dependencies'
+
+    - script: |
+        cat > src/environments/environment.prod.ts << 'EOF'
+        export const environment = {
+          production: true,
+          environment: 'production',
+          apiUrl: 'REPLACE_WITH_PRODUCTION_API_URL',
+          auth0: {
+            domain: 'REPLACE_WITH_AUTH0_DOMAIN',
+            clientId: 'REPLACE_WITH_AUTH0_CLIENT_ID',
+            audience: 'REPLACE_WITH_AUTH0_AUDIENCE',
+            redirectUri: 'REPLACE_WITH_FRONTEND_URL'
+          },
+          enableLogging: false,
+          enableDebugMode: false
+        };
+        EOF
+        ENV_FILE="src/environments/environment.prod.ts"
+        sed -i "s|REPLACE_WITH_PRODUCTION_API_URL|$(PROD_API_URL)|g"   $ENV_FILE
+        sed -i "s|REPLACE_WITH_AUTH0_DOMAIN|$(AUTH0_DOMAIN)|g"         $ENV_FILE
+        sed -i "s|REPLACE_WITH_AUTH0_CLIENT_ID|$(AUTH0_CLIENT_ID)|g"   $ENV_FILE
+        sed -i "s|REPLACE_WITH_AUTH0_AUDIENCE|$(AUTH0_AUDIENCE)|g"     $ENV_FILE
+        sed -i "s|REPLACE_WITH_FRONTEND_URL|$(FRONTEND_URL)|g"         $ENV_FILE
+        echo "Environment substitution complete."
+      displayName: 'Generate and substitute production environment'
+
+    - script: npx ng build --configuration production
+      displayName: 'Build Angular (production)'
+
+    - script: cp server.js dist/ss-frontend-spa/browser/
+      displayName: 'Copy Express server to dist'
+
+    - task: ArchiveFiles@2
+      displayName: 'Zip deployment package'
+      inputs:
+        rootFolderOrFile: '$(outputDir)/browser'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+        replaceExistingArchive: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifact: frontend'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'frontend'
+
+# ── DEPLOY ───────────────────────────────────────────────────
+- stage: Deploy
+  displayName: 'Deploy to etsw-frontend-prod'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+  - deployment: DeployFrontend
+    displayName: 'Deploy to Azure Web App'
+    environment: 'etsw-production'
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Deploy frontend zip'
+            inputs:
+              azureSubscription: 'azure-etsw-prod'
+              appType: 'webAppLinux'
+              appName: 'etsw-frontend-prod'
+              package: '$(Pipeline.Workspace)/frontend/frontend.zip'
+              startUpCommand: 'node server.js'

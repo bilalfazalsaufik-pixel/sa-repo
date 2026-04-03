@@ -24,7 +24,7 @@
     <app-loading-spinner />
 
     @if (!loadingService.loading() && rows().length > 0) {
-      <p-table [value]="rows()" dataKey="screenKey" styleClass="p-datatable-sm p-datatable-gridlines">
+      <p-table [value]="rows()" dataKey="screenKey" styleClass="enterprise-table p-datatable-sm p-datatable-gridlines">
         <ng-template pTemplate="header">
           <tr>
             <th style="width: 40%">Screen</th>

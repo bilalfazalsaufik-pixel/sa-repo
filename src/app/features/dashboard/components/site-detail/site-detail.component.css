@@ -9,6 +9,54 @@
   margin-bottom: 2rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.last-updated {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.auto-refresh-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auto-refresh-toggle:hover {
+  background: rgba(0, 217, 163, 0.12);
+  border-color: rgba(0, 217, 163, 0.4);
+  color: #00d9a3;
+  box-shadow: 0 4px 16px rgba(0, 217, 163, 0.3);
+}
+
+.auto-refresh-toggle.active {
+  background: rgba(0, 217, 163, 0.1);
+  border-color: rgba(0, 217, 163, 0.35);
+  color: #00d9a3;
+}
+
+.auto-refresh-toggle.active:hover {
+  box-shadow: 0 4px 16px rgba(0, 217, 163, 0.4);
+}
+
+.auto-refresh-toggle i {
+  font-size: 0.8rem;
+}
+
 .header-content {
   display: flex;
   align-items: center;
@@ -52,4 +100,84 @@
 
 .operator-view {
   padding: 1rem 0;
+}
+
+/* ---- Chart skeleton ---- */
+.chart-skeleton {
+  height: 280px;
+  border-radius: 8px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---- Breadcrumb ---- */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.75rem;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.breadcrumb a:hover {
+  color: #00d9a3;
+}
+
+.breadcrumb .sep {
+  opacity: 0.4;
+}
+
+.breadcrumb .current {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+html.light-theme .auto-refresh-toggle {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #475569;
+}
+
+html.light-theme .last-updated {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+html.light-theme .breadcrumb {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+html.light-theme .breadcrumb a {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+html.light-theme .breadcrumb .current {
+  color: rgba(0, 0, 0, 0.75);
+}
+
+html.light-theme .chart-skeleton {
+  background: linear-gradient(90deg,
+    rgba(0,0,0,0.04) 25%,
+    rgba(0,0,0,0.08) 50%,
+    rgba(0,0,0,0.04) 75%);
+  background-size: 200% 100%;
 }

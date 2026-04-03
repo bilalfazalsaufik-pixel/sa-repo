@@ -15,20 +15,20 @@
   --info-dark: #2563eb;
   --warning-color: #f59e0b;
 
-  /* Neutral Colors */
-  --bg-primary: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary-black: #0f172a;
-  --text-secondary-dark: #64748b;
-  --text-tertiary: #94a3b8;
-  --border-color-light: #e2e8f0;
-  --border-light: #f1f5f9;
+  /* Neutral Colors — Dark Theme */
+  --bg-primary: #0a1929;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --text-primary-black: #ffffff;
+  --text-secondary-dark: rgba(255, 255, 255, 0.55);
+  --text-tertiary: rgba(255, 255, 255, 0.3);
+  --border-color-light: rgba(255, 255, 255, 0.09);
+  --border-light: rgba(255, 255, 255, 0.05);
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -59,7 +59,7 @@
    HEADER SECTION
    ============================================ */
 .dashboard-header {
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .header-content {
@@ -77,16 +77,15 @@
 
 .page-title {
   margin: 0 0 var(--spacing-xs) 0;
-  font-size: 2rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary-black);
-  letter-spacing: -0.025em;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 .page-subtitle {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: var(--text-secondary-dark);
   font-weight: 400;
   line-height: 1.5;
@@ -103,10 +102,10 @@
   align-items: center;
   gap: var(--spacing-xs);
   padding: 0.625rem 1.25rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color-light);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  color: var(--text-primary-black);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -119,11 +118,45 @@
   color: white;
   border-color: var(--primary-color);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 6px 24px rgba(0, 217, 163, 0.45);
 }
 
 .action-button i {
   font-size: 1rem;
+}
+
+.auto-refresh-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.auto-refresh-btn.active:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  box-shadow: 0 6px 24px rgba(0, 217, 163, 0.5);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinning {
+  animation: spin 2s linear infinite;
+}
+
+.last-updated {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.8125rem;
+  color: var(--text-secondary-dark);
+  font-weight: 500;
+}
+
+.last-updated i {
+  font-size: 0.875rem;
 }
 
 /* ============================================
@@ -145,13 +178,23 @@
 }
 
 .stat-card {
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
-  padding: var(--spacing-lg);
-  border: 1px solid var(--border-color-light);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(0, 217, 163, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .stat-card::before {
@@ -183,20 +226,26 @@
 
 
 
-.stat-card-header {
+.stat-main {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.stat-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .stat-icon-wrapper {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   background: linear-gradient(135deg, rgba(29, 209, 161, 0.1), rgba(29, 209, 161, 0.05));
   transition: transform var(--transition-base);
 }
@@ -222,7 +271,7 @@
 }
 
 .stat-icon {
-  font-size: 1.75rem;
+  font-size: 1.35rem;
   color: var(--primary-color);
 }
 
@@ -258,13 +307,9 @@
   color: var(--danger-color);
 }
 
-.stat-card-body {
-  margin-bottom: var(--spacing-md);
-}
-
 .stat-value {
-  margin: 0 0 var(--spacing-xs) 0;
-  font-size: 2.5rem;
+  margin: 0;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary-black);
   line-height: 1;
@@ -272,18 +317,10 @@
 }
 
 .stat-label {
-  margin: 0 0 var(--spacing-xs) 0;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary-black);
-  letter-spacing: 0.01em;
-}
-
-.stat-description {
-  margin: 0;
+  margin: 0.25rem 0 0;
   font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--text-secondary-dark);
-  line-height: 1.4;
 }
 
 .stat-card-footer {
@@ -291,7 +328,7 @@
   align-items: center;
   gap: var(--spacing-xs);
   padding-top: var(--spacing-md);
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .status-indicator {
@@ -323,9 +360,12 @@
    DATA SECTION
    ============================================ */
 .data-section {
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
-  border: 1px solid var(--border-color-light);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 
@@ -333,9 +373,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-lg) var(--spacing-xl);
-  border-bottom: 1px solid var(--border-color-light);
-  background: linear-gradient(to bottom, #ffffff, #fafbfc);
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .section-header-left {
@@ -344,8 +384,8 @@
 }
 
 .section-title {
-  margin: 0 0 var(--spacing-xs) 0;
-  font-size: 1.25rem;
+  margin: 0 0 2px 0;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary-black);
   display: flex;
@@ -355,12 +395,12 @@
 
 .section-icon {
   color: var(--primary-color);
-  font-size: 1.25rem;
+  font-size: 1rem;
 }
 
 .section-subtitle {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: var(--text-secondary-dark);
   font-weight: 400;
 }
@@ -390,21 +430,35 @@
 /* Enterprise Table Styling */
 ::ng-deep .enterprise-table {
   border: none !important;
+  background: transparent !important;
 }
 
 ::ng-deep .enterprise-table .p-datatable-wrapper {
   border-radius: 0;
+  background: transparent !important;
+}
+
+::ng-deep .enterprise-table .p-datatable-table {
+  background: transparent !important;
+}
+
+::ng-deep .enterprise-table .p-datatable-tbody {
+  background: transparent !important;
+}
+
+::ng-deep .enterprise-table .p-datatable-tbody > tr > td {
+  background: transparent !important;
 }
 
 ::ng-deep .enterprise-table .p-datatable-thead > tr > th {
-  background: #fafbfc !important;
-  color: var(--text-secondary-dark) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
   font-weight: 600 !important;
   font-size: 0.75rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  padding: 1rem 1.5rem !important;
-  border-bottom: 2px solid var(--border-color-light) !important;
+  padding: 0.6rem 1rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
@@ -418,34 +472,36 @@
 }
 
 .th-icon {
-  color: var(--text-tertiary);
+  color: rgba(0, 217, 163, 0.6);
   font-size: 0.875rem;
 }
 
 ::ng-deep .enterprise-table .p-datatable-tbody > tr {
   transition: all var(--transition-fast);
-  border-bottom: 1px solid var(--border-light) !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 ::ng-deep .enterprise-table .p-datatable-tbody > tr:hover {
-  background: #f8fafc !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 ::ng-deep .enterprise-table .p-datatable-tbody > tr.alarmed-row {
-  background: #fef2f2 !important;
+  background: rgba(239, 68, 68, 0.08) !important;
   border-left: 3px solid var(--danger-color) !important;
 }
 
 ::ng-deep .enterprise-table .p-datatable-tbody > tr.alarmed-row:hover {
-  background: #fee2e2 !important;
+  background: rgba(239, 68, 68, 0.13) !important;
 }
 
 ::ng-deep .enterprise-table .p-datatable-tbody > tr > td {
-  padding: 1rem 1.5rem !important;
-  color: var(--text-primary-black) !important;
+  padding: 0.4rem 1rem !important;
+  color: rgba(255, 255, 255, 0.85) !important;
   font-size: 0.875rem !important;
   border: none !important;
   vertical-align: middle;
+  background: transparent !important;
 }
 
 .site-name-cell {
@@ -469,12 +525,13 @@
   display: inline-flex;
   align-items: center;
   padding: 0.375rem 0.75rem;
-  background: #f1f5f9;
-  color: var(--text-primary-black);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
   border-radius: 6px;
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.01em;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .region-cell {
@@ -508,7 +565,7 @@
 .action-btn:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(29, 209, 161, 0.3);
+  box-shadow: 0 6px 24px rgba(0, 217, 163, 0.5);
 }
 
 .action-btn i {
@@ -516,52 +573,82 @@
 }
 
 /* PrimeNG Tag Customization */
+::ng-deep p-tag {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: fit-content !important;
+}
+
 ::ng-deep .p-tag {
-  padding: 0.375rem 0.75rem !important;
-  font-size: 0.8125rem !important;
+  padding: 0.15rem 0.55rem !important;
+  font-size: 0.75rem !important;
   font-weight: 600 !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 0.375rem !important;
+  gap: 0.25rem !important;
+  width: auto !important;
+  max-width: fit-content !important;
 }
 
 ::ng-deep .p-tag-icon {
-  font-size: 0.875rem !important;
+  font-size: 0.7rem !important;
 }
 
 /* Paginator Styling */
 ::ng-deep .enterprise-table .p-paginator {
-  background: #fafbfc !important;
-  border-top: 1px solid var(--border-color-light) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-bottom: none !important;
   border-left: none !important;
   border-right: none !important;
   padding: 1rem 1.5rem !important;
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 ::ng-deep .enterprise-table .p-paginator .p-paginator-pages .p-paginator-page {
   min-width: 2.25rem !important;
   height: 2.25rem !important;
   border-radius: 6px !important;
-  color: var(--text-primary-black) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
   font-weight: 500 !important;
   transition: all var(--transition-fast) !important;
 }
 
 ::ng-deep .enterprise-table .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
   background: var(--primary-color) !important;
-  color: white !important;
+  color: #050f1a !important;
   border-color: var(--primary-color) !important;
 }
 
 ::ng-deep .enterprise-table .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
-  background: #f1f5f9 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+::ng-deep .enterprise-table .p-paginator .p-paginator-current {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+::ng-deep .enterprise-table .p-paginator .p-paginator-first,
+::ng-deep .enterprise-table .p-paginator .p-paginator-prev,
+::ng-deep .enterprise-table .p-paginator .p-paginator-next,
+::ng-deep .enterprise-table .p-paginator .p-paginator-last {
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
 ::ng-deep .enterprise-table .p-dropdown {
   border-radius: 6px !important;
-  border-color: var(--border-color-light) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .enterprise-table .p-dropdown .p-dropdown-label {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .enterprise-table .p-dropdown .p-dropdown-trigger {
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* ============================================
@@ -705,7 +792,7 @@
 
   ::ng-deep .enterprise-table .p-datatable-thead > tr > th,
   ::ng-deep .enterprise-table .p-datatable-tbody > tr > td {
-    padding: 0.75rem 1rem !important;
+    padding: 0.4rem 0.75rem !important;
   }
 
   .section-header {
@@ -782,4 +869,117 @@
 .retry-button:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+
+/* Dashboard-specific CSS variables */
+html.light-theme {
+  --text-primary-black: #1e293b;
+  --text-secondary-dark: #475569;
+  --text-tertiary: #94a3b8;
+  --border-color-light: rgba(0, 0, 0, 0.08);
+  --border-light: rgba(0, 0, 0, 0.05);
+  --bg-card: rgba(0, 0, 0, 0.02);
+  --bg-primary: #f0f4f8;
+}
+
+/* Stat cards */
+html.light-theme .stat-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+html.light-theme .stat-card:hover {
+  background: #f8fafc;
+  border-color: rgba(0, 185, 144, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+html.light-theme .stat-card-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+/* Data sections (site list panel) */
+html.light-theme .data-section {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+html.light-theme .section-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Refresh / action buttons */
+html.light-theme .action-button {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #475569;
+}
+
+/* Level badge */
+html.light-theme .level-badge {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1e293b;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ::ng-deep table overrides (light) — these are globally scoped via ::ng-deep */
+html.light-theme ::ng-deep .enterprise-table .p-datatable-thead > tr > th {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: #0a7d60 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-datatable-tbody > tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-datatable-tbody > tr:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-datatable-tbody > tr > td {
+  color: #1e293b !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-paginator {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #64748b !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-paginator .p-paginator-pages .p-paginator-page {
+  color: #64748b !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-paginator .p-paginator-current,
+html.light-theme ::ng-deep .enterprise-table .p-paginator .p-paginator-first,
+html.light-theme ::ng-deep .enterprise-table .p-paginator .p-paginator-prev,
+html.light-theme ::ng-deep .enterprise-table .p-paginator .p-paginator-next,
+html.light-theme ::ng-deep .enterprise-table .p-paginator .p-paginator-last {
+  color: #64748b !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-dropdown {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #1e293b !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-dropdown .p-dropdown-label {
+  color: #1e293b !important;
+}
+
+html.light-theme ::ng-deep .enterprise-table .p-dropdown .p-dropdown-trigger {
+  color: #64748b !important;
 }

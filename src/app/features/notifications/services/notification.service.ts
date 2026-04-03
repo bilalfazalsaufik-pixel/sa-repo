@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { BaseCachedService } from '../../../core/services/base-cached.service';
 import {
   NotificationRule,
+  NotificationValue,
   CreateNotificationRuleRequest,
   UpdateNotificationRuleRequest
 } from '../../../shared/models/notification.model';
@@ -12,20 +13,28 @@ import { PagedResult } from '../../../shared/models/paged-result.model';
   providedIn: 'root'
 })
 export class NotificationService extends BaseCachedService<NotificationRule> {
-  private readonly endpoint = 'NotificationRule';
+  private readonly endpoint = 'notificationrule';
+
+  getNotificationValues(): Observable<NotificationValue[]> {
+    return this.api.get<NotificationValue[]>(`${this.endpoint}/values`);
+  }
 
   getNotificationRules(params: {
-    nameSearch?: string;
-    triggerType?: string;
-    isActive?: boolean;
+    userId?: number;
+    zoneId?: number;
+    timeframeSearch?: string;
+    notificationValueId?: number;
+    active?: boolean;
     pageNumber?: number;
     pageSize?: number;
   } = {}): Observable<PagedResult<NotificationRule>> {
-    const { nameSearch, triggerType, isActive, pageNumber, pageSize } = params;
+    const { userId, zoneId, timeframeSearch, notificationValueId, active, pageNumber, pageSize } = params;
     const queryParams: Record<string, string | number | boolean | undefined> = {};
-    if (nameSearch != null && nameSearch !== '') queryParams['nameSearch'] = nameSearch;
-    if (triggerType != null && triggerType !== '') queryParams['triggerType'] = triggerType;
-    if (isActive != null) queryParams['isActive'] = isActive;
+    if (userId != null) queryParams['userId'] = userId;
+    if (zoneId != null) queryParams['zoneId'] = zoneId;
+    if (timeframeSearch != null && timeframeSearch !== '') queryParams['timeframeSearch'] = timeframeSearch;
+    if (notificationValueId != null) queryParams['notificationValueId'] = notificationValueId;
+    if (active != null) queryParams['active'] = active;
     return this.getCached(this.endpoint, queryParams, pageNumber, pageSize);
   }
 
@@ -36,7 +45,7 @@ export class NotificationService extends BaseCachedService<NotificationRule> {
   createNotificationRule(request: CreateNotificationRuleRequest): Observable<NotificationRule> {
     return this.create(this.endpoint, {
       ...request,
-      isActive: request.isActive ?? true
+      active: request.active ?? true
     });
   }
 

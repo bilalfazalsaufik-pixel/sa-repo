@@ -1,17 +1,1 @@
-.site-list {
-  padding: 0;
-}
-
-.filter-row th {
-  padding: 0.25rem;
-}
-
-.filter-input,
-.filter-dropdown-inline {
-  width: 100%;
-  min-width: 0;
-}
-
-.filter-dropdown-inline {
-  min-width: 120px;
-}
+/* Component-specific styles only — shared styles in styles.css */

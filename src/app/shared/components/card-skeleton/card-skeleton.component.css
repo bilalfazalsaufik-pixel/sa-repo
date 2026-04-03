@@ -1,0 +1,40 @@
+.card-skeleton {
+  min-height: 140px;
+  border-radius: 12px;
+  padding: 2rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.card-skeleton-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.card-skeleton-icon {
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.card-skeleton-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.card-skeleton-value {
+  border-radius: 6px;
+}
+
+.card-skeleton-label {
+  border-radius: 4px;
+}
+
+/* When used inside a grid (e.g. summary-cards), host does not create an extra wrapper */
+:host {
+  display: contents;
+}

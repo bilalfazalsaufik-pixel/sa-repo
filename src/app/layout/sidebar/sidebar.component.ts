@@ -4,8 +4,8 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { PermissionService } from '../../core/services/permission.service';
 import { SidebarService } from '../services/sidebar.service';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { filter, map, catchError } from 'rxjs/operators';
+import { toSignal, takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { filter, map, catchError, switchMap, take } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TenantService } from '../../features/tenants/services/tenant.service';
 import { Tenant } from '../../shared/models/tenant.model';
@@ -30,13 +30,19 @@ export class SidebarComponent {
   private tenantService = inject(TenantService);
 
   isCollapsed = this.sidebarService.isCollapsed;
+  permissionsLoaded = this.permissionService.permissionsLoaded;
+  tenantName = this.permissionService.tenantName;
   private user$ = toSignal(this.authService.user$, { initialValue: null });
 
-  /** Tenants list for SuperAdmin Users submenu */
+  /** Tenants list for SuperAdmin Users submenu — loaded after sync so user exists in DB */
   tenantList = toSignal(
-    this.tenantService.getTenants(1, 500).pipe(
-      map(r => r.items),
-      catchError(() => of<Tenant[]>([]))
+    toObservable(this.permissionService.permissionsLoaded).pipe(
+      filter(loaded => loaded),
+      take(1),
+      switchMap(() => this.tenantService.getTenants(1, 500).pipe(
+        map(r => r.items),
+        catchError(() => of<Tenant[]>([]))
+      ))
     ),
     { initialValue: [] as Tenant[] }
   );
@@ -60,12 +66,15 @@ export class SidebarComponent {
   constructor() {
     // Auto-expand submenus based on active routes
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntilDestroyed()
+      )
       .subscribe(() => {
         this.autoExpandActiveSubmenu();
       });
 
-    // Initial auto-expand
+    // Initial auto-expand (needed for first-load state before any NavigationEnd fires)
     this.autoExpandActiveSubmenu();
   }
 

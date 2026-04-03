@@ -8,19 +8,33 @@
   <!-- Header -->
   <div class="sidebar-header">
     <div class="logo-section">
-      <i class="pi pi-building"></i>
+      <img src="assets/images/logo.png" alt="ETSW" class="sidebar-logo-img" [class.collapsed]="isCollapsed()" />
       @if (!isCollapsed()) {
         <div class="logo-text">
-          <div class="logo-title">Solid Rock Solutions</div>
+          <div class="logo-title">{{ tenantName() || 'ETSW' }}</div>
           <div class="logo-subtitle">Remote Monitoring</div>
         </div>
       }
     </div>
-    
   </div>
 
   <!-- Menu -->
   <div class="sidebar-menu">
+    <!-- Loading skeleton shown while permissions are being fetched -->
+    @if (!permissionsLoaded()) {
+      <div class="menu-loading">
+        @for (i of [1,2,3,4,5]; track i) {
+          <div class="menu-skeleton-item">
+            <div class="skeleton-icon"></div>
+            @if (!isCollapsed()) {
+              <div class="skeleton-text"></div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (permissionsLoaded()) {
     <ul class="menu-list">
       <!-- Dashboard -->
       @if (hasPermission('View Sites')) {
@@ -168,16 +182,6 @@
         </li>
       }
 
-      <!-- Support -->
-      <li class="menu-item">
-        <a routerLink="/support" routerLinkActive="active" class="menu-link">
-          <i class="pi pi-question-circle menu-icon"></i>
-          @if (!isCollapsed()) {
-            <span class="menu-text">Support</span>
-          }
-        </a>
-      </li>
-
       <!-- Admin Settings -->
       @if (hasRole('SuperAdministrator')) {
         <li class="menu-item" [class.has-submenu]="true">
@@ -223,23 +227,15 @@
         </li>
       }
 
-      <!-- Settings -->
-      <li class="menu-item">
-        <a routerLink="/settings" routerLinkActive="active" class="menu-link">
-          <i class="pi pi-cog menu-icon"></i>
-          @if (!isCollapsed()) {
-            <span class="menu-text">Settings</span>
-          }
-        </a>
-      </li>
     </ul>
+    } <!-- end @if permissionsLoaded -->
   </div>
 
   <!-- Footer -->
   <div class="sidebar-footer">
     <!-- User Profile Section -->
     @if (user()) {
-      <div class="user-profile">
+      <a routerLink="/profile" class="user-profile" [title]="isCollapsed() ? user()?.name : ''">
         <div class="user-avatar">
           {{ user()?.initial }}
         </div>
@@ -248,9 +244,9 @@
             <div class="user-name">{{ user()?.name }}</div>
             <div class="user-email">{{ user()?.email }}</div>
           </div>
-          <!-- <i class="pi pi-chevron-right user-chevron"></i> -->
+          <i class="pi pi-chevron-right user-chevron"></i>
         }
-      </div>
+      </a>
     }
 
     <!-- Logout Button -->

@@ -31,8 +31,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 15px;
   line-height: 1.6;
-  color: #1e293b;
-  background-color: #f8fafc;
+  color: rgba(255, 255, 255, 0.85);
+  background-color: #0a1929;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -42,75 +42,128 @@ body {
    PRIMENG COMPONENT OVERRIDES
    ============================================ */
 
-.p-component {
-  font-family: inherit;
-  font-size: 15px;
+.p-component *:not(.pi):not([class*="pi-"]) {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.875rem;
 }
 
-/* Tables - Enterprise Data Tables */
+/* Form field groups - vertical spacing between fields */
+.p-field {
+  margin-bottom: 1rem;
+}
+
+.p-field:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Form labels - consistent spacing above inputs */
+.p-dialog label,
+.p-sidebar label,
+form label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.375rem;
+}
+
+/* Tables - Enterprise Data Tables (Dark Theme) */
 .p-datatable {
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
+  overflow: visible; /* must NOT be hidden — paginator dropdown gets clipped otherwise */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
 }
 
+/* Restore rounded corners on the actual edge elements instead of the wrapper */
+.p-datatable .p-datatable-thead > tr:first-child > th:first-child {
+  border-top-left-radius: 8px;
+}
+.p-datatable .p-datatable-thead > tr:first-child > th:last-child {
+  border-top-right-radius: 8px;
+}
+.p-datatable .p-datatable-tbody > tr:last-child > td:first-child {
+  border-bottom-left-radius: 8px;
+}
+.p-datatable .p-datatable-tbody > tr:last-child > td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+/* Paginator must not clip its own dropdown panel */
+.p-paginator {
+  overflow: visible;
+  position: relative;
+}
+
+
 .p-datatable .p-datatable-thead > tr > th {
-  background: #f8fafc;
-  color: #475569;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(0, 217, 163, 0.75);
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 2px solid #e2e8f0;
-  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 1rem;
 }
 
-.p-datatable .p-datatable-tbody > tr {
+.p-datatable .p-datatable-tbody > tr,
+.p-datatable .p-datatable-tbody > tr:nth-child(even),
+.p-datatable .p-datatable-tbody > tr:nth-child(odd) {
   transition: background-color 0.15s ease;
-  border-bottom: 1px solid #f1f5f9;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.p-datatable .p-datatable-tbody > tr:hover {
-  background-color: #f8fafc;
+.p-datatable .p-datatable-tbody > tr:hover,
+.p-datatable .p-datatable-tbody > tr:nth-child(even):hover,
+.p-datatable .p-datatable-tbody > tr:nth-child(odd):hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
-.p-datatable .p-datatable-tbody > tr > td {
-  padding: 1rem 1.5rem;
-  color: #334155;
+.p-datatable .p-datatable-tbody > tr > td,
+.p-datatable .p-datatable-tbody > tr:nth-child(even) > td,
+.p-datatable .p-datatable-tbody > tr:nth-child(odd) > td {
+  padding: 0.4rem 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  background: transparent !important;
   font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
-/* Cards - Enterprise Card Design */
+/* Cards - Enterprise Card Design (Dark Theme) */
 .p-card {
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   overflow: hidden;
 }
 
 .p-card .p-card-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-  background: #ffffff;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .p-card .p-card-body {
   padding: 1.5rem;
+  background: transparent;
 }
 
 .p-card .p-card-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #ffffff;
   margin: 0 0 0.5rem 0;
 }
 
 .p-card .p-card-subtitle {
   font-size: 0.875rem;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.5);
   margin: 0;
 }
 
@@ -120,7 +173,68 @@ body {
   font-weight: 500;
   font-size: 0.875rem;
   padding: 0.625rem 1.25rem;
-  transition: all 0.2s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+}
+
+/* Primary / default buttons — teal glow */
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(0, 217, 163, 0.45) !important;
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(0, 217, 163, 0.25) !important;
+}
+
+/* Danger buttons — red glow */
+.p-button.p-button-danger:not(.p-button-text):not(.p-button-outlined):hover {
+  box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Success buttons — green glow */
+.p-button.p-button-success:not(.p-button-text):not(.p-button-outlined):hover {
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Secondary/outlined buttons — subtle white glow */
+.p-button.p-button-outlined:hover,
+.p-button.p-button-secondary:not(.p-button-text):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Icon-only text buttons (edit/delete icons in tables) — glow ring on hover */
+.p-button.p-button-text.p-button-rounded:hover {
+  transform: scale(1.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 0 0 3px rgba(0, 217, 163, 0.25), 0 0 16px rgba(0, 217, 163, 0.4) !important;
+  background: rgba(0, 217, 163, 0.1) !important;
+}
+
+.p-button.p-button-text.p-button-rounded:active {
+  transform: scale(1.0);
+  box-shadow: 0 0 0 2px rgba(0, 217, 163, 0.15), 0 0 8px rgba(0, 217, 163, 0.25) !important;
+}
+
+/* Danger icon buttons (delete) — red glow ring */
+.p-button.p-button-text.p-button-rounded.p-button-danger:hover {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25), 0 0 16px rgba(239, 68, 68, 0.4) !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.p-button.p-button-text.p-button-rounded.p-button-danger:active {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15), 0 0 8px rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Info icon buttons (edit) — blue glow ring */
+.p-button.p-button-text.p-button-rounded.p-button-info:hover {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 0 16px rgba(59, 130, 246, 0.4) !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.p-button.p-button-text.p-button-rounded.p-button-info:active {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15), 0 0 8px rgba(59, 130, 246, 0.25) !important;
 }
 
 .p-button.p-button-primary {
@@ -139,48 +253,112 @@ body {
 }
 
 .p-button.p-button-text:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* Inputs - Enterprise Input Design */
+/* Inputs - Enterprise Input Design (Dark Theme) */
 .p-inputtext,
 .p-dropdown,
 .p-multiselect {
   border-radius: 6px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.875rem !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Direct inputs get padding on themselves */
+.p-inputtext {
+  padding: 0.625rem 0.875rem;
+}
+
+/* Dropdowns: padding lives on the inner label, not the wrapper.
+   This ensures the dropdown height exactly matches .p-inputtext. */
+.p-dropdown .p-dropdown-label,
+.p-multiselect .p-multiselect-label {
   padding: 0.625rem 0.875rem;
   font-size: 0.875rem;
-  transition: all 0.2s;
-  background: #ffffff;
-  color: #1e293b;
+  line-height: 1.25rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Placeholder text color */
+.p-dropdown .p-dropdown-label.p-placeholder,
+.p-multiselect .p-multiselect-label.p-placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Remove extra padding PrimeNG adds to the trigger icon area */
+.p-dropdown .p-dropdown-trigger,
+.p-multiselect .p-multiselect-trigger {
+  width: 2.5rem;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .p-inputtext:focus,
-.p-dropdown:focus,
-.p-multiselect:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.p-dropdown:focus-within,
+.p-multiselect:focus-within {
+  border-color: rgba(0, 217, 163, 0.6);
+  box-shadow: 0 0 0 3px rgba(0, 217, 163, 0.1);
   outline: none;
 }
 
-/* Paginator - Enterprise Pagination */
+/* Paginator - Enterprise Pagination (Dark Theme) */
 .p-paginator {
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding: 1rem 1.5rem;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-.p-paginator .p-paginator-page.p-highlight {
-  background: #3b82f6;
-  color: #ffffff;
+.p-paginator .p-paginator-page.p-highlight,
+.p-paginator .p-paginator-page.p-paginator-page-selected {
+  background: #00d9a3;
+  color: #050f1a;
+  font-weight: 700;
 }
 
 /* Tags - Enterprise Tag Design */
 .p-tag {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: fit-content !important;
+  align-self: flex-start !important;
   border-radius: 4px;
-  padding: 0.25rem 0.75rem;
+  padding: 0.15rem 0.55rem;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.p-tag .p-tag-label {
+  color: #ffffff !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Severity text overrides (PrimeNG 19 uses p-tag-warn not p-tag-warning) */
+.p-tag.p-tag-success .p-tag-label,
+.p-tag.p-tag-danger .p-tag-label,
+.p-tag.p-tag-warn .p-tag-label,
+.p-tag.p-tag-warning .p-tag-label,
+.p-tag.p-tag-info .p-tag-label,
+.p-tag.p-tag-secondary .p-tag-label,
+.p-tag.p-tag-contrast .p-tag-label {
+  color: #ffffff !important;
+}
+
+/* Table cells containing tags — prevent stretch */
+.p-datatable .p-datatable-tbody > tr > td:has(p-tag),
+.p-datatable .p-datatable-tbody > tr > td:has(.p-tag) {
+  display: table-cell !important;
+}
+
+p-tag {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: fit-content !important;
 }
 
 /* Tooltips - Enterprise Tooltip */
@@ -192,14 +370,14 @@ body {
   font-size: 0.75rem;
 }
 
-/* Menus - Exclude sidebar menus from default styling */
+/* Menus - Dark Theme (Exclude sidebar menus from default styling) */
 .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu),
 .p-menu.p-menu-overlay {
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 0.5rem;
-  background: #ffffff;
+  background: #1a2d3f;
   z-index: 1100;
   min-width: 200px;
 }
@@ -216,7 +394,7 @@ body {
 .p-menu.p-menu-overlay .p-menu-item {
   border-radius: 6px;
   padding: 0.75rem 1rem;
-  color: #334155;
+  color: rgba(255, 255, 255, 0.8);
   transition: all 0.15s;
   display: flex;
   align-items: center;
@@ -229,8 +407,8 @@ body {
 .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menu-item:hover,
 .p-menu.p-menu-overlay .p-menuitem-link:hover,
 .p-menu.p-menu-overlay .p-menu-item:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 
 .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menuitem-icon,
@@ -241,48 +419,235 @@ body {
 
 .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menuitem-separator,
 .p-menu.p-menu-overlay .p-menuitem-separator {
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   margin: 0.5rem 0;
   height: 1px;
 }
 
-/* Dropdowns - Enterprise Dropdown */
-.p-dropdown-panel {
+/* Dropdowns - Enterprise Dropdown Panel (Dark Theme)
+   Covers both legacy p-dropdown (p-dropdown-panel) and PrimeNG 19 p-select (p-select-overlay).
+   appendTo="body" is set on all dropdowns so the panel escapes overflow:hidden containers. */
+
+/* Legacy p-dropdown + PrimeNG 19 p-select — overlay wrapper
+   Use :root:root scoped rules + explicit selectors at every DOM level
+   because PrimeNG 19 injects styles dynamically after styles.css loads. */
+
+.p-dropdown-panel,
+.p-multiselect-panel,
+.p-multiselect-overlay {
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: #1a2d3f !important;
+  z-index: 9999 !important;
+}
+
+/* PrimeNG 19 p-select overlay — target every level of the DOM tree
+   so there is no ancestor with a white/light background anywhere */
+.p-select-overlay,
+.p-overlay .p-select-overlay,
+.p-overlay-content .p-select-overlay,
+.p-overlay .p-overlay-content .p-select-overlay {
+  background: #1a2d3f !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+.p-select-overlay .p-select-list-container,
+.p-overlay .p-select-overlay .p-select-list-container {
+  background: #1a2d3f !important;
+  overflow-y: auto;
+  max-height: 220px;
+}
+
+.p-select-overlay .p-select-list,
+.p-overlay .p-select-overlay .p-select-list {
+  background: #1a2d3f !important;
+  padding: 4px !important;
+}
+
+/* Scrollable list containers (legacy + PrimeNG 19) */
+.p-dropdown-panel .p-dropdown-items-wrapper,
+.p-multiselect-panel .p-multiselect-items-wrapper,
+.p-multiselect-overlay .p-multiselect-list-container {
+  max-height: 220px;
+  overflow-y: auto;
+  background: #1a2d3f !important;
+}
+
+/* Items list (legacy + PrimeNG 19) */
+.p-dropdown-panel .p-dropdown-items,
+.p-multiselect-panel .p-multiselect-items,
+.p-multiselect-overlay .p-multiselect-list {
+  background: #1a2d3f !important;
+  padding: 4px !important;
+}
+
+/* Individual option items (legacy + PrimeNG 19) */
+.p-dropdown-panel .p-dropdown-item,
+.p-multiselect-panel .p-multiselect-item,
+.p-multiselect-overlay .p-multiselect-option {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: #1a2d3f !important;
+  transition: background-color 0.15s;
+}
+
+.p-select-overlay .p-select-option {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: #1a2d3f !important;
+}
+
+/* Option hover (legacy + PrimeNG 19) */
+.p-dropdown-panel .p-dropdown-item:hover,
+.p-multiselect-panel .p-multiselect-item:hover,
+.p-multiselect-overlay .p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled).p-focus,
+.p-multiselect-overlay .p-multiselect-option:not(.p-multiselect-option-selected):hover,
+.p-select-overlay .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
+.p-select-overlay .p-select-option:not(.p-select-option-selected):hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* Selected option (legacy + PrimeNG 19) */
+.p-dropdown-panel .p-dropdown-item.p-highlight,
+.p-multiselect-panel .p-multiselect-item.p-highlight,
+.p-multiselect-overlay .p-multiselect-option.p-multiselect-option-selected,
+.p-select-overlay .p-select-option.p-select-option-selected {
+  background: rgba(0, 217, 163, 0.15) !important;
+  color: #00d9a3 !important;
+}
+
+/* Selected + focused (PrimeNG 19) */
+.p-multiselect-overlay .p-multiselect-option.p-multiselect-option-selected.p-focus,
+.p-select-overlay .p-select-option.p-select-option-selected.p-focus {
+  background: rgba(0, 217, 163, 0.22) !important;
+  color: #00d9a3 !important;
+}
+
+/* Multiselect header (select all checkbox row) */
+.p-multiselect-overlay .p-multiselect-header {
+  background: #1a2d3f !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 0.5rem 0.875rem !important;
+}
+
+/* Multiselect filter input */
+.p-multiselect-overlay .p-multiselect-filter-container .p-inputtext,
+.p-multiselect-overlay .p-multiselect-filter {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Calendar - Date Picker Panel (Dark Theme)
+   appendTo="body" is set on all calendars so the panel escapes
+   overflow:hidden containers. PrimeNG auto-flips upward when
+   there is not enough space below. */
+.p-datepicker {
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #1a2d3f;
+  z-index: 9999 !important;
 }
 
-.p-dropdown-items .p-dropdown-item:hover {
-  background: #f1f5f9;
+.p-datepicker .p-datepicker-header {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
 }
 
-/* Dialog - Enterprise Dialog */
+.p-datepicker table td {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.p-datepicker table td > span {
+  border-radius: 6px;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.p-datepicker table td > span.p-highlight {
+  background: #00d9a3;
+  color: #050f1a;
+}
+
+.p-datepicker table td > span:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.p-datepicker .p-datepicker-buttonbar {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Dialog - Enterprise Dialog (Dark Theme) */
 .p-dialog {
-  border-radius: 8px;
-  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0d1f2d;
 }
 
 .p-dialog .p-dialog-header {
-  border-bottom: 1px solid #e2e8f0;
-  padding: 1.5rem;
-  background: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px 12px 0 0;
+}
+
+.p-dialog .p-dialog-title,
+.p-dialog .p-dialog-header span {
+  font-weight: 700 !important;
+  font-size: 1.125rem !important;
+  color: #ffffff !important;
 }
 
 .p-dialog .p-dialog-content {
   padding: 1.5rem;
+  background: #0d1f2d;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-/* Toast - Enterprise Toast */
+.p-dialog .p-dialog-footer {
+  background: #0d1f2d;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 12px 12px;
+}
+
+/* Divider - Dark Theme */
+.p-divider .p-divider-content {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.p-divider-horizontal:before {
+  border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.p-divider-vertical:before {
+  border-left-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Toast - Enterprise Toast (Dark Theme) */
 .p-toast {
   z-index: 1100;
 }
 
 .p-toast .p-toast-message {
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* ============================================
@@ -328,19 +693,39 @@ a:hover {
   flex-shrink: 0;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.last-updated {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.last-updated i {
+  font-size: 0.75rem;
+  color: rgba(0, 217, 163, 0.6);
+}
+
 /* Shared Page Patterns */
 .subtitle {
-  font-size: 0.9375rem;
-  color: #64748b;
+  font-size: 0.875rem !important;
+  color: rgba(255, 255, 255, 0.45);
   margin: 0;
 }
 
 .card-header h2,
 .card-header h3 {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #ffffff;
 }
 
 .filters {
@@ -349,9 +734,15 @@ a:hover {
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background-color: #f8fafc;
+  background-color: rgba(255, 255, 255, 0.04);
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.filter-item {
+  flex: 1 1 160px;
+  min-width: 140px;
+  max-width: 260px;
 }
 
 .filter-group {
@@ -363,7 +754,7 @@ a:hover {
 .filter-group label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #475569;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .empty-state {
@@ -372,9 +763,22 @@ a:hover {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 3rem 2rem;
-  color: #64748b;
-  gap: 0.5rem;
+  padding: 3.5rem 2rem;
+  color: rgba(255, 255, 255, 0.4);
+  gap: 0.75rem;
+}
+
+.empty-state i {
+  font-size: 2.75rem !important;
+  color: rgba(0, 217, 163, 0.35) !important;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  max-width: 380px;
+  line-height: 1.5;
 }
 
 .full-width {
@@ -482,6 +886,475 @@ a:hover {
 }
 
 /* ============================================
+   LIST COMPONENT SHARED STYLES
+   ============================================ */
+
+/* List container reset - applied to all feature list wrappers */
+.site-list,
+.device-list,
+.sensor-list,
+.zone-list,
+.eventtype-list,
+.regtype-list,
+.tenant-list,
+.user-list,
+.event-list,
+.maintenance-list,
+.reading-list,
+.notification-list,
+.notification-history-list,
+.role-list {
+  padding: 0;
+}
+
+/* Inline table filter row */
+.filter-row th {
+  padding: 0.25rem;
+}
+
+.filter-input,
+.filter-dropdown-inline {
+  width: 100%;
+  min-width: 0;
+}
+
+.filter-dropdown-inline {
+  min-width: 140px;
+}
+
+/* Form field validation feedback */
+input.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched {
+  border-color: #e24c4c !important;
+  box-shadow: 0 0 0 1px #e24c4c !important;
+}
+
+p-dropdown.ng-invalid.ng-touched .p-dropdown,
+p-multiSelect.ng-invalid.ng-touched .p-multiselect,
+p-inputNumber.ng-invalid.ng-touched .p-inputnumber-input {
+  border-color: #e24c4c !important;
+}
+
+/* Empty state hint text */
+.empty-state-hint {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+  max-width: 32rem;
+}
+
+/* Maintenance table column widths */
+.maintenance-list .p-datatable .p-datatable-thead > tr > th,
+.maintenance-list .p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.4rem 1rem;
+  white-space: nowrap;
+}
+
+.maintenance-list .p-datatable .p-datatable-thead > tr > th:nth-child(6),
+.maintenance-list .p-datatable .p-datatable-tbody > tr > td:nth-child(6) {
+  min-width: 200px;
+  white-space: normal;
+}
+
+/* ============================================
+   PRIMENG 19 DESIGN TOKEN OVERRIDES
+   Uses :root:root (specificity 0,2,0) to beat
+   PrimeNG's injected :root (specificity 0,1,0)
+   ============================================ */
+:root:root {
+  /* Select / Dropdown input trigger */
+  --p-select-background: rgba(255, 255, 255, 0.06);
+  --p-select-border-color: rgba(255, 255, 255, 0.15);
+  --p-select-color: rgba(255, 255, 255, 0.7);
+  --p-select-hover-border-color: rgba(255, 255, 255, 0.25);
+  --p-select-dropdown-color: rgba(255, 255, 255, 0.5);
+  --p-select-placeholder-color: rgba(255, 255, 255, 0.35);
+
+  /* Select / Dropdown overlay panel */
+  --p-select-overlay-background: #1a2d3f;
+  --p-select-overlay-border-color: rgba(255, 255, 255, 0.12);
+  --p-select-overlay-color: rgba(255, 255, 255, 0.8);
+
+  /* Select options */
+  --p-select-option-color: rgba(255, 255, 255, 0.8);
+  --p-select-option-background: transparent;
+  --p-select-option-focus-background: rgba(255, 255, 255, 0.08);
+  --p-select-option-focus-color: #ffffff;
+  --p-select-option-selected-background: rgba(0, 217, 163, 0.15);
+  --p-select-option-selected-color: #00d9a3;
+  --p-select-option-selected-focus-background: rgba(0, 217, 163, 0.2);
+  --p-select-option-selected-focus-color: #00d9a3;
+
+  /* Paginator */
+  --p-paginator-background: transparent;
+  --p-paginator-color: rgba(255, 255, 255, 0.5);
+  --p-paginator-current-page-report-color: rgba(255, 255, 255, 0.4);
+  --p-paginator-nav-button-background: transparent;
+  --p-paginator-nav-button-color: rgba(255, 255, 255, 0.5);
+  --p-paginator-nav-button-hover-background: rgba(255, 255, 255, 0.08);
+  --p-paginator-nav-button-hover-color: #ffffff;
+  --p-paginator-nav-button-selected-background: #00d9a3;
+  --p-paginator-nav-button-selected-color: #050f1a;
+
+  /* Datatable rows */
+  --p-datatable-row-background: transparent;
+  --p-datatable-row-color: rgba(255, 255, 255, 0.85);
+  --p-datatable-row-hover-background: rgba(255, 255, 255, 0.05);
+  --p-datatable-row-hover-color: #ffffff;
+  --p-datatable-row-striped-background: transparent;
+  --p-datatable-header-background: rgba(255, 255, 255, 0.04);
+  --p-datatable-header-cell-background: rgba(255, 255, 255, 0.04);
+  --p-datatable-header-cell-color: rgba(0, 217, 163, 0.7);
+  --p-datatable-footer-background: rgba(255, 255, 255, 0.03);
+  --p-datatable-footer-cell-background: rgba(255, 255, 255, 0.03);
+  --p-datatable-body-cell-border-color: rgba(255, 255, 255, 0.05);
+
+  /* Card tokens */
+  --p-card-background: rgba(255, 255, 255, 0.04);
+  --p-card-color: rgba(255, 255, 255, 0.85);
+  --p-card-subtitle-color: rgba(255, 255, 255, 0.5);
+  --p-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  /* Content tokens (card, panel, etc. inherit from these) */
+  --p-content-background: rgba(255, 255, 255, 0.04);
+  --p-content-hover-background: rgba(255, 255, 255, 0.06);
+  --p-content-border-color: rgba(255, 255, 255, 0.08);
+  --p-content-color: rgba(255, 255, 255, 0.85);
+  --p-content-hover-color: #ffffff;
+
+  /* Form field tokens (inputs, selects, textareas) */
+  --p-form-field-background: rgba(255, 255, 255, 0.06);
+  --p-form-field-disabled-background: rgba(255, 255, 255, 0.03);
+  --p-form-field-filled-background: rgba(255, 255, 255, 0.06);
+  --p-form-field-border-color: rgba(255, 255, 255, 0.15);
+  --p-form-field-hover-border-color: rgba(0, 217, 163, 0.5);
+  --p-form-field-focus-border-color: rgba(0, 217, 163, 0.7);
+  --p-form-field-color: rgba(255, 255, 255, 0.85);
+  --p-form-field-disabled-color: rgba(255, 255, 255, 0.3);
+  --p-form-field-placeholder-color: rgba(255, 255, 255, 0.35);
+  --p-form-field-icon-color: rgba(255, 255, 255, 0.4);
+
+  /* Overlay modal tokens (p-dialog) */
+  --p-overlay-modal-background: #0d1f2d;
+  --p-overlay-modal-border-color: rgba(255, 255, 255, 0.12);
+  --p-overlay-modal-color: rgba(255, 255, 255, 0.85);
+
+  /* Overlay select/popover tokens */
+  --p-overlay-select-background: #1a2d3f;
+  --p-overlay-select-border-color: rgba(255, 255, 255, 0.12);
+  --p-overlay-select-color: rgba(255, 255, 255, 0.85);
+  --p-overlay-popover-background: #1a2d3f;
+  --p-overlay-popover-border-color: rgba(255, 255, 255, 0.12);
+
+  /* Text tokens */
+  --p-text-color: rgba(255, 255, 255, 0.85);
+  --p-text-hover-color: #ffffff;
+  --p-text-muted-color: rgba(255, 255, 255, 0.45);
+  --p-text-hover-muted-color: rgba(255, 255, 255, 0.6);
+
+  /* Surface tokens */
+  --p-surface-0: rgba(255, 255, 255, 0.04);
+  --p-surface-50: rgba(255, 255, 255, 0.05);
+  --p-surface-100: rgba(255, 255, 255, 0.06);
+  --p-surface-200: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   DARK THEME — ENTERPRISE TABLE OVERRIDE
+   Scoped to .enterprise-table to avoid affecting
+   other datatables in the app
+   ============================================ */
+
+.enterprise-table.p-datatable,
+.enterprise-table .p-datatable-wrapper,
+.enterprise-table .p-datatable-table {
+  background: transparent !important;
+}
+
+.enterprise-table .p-datatable-thead > tr > th {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(0, 217, 163, 0.7) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.enterprise-table .p-datatable-tbody > tr,
+.enterprise-table .p-datatable-tbody > tr:nth-child(even),
+.enterprise-table .p-datatable-tbody > tr:nth-child(odd) {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.enterprise-table .p-datatable-tbody > tr:hover,
+.enterprise-table .p-datatable-tbody > tr:nth-child(even):hover,
+.enterprise-table .p-datatable-tbody > tr:nth-child(odd):hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.enterprise-table .p-datatable-tbody > tr > td,
+.enterprise-table .p-datatable-tbody > tr:nth-child(even) > td,
+.enterprise-table .p-datatable-tbody > tr:nth-child(odd) > td {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.enterprise-table .p-datatable-tbody > tr.alarmed-row,
+.enterprise-table .p-datatable-tbody > tr.alarmed-row:nth-child(even),
+.enterprise-table .p-datatable-tbody > tr.alarmed-row:nth-child(odd) {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+.enterprise-table .p-datatable-tbody > tr.alarmed-row:hover {
+  background: rgba(239, 68, 68, 0.13) !important;
+}
+
+.enterprise-table .p-datatable-tbody > tr.alarmed-row > td,
+.enterprise-table .p-datatable-tbody > tr.alarmed-row:nth-child(even) > td {
+  background: transparent !important;
+}
+
+.enterprise-table .p-paginator {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.enterprise-table .p-paginator .p-paginator-page,
+.enterprise-table .p-paginator .p-paginator-first,
+.enterprise-table .p-paginator .p-paginator-prev,
+.enterprise-table .p-paginator .p-paginator-next,
+.enterprise-table .p-paginator .p-paginator-last {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.enterprise-table .p-paginator .p-paginator-page {
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem !important;
+  border-radius: 6px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.enterprise-table .p-paginator .p-paginator-page.p-highlight,
+.enterprise-table .p-paginator .p-paginator-page.p-paginator-page-selected {
+  background: #00d9a3 !important;
+  color: #050f1a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(0, 217, 163, 0.4) !important;
+}
+
+.enterprise-table .p-paginator .p-paginator-page:not(.p-highlight):not(.p-paginator-page-selected):hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.enterprise-table .p-paginator .p-paginator-current {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+
+/* ============================================
+   USER MENU POPUP (appended to body)
+   ============================================ */
+
+/* Override PrimeNG 19 menu tokens */
+:root:root {
+  --p-menu-background: #0d1f2d;
+  --p-menu-border-color: rgba(255, 255, 255, 0.1);
+  --p-menu-item-color: rgba(255, 255, 255, 0.75);
+  --p-menu-item-focus-background: transparent;
+  --p-menu-item-focus-color: rgba(255, 255, 255, 0.75);
+  --p-menu-item-active-background: rgba(0, 217, 163, 0.1);
+  --p-menu-item-active-color: #00d9a3;
+  --p-menu-separator-border-color: rgba(255, 255, 255, 0.08);
+  --p-focus-ring-color: transparent;
+  --p-focus-ring-shadow: none;
+  --p-focus-ring-width: 0;
+}
+
+.p-menu.p-menu-overlay {
+  background: #0d1f2d !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55) !important;
+  min-width: 190px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+.p-menu.p-menu-overlay .p-menu-list {
+  padding: 0.25rem !important;
+  background: transparent !important;
+  margin: 0 !important;
+}
+
+/* Zero out li padding so the inner <a> is the only clickable area, fills full row */
+.p-menu.p-menu-overlay .p-menu-list > li {
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+
+/* PrimeNG 19 menu uses p-menu-item-content / p-menu-item-icon / p-menu-item-label */
+
+/* Reset base state — padding:0 so the inner <a> fills the full clickable box */
+.p-menu.p-menu-overlay .p-menu-item-content {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 6px !important;
+  transition: background 0.15s ease, color 0.15s ease !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: stretch !important;
+}
+.p-menu.p-menu-overlay li.p-focus .p-menu-item-content {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Kill all anchor defaults */
+.p-menu.p-menu-overlay a,
+.p-menu.p-menu-overlay a:link,
+.p-menu.p-menu-overlay a:visited,
+.p-menu.p-menu-overlay a:hover,
+.p-menu.p-menu-overlay a:focus,
+.p-menu.p-menu-overlay a:active {
+  text-decoration: none !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Inner <a> / link — fills the full width+height of its wrapper */
+.p-menu.p-menu-overlay .p-menu-item-content > * {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+  padding: 0.45rem 0.75rem !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  outline: none !important;
+  border: none !important;
+  background: transparent !important;
+  width: 100% !important;
+  flex: 1 !important;
+  cursor: pointer !important;
+}
+
+/* Icon — teal */
+.p-menu.p-menu-overlay .p-menu-item-icon,
+.p-menu.p-menu-overlay .p-menu-item-icon i,
+.p-menu.p-menu-overlay .p-menu-item-content > * .p-menu-item-icon,
+.p-menu.p-menu-overlay .p-menu-item-content > * .p-menu-item-icon i {
+  color: #00d9a3 !important;
+  font-size: 0.875rem !important;
+  flex-shrink: 0 !important;
+  text-decoration: none !important;
+  opacity: 1 !important;
+}
+
+/* Label */
+.p-menu.p-menu-overlay .p-menu-item-label {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* Hover — teal: background on the li so the full row lights up */
+.p-menu.p-menu-overlay li:hover {
+  background: rgba(0, 217, 163, 0.1) !important;
+}
+.p-menu.p-menu-overlay li:hover .p-menu-item-content > *,
+.p-menu.p-menu-overlay li:hover .p-menu-item-content .p-menu-item-icon,
+.p-menu.p-menu-overlay li:hover .p-menu-item-content .p-menu-item-icon i,
+.p-menu.p-menu-overlay li:hover .p-menu-item-content .p-menu-item-label {
+  color: #00d9a3 !important;
+  opacity: 1 !important;
+}
+
+/* Hover — red for Logout */
+.p-menu.p-menu-overlay li:last-child:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+.p-menu.p-menu-overlay li:last-child:hover .p-menu-item-content > *,
+.p-menu.p-menu-overlay li:last-child:hover .p-menu-item-content .p-menu-item-icon,
+.p-menu.p-menu-overlay li:last-child:hover .p-menu-item-content .p-menu-item-icon i,
+.p-menu.p-menu-overlay li:last-child:hover .p-menu-item-content .p-menu-item-label {
+  color: #ef4444 !important;
+  opacity: 1 !important;
+}
+
+/* Separator */
+.p-menu.p-menu-overlay .p-menu-separator,
+.p-menu.p-menu-overlay .p-menuitem-separator {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin: 0.25rem 0.35rem !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* ============================================
+   CONFIRM DIALOG — DARK THEME
+   ============================================ */
+
+.p-confirmdialog,
+.p-dialog.p-confirmdialog {
+  background: #0d1f2d !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6) !important;
+  overflow: hidden !important;
+  min-width: 360px !important;
+}
+
+.p-confirmdialog .p-dialog-header,
+.p-confirmdialog .p-confirmdialog-header {
+  background: #0d1f2d !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  padding: 1.1rem 1.5rem !important;
+  color: #ffffff !important;
+}
+
+.p-confirmdialog .p-dialog-header .p-dialog-title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+.p-confirmdialog .p-dialog-content,
+.p-confirmdialog .p-confirmdialog-content {
+  background: #0d1f2d !important;
+  padding: 1.25rem 1.5rem !important;
+  color: rgba(255,255,255,0.75) !important;
+  font-size: 0.9rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+}
+
+.p-confirmdialog .p-confirmdialog-icon,
+.p-confirmdialog .p-dialog-content .pi-exclamation-triangle {
+  color: #f59e0b !important;
+  font-size: 1.5rem !important;
+  flex-shrink: 0 !important;
+}
+
+.p-confirmdialog .p-dialog-footer,
+.p-confirmdialog .p-confirmdialog-footer {
+  background: #0d1f2d !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+  padding: 0.85rem 1.5rem !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 0.5rem !important;
+}
+
+/* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 
@@ -489,14 +1362,724 @@ a:hover {
   body {
     font-size: 14px;
   }
-  
+
   .p-datatable .p-datatable-thead > tr > th,
   .p-datatable .p-datatable-tbody > tr > td {
-    padding: 0.75rem 1rem;
+    padding: 0.4rem 0.75rem;
   }
-  
+
   .p-card .p-card-header,
   .p-card .p-card-body {
     padding: 1rem;
   }
+
+  /* Filter rows wrap on mobile */
+  .filters {
+    flex-wrap: wrap;
+  }
+
+  .filter-item,
+  .filter-dropdown-inline,
+  .filter-input {
+    min-width: 140px !important;
+    width: 100% !important;
+  }
+
+  /* Sticky header: tighten on mobile */
+  .sticky-header {
+    padding: 0 12px !important;
+    height: 50px !important;
+    min-height: 50px !important;
+  }
+
+  .section-label {
+    font-size: 0.95rem !important;
+  }
+
+  .user-name {
+    display: none; /* hide name on very small screens — avatar still visible */
+  }
+
+  /* Modals full-width on mobile */
+  .p-dialog {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 0 auto !important;
+  }
+
+  /* Charts: ensure they don't overflow */
+  .charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   Applied when <html class="light-theme"> is set by ThemeService.
+   Uses html.light-theme (specificity 0,1,1) to override :root (0,1,0).
+   Uses html.light-theme:root (specificity 0,2,1) to override :root:root (0,2,0).
+   ============================================ */
+
+/* --- CSS Custom Properties (sidebar vars + new layout vars) --- */
+html.light-theme {
+  /* Sidebar palette */
+  --bg-surface: #ffffff;
+  --bg-surface-light: #f8fafc;
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-active: #00b890;
+  --bg-active-rgb: 0, 184, 144;
+  --border-color: rgba(0, 0, 0, 0.09);
+  --brand-primary: #00916e;
+  --brand-secondary: #00a07c;
+  --brand-gradient-start: #00b890;
+  --brand-gradient-end: #00a07c;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --text-on-brand: #ffffff;
+  --text-on-active: #ffffff;
+  --state-hover: rgba(0, 0, 0, 0.04);
+  --state-active: #00b890;
+  --state-active-bg: #00b890;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Layout component variables */
+  --main-bg: #f0f4f8;
+  --header-bg: rgba(248, 250, 252, 0.95);
+  --header-shadow: rgba(0, 0, 0, 0.08);
+  --user-btn-bg: rgba(0, 0, 0, 0.04);
+  --user-btn-border: rgba(0, 0, 0, 0.1);
+  --user-btn-color: #1e293b;
+}
+
+/* --- Body --- */
+html.light-theme body {
+  background-color: #f0f4f8;
+  color: #1e293b;
+}
+
+/* --- Form Labels --- */
+html.light-theme .p-dialog label,
+html.light-theme .p-sidebar label,
+html.light-theme form label {
+  color: #475569;
+}
+
+/* --- Buttons --- */
+/* Plain text buttons: swap the white-on-dark hover for a subtle dark-on-light one */
+html.light-theme .p-button.p-button-text:not(.p-button-rounded):hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+/* Rounded icon buttons: preserve the teal/colored glow ring backgrounds (same as dark theme) */
+html.light-theme .p-button.p-button-text.p-button-rounded:hover {
+  background: rgba(0, 217, 163, 0.1) !important;
+}
+html.light-theme .p-button.p-button-text.p-button-rounded.p-button-danger:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+html.light-theme .p-button.p-button-text.p-button-rounded.p-button-info:hover {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* --- Tables --- */
+html.light-theme .p-datatable {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+html.light-theme .p-datatable .p-datatable-thead > tr > th {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: #0a7d60 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light-theme .p-datatable .p-datatable-tbody > tr,
+html.light-theme .p-datatable .p-datatable-tbody > tr:nth-child(even),
+html.light-theme .p-datatable .p-datatable-tbody > tr:nth-child(odd) {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light-theme .p-datatable .p-datatable-tbody > tr:hover,
+html.light-theme .p-datatable .p-datatable-tbody > tr:nth-child(even):hover,
+html.light-theme .p-datatable .p-datatable-tbody > tr:nth-child(odd):hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme .p-datatable .p-datatable-tbody > tr > td,
+html.light-theme .p-datatable .p-datatable-tbody > tr:nth-child(even) > td,
+html.light-theme .p-datatable .p-datatable-tbody > tr:nth-child(odd) > td {
+  color: #1e293b !important;
+  background: transparent !important;
+}
+
+/* --- Cards --- */
+html.light-theme .p-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+html.light-theme .p-card .p-card-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+html.light-theme .p-card .p-card-title {
+  color: #1e293b !important;
+}
+
+html.light-theme .p-card .p-card-subtitle {
+  color: #64748b !important;
+}
+
+/* --- Inputs / Dropdowns / Multiselect --- */
+html.light-theme .p-inputtext,
+html.light-theme .p-dropdown,
+html.light-theme .p-multiselect {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: #1e293b;
+}
+
+html.light-theme .p-dropdown .p-dropdown-label,
+html.light-theme .p-multiselect .p-multiselect-label {
+  color: #1e293b !important;
+}
+
+html.light-theme .p-dropdown .p-dropdown-label.p-placeholder,
+html.light-theme .p-multiselect .p-multiselect-label.p-placeholder {
+  color: #94a3b8 !important;
+}
+
+html.light-theme .p-dropdown .p-dropdown-trigger,
+html.light-theme .p-multiselect .p-multiselect-trigger {
+  color: #64748b !important;
+}
+
+/* --- Paginator --- */
+html.light-theme .p-paginator {
+  background: rgba(0, 0, 0, 0.02);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  color: #64748b;
+}
+
+html.light-theme .p-paginator .p-paginator-page.p-highlight,
+html.light-theme .p-paginator .p-paginator-page.p-paginator-page-selected {
+  background: #00b890;
+  color: #ffffff;
+}
+
+/* --- Tooltip --- */
+html.light-theme .p-tooltip .p-tooltip-text {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+/* --- Menus (non-sidebar) --- */
+html.light-theme .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu),
+html.light-theme .p-menu.p-menu-overlay {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light-theme .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menuitem-link,
+html.light-theme .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menu-item,
+html.light-theme .p-menu.p-menu-overlay .p-menuitem-link,
+html.light-theme .p-menu.p-menu-overlay .p-menu-item {
+  color: #1e293b !important;
+}
+
+html.light-theme .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menuitem-link:hover,
+html.light-theme .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menu-item:hover,
+html.light-theme .p-menu.p-menu-overlay .p-menuitem-link:hover,
+html.light-theme .p-menu.p-menu-overlay .p-menu-item:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #1e293b !important;
+}
+
+html.light-theme .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menuitem-separator,
+html.light-theme .p-menu.p-menu-overlay .p-menuitem-separator {
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* --- Dropdown / Select panels (appended to body) --- */
+html.light-theme .p-dropdown-panel,
+html.light-theme .p-multiselect-panel,
+html.light-theme .p-multiselect-overlay {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light-theme .p-select-overlay,
+html.light-theme .p-overlay .p-select-overlay,
+html.light-theme .p-overlay-content .p-select-overlay,
+html.light-theme .p-overlay .p-overlay-content .p-select-overlay {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light-theme .p-select-overlay .p-select-list-container,
+html.light-theme .p-overlay .p-select-overlay .p-select-list-container {
+  background: #ffffff !important;
+}
+
+html.light-theme .p-select-overlay .p-select-list,
+html.light-theme .p-overlay .p-select-overlay .p-select-list {
+  background: #ffffff !important;
+}
+
+html.light-theme .p-dropdown-panel .p-dropdown-items-wrapper,
+html.light-theme .p-multiselect-panel .p-multiselect-items-wrapper,
+html.light-theme .p-multiselect-overlay .p-multiselect-list-container {
+  background: #ffffff !important;
+}
+
+html.light-theme .p-dropdown-panel .p-dropdown-items,
+html.light-theme .p-multiselect-panel .p-multiselect-items,
+html.light-theme .p-multiselect-overlay .p-multiselect-list {
+  background: #ffffff !important;
+}
+
+html.light-theme .p-dropdown-panel .p-dropdown-item,
+html.light-theme .p-multiselect-panel .p-multiselect-item,
+html.light-theme .p-multiselect-overlay .p-multiselect-option {
+  color: #1e293b !important;
+  background: #ffffff !important;
+}
+
+html.light-theme .p-select-overlay .p-select-option {
+  color: #1e293b !important;
+  background: #ffffff !important;
+}
+
+html.light-theme .p-dropdown-panel .p-dropdown-item:hover,
+html.light-theme .p-multiselect-panel .p-multiselect-item:hover,
+html.light-theme .p-multiselect-overlay .p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled).p-focus,
+html.light-theme .p-multiselect-overlay .p-multiselect-option:not(.p-multiselect-option-selected):hover,
+html.light-theme .p-select-overlay .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
+html.light-theme .p-select-overlay .p-select-option:not(.p-select-option-selected):hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #1e293b !important;
+}
+
+html.light-theme .p-dropdown-panel .p-dropdown-item.p-highlight,
+html.light-theme .p-multiselect-panel .p-multiselect-item.p-highlight,
+html.light-theme .p-multiselect-overlay .p-multiselect-option.p-multiselect-option-selected,
+html.light-theme .p-select-overlay .p-select-option.p-select-option-selected {
+  background: rgba(0, 184, 144, 0.12) !important;
+  color: #00916e !important;
+}
+
+html.light-theme .p-multiselect-overlay .p-multiselect-option.p-multiselect-option-selected.p-focus,
+html.light-theme .p-select-overlay .p-select-option.p-select-option-selected.p-focus {
+  background: rgba(0, 184, 144, 0.18) !important;
+  color: #00916e !important;
+}
+
+html.light-theme .p-multiselect-overlay .p-multiselect-header {
+  background: #f8fafc !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light-theme .p-multiselect-overlay .p-multiselect-filter-container .p-inputtext,
+html.light-theme .p-multiselect-overlay .p-multiselect-filter {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #1e293b !important;
+}
+
+/* --- Datepicker --- */
+html.light-theme .p-datepicker {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+html.light-theme .p-datepicker .p-datepicker-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  color: #1e293b;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+html.light-theme .p-datepicker table td {
+  color: #1e293b;
+}
+
+html.light-theme .p-datepicker table td > span {
+  color: #1e293b;
+}
+
+html.light-theme .p-datepicker table td > span.p-highlight {
+  background: #00b890;
+  color: #ffffff;
+}
+
+html.light-theme .p-datepicker table td > span:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+html.light-theme .p-datepicker .p-datepicker-buttonbar {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* --- Dialog --- */
+html.light-theme .p-dialog {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15);
+}
+
+html.light-theme .p-dialog .p-dialog-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+html.light-theme .p-dialog .p-dialog-title,
+html.light-theme .p-dialog .p-dialog-header span {
+  color: #1e293b !important;
+}
+
+html.light-theme .p-dialog .p-dialog-content {
+  background: #ffffff;
+  color: #1e293b;
+}
+
+html.light-theme .p-dialog .p-dialog-footer {
+  background: #ffffff;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* --- Confirm Dialog (overrides the hardcoded dark !important rules) --- */
+html.light-theme .p-confirmdialog,
+html.light-theme .p-dialog.p-confirmdialog {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15) !important;
+}
+
+html.light-theme .p-confirmdialog .p-dialog-header,
+html.light-theme .p-confirmdialog .p-confirmdialog-header {
+  background: #f8fafc !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1e293b !important;
+}
+
+html.light-theme .p-confirmdialog .p-dialog-header .p-dialog-title {
+  color: #1e293b !important;
+}
+
+html.light-theme .p-confirmdialog .p-dialog-header .p-dialog-header-action .pi,
+html.light-theme .p-confirmdialog .p-dialog-header .p-dialog-close-button .pi {
+  color: #64748b !important;
+}
+
+html.light-theme .p-confirmdialog .p-dialog-content,
+html.light-theme .p-confirmdialog .p-confirmdialog-content {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+html.light-theme .p-confirmdialog .p-dialog-footer,
+html.light-theme .p-confirmdialog .p-confirmdialog-footer {
+  background: #ffffff !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* --- Divider --- */
+html.light-theme .p-divider .p-divider-content {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+html.light-theme .p-divider-horizontal:before {
+  border-top-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light-theme .p-divider-vertical:before {
+  border-left-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* --- Utility classes --- */
+html.light-theme .subtitle {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
+html.light-theme .card-header h2,
+html.light-theme .card-header h3 {
+  color: #1e293b !important;
+}
+
+html.light-theme .filters {
+  background-color: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+html.light-theme .filter-group label {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+html.light-theme .last-updated {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+html.light-theme .last-updated i {
+  color: rgba(0, 145, 110, 0.7) !important;
+}
+
+html.light-theme .empty-state {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+html.light-theme .empty-state i {
+  color: rgba(0, 145, 110, 0.4) !important;
+}
+
+/* --- Skeleton shimmer (light variant) --- */
+html.light-theme .skeleton-icon,
+html.light-theme .skeleton-text {
+  background: linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.06) 75%);
+  background-size: 200% 100%;
+}
+
+/* --- Sidebar scrollbar (light variant) --- */
+html.light-theme .sidebar-menu::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+html.light-theme .sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* --- Collapsed submenu popup (light variant) --- */
+html.light-theme .sidebar.collapsed .submenu-list {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Enterprise table (light variant) --- */
+html.light-theme .enterprise-table .p-datatable-thead > tr > th {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: #0a7d60 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light-theme .enterprise-table .p-datatable-tbody > tr,
+html.light-theme .enterprise-table .p-datatable-tbody > tr:nth-child(even),
+html.light-theme .enterprise-table .p-datatable-tbody > tr:nth-child(odd) {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light-theme .enterprise-table .p-datatable-tbody > tr:hover,
+html.light-theme .enterprise-table .p-datatable-tbody > tr:nth-child(even):hover,
+html.light-theme .enterprise-table .p-datatable-tbody > tr:nth-child(odd):hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme .enterprise-table .p-datatable-tbody > tr > td,
+html.light-theme .enterprise-table .p-datatable-tbody > tr:nth-child(even) > td,
+html.light-theme .enterprise-table .p-datatable-tbody > tr:nth-child(odd) > td {
+  background: transparent !important;
+  color: #1e293b !important;
+}
+
+html.light-theme .enterprise-table .p-paginator {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #64748b !important;
+}
+
+html.light-theme .enterprise-table .p-paginator .p-paginator-page,
+html.light-theme .enterprise-table .p-paginator .p-paginator-first,
+html.light-theme .enterprise-table .p-paginator .p-paginator-prev,
+html.light-theme .enterprise-table .p-paginator .p-paginator-next,
+html.light-theme .enterprise-table .p-paginator .p-paginator-last {
+  color: #64748b !important;
+}
+
+html.light-theme .enterprise-table .p-paginator .p-paginator-page {
+  color: #64748b !important;
+  background: transparent !important;
+}
+
+html.light-theme .enterprise-table .p-paginator .p-paginator-page.p-highlight,
+html.light-theme .enterprise-table .p-paginator .p-paginator-page.p-paginator-page-selected {
+  background: #00b890 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 184, 144, 0.3) !important;
+}
+
+html.light-theme .enterprise-table .p-paginator .p-paginator-page:not(.p-highlight):not(.p-paginator-page-selected):hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light-theme .enterprise-table .p-paginator .p-paginator-current {
+  color: #64748b !important;
+}
+
+/* --- User menu popup (light variant) --- */
+html.light-theme .p-menu.p-menu-overlay {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay .p-menu-item-content {
+  background: transparent !important;
+}
+html.light-theme .p-menu.p-menu-overlay li.p-focus .p-menu-item-content {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay .p-menu-item-content > * {
+  color: #1e293b !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay .p-menu-item-icon,
+html.light-theme .p-menu.p-menu-overlay .p-menu-item-icon i,
+html.light-theme .p-menu.p-menu-overlay .p-menu-item-content > * .p-menu-item-icon,
+html.light-theme .p-menu.p-menu-overlay .p-menu-item-content > * .p-menu-item-icon i {
+  color: #00916e !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay .p-menu-item-label {
+  color: inherit !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay li:hover {
+  background: rgba(0, 145, 110, 0.08) !important;
+}
+html.light-theme .p-menu.p-menu-overlay li:hover .p-menu-item-content > *,
+html.light-theme .p-menu.p-menu-overlay li:hover .p-menu-item-content .p-menu-item-icon,
+html.light-theme .p-menu.p-menu-overlay li:hover .p-menu-item-content .p-menu-item-icon i,
+html.light-theme .p-menu.p-menu-overlay li:hover .p-menu-item-content .p-menu-item-label {
+  color: #00916e !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay li:last-child:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+html.light-theme .p-menu.p-menu-overlay li:last-child:hover .p-menu-item-content > *,
+html.light-theme .p-menu.p-menu-overlay li:last-child:hover .p-menu-item-content .p-menu-item-icon,
+html.light-theme .p-menu.p-menu-overlay li:last-child:hover .p-menu-item-content .p-menu-item-icon i,
+html.light-theme .p-menu.p-menu-overlay li:last-child:hover .p-menu-item-content .p-menu-item-label {
+  color: #ef4444 !important;
+}
+
+html.light-theme .p-menu.p-menu-overlay .p-menu-separator,
+html.light-theme .p-menu.p-menu-overlay .p-menuitem-separator {
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* --- PrimeNG design tokens (beats :root:root specificity) --- */
+html.light-theme:root {
+  /* Select / Dropdown */
+  --p-select-background: #ffffff;
+  --p-select-border-color: rgba(0, 0, 0, 0.15);
+  --p-select-color: #1e293b;
+  --p-select-hover-border-color: rgba(0, 184, 144, 0.5);
+  --p-select-dropdown-color: #64748b;
+  --p-select-placeholder-color: #94a3b8;
+  --p-select-overlay-background: #ffffff;
+  --p-select-overlay-border-color: rgba(0, 0, 0, 0.1);
+  --p-select-overlay-color: #1e293b;
+  --p-select-option-color: #1e293b;
+  --p-select-option-background: transparent;
+  --p-select-option-focus-background: rgba(0, 0, 0, 0.05);
+  --p-select-option-focus-color: #1e293b;
+  --p-select-option-selected-background: rgba(0, 184, 144, 0.12);
+  --p-select-option-selected-color: #00916e;
+  --p-select-option-selected-focus-background: rgba(0, 184, 144, 0.18);
+  --p-select-option-selected-focus-color: #00916e;
+
+  /* Paginator */
+  --p-paginator-background: transparent;
+  --p-paginator-color: #64748b;
+  --p-paginator-current-page-report-color: #94a3b8;
+  --p-paginator-nav-button-background: transparent;
+  --p-paginator-nav-button-color: #64748b;
+  --p-paginator-nav-button-hover-background: rgba(0, 0, 0, 0.06);
+  --p-paginator-nav-button-hover-color: #1e293b;
+  --p-paginator-nav-button-selected-background: #00b890;
+  --p-paginator-nav-button-selected-color: #ffffff;
+
+  /* Datatable */
+  --p-datatable-row-background: transparent;
+  --p-datatable-row-color: #1e293b;
+  --p-datatable-row-hover-background: rgba(0, 0, 0, 0.04);
+  --p-datatable-row-hover-color: #1e293b;
+  --p-datatable-row-striped-background: transparent;
+  --p-datatable-header-background: rgba(0, 0, 0, 0.03);
+  --p-datatable-header-cell-background: rgba(0, 0, 0, 0.03);
+  --p-datatable-header-cell-color: #0a7d60;
+  --p-datatable-footer-background: rgba(0, 0, 0, 0.02);
+  --p-datatable-footer-cell-background: rgba(0, 0, 0, 0.02);
+  --p-datatable-body-cell-border-color: rgba(0, 0, 0, 0.05);
+
+  /* Card */
+  --p-card-background: #ffffff;
+  --p-card-color: #1e293b;
+  --p-card-subtitle-color: #64748b;
+  --p-card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+
+  /* Content */
+  --p-content-background: #ffffff;
+  --p-content-hover-background: rgba(0, 0, 0, 0.03);
+  --p-content-border-color: rgba(0, 0, 0, 0.08);
+  --p-content-color: #1e293b;
+  --p-content-hover-color: #0f172a;
+
+  /* Form fields */
+  --p-form-field-background: #ffffff;
+  --p-form-field-disabled-background: #f8fafc;
+  --p-form-field-filled-background: #ffffff;
+  --p-form-field-border-color: rgba(0, 0, 0, 0.15);
+  --p-form-field-hover-border-color: rgba(0, 184, 144, 0.5);
+  --p-form-field-focus-border-color: rgba(0, 184, 144, 0.7);
+  --p-form-field-color: #1e293b;
+  --p-form-field-disabled-color: #94a3b8;
+  --p-form-field-placeholder-color: #94a3b8;
+  --p-form-field-icon-color: #94a3b8;
+
+  /* Overlay modal (p-dialog) */
+  --p-overlay-modal-background: #ffffff;
+  --p-overlay-modal-border-color: rgba(0, 0, 0, 0.1);
+  --p-overlay-modal-color: #1e293b;
+
+  /* Overlay select/popover */
+  --p-overlay-select-background: #ffffff;
+  --p-overlay-select-border-color: rgba(0, 0, 0, 0.1);
+  --p-overlay-select-color: #1e293b;
+  --p-overlay-popover-background: #ffffff;
+  --p-overlay-popover-border-color: rgba(0, 0, 0, 0.1);
+
+  /* Text */
+  --p-text-color: #1e293b;
+  --p-text-hover-color: #0f172a;
+  --p-text-muted-color: #64748b;
+  --p-text-hover-muted-color: #475569;
+
+  /* Surface */
+  --p-surface-0: #ffffff;
+  --p-surface-50: #f8fafc;
+  --p-surface-100: #f1f5f9;
+  --p-surface-200: #e2e8f0;
+
+  /* Menu tokens */
+  --p-menu-background: #ffffff;
+  --p-menu-border-color: rgba(0, 0, 0, 0.1);
+  --p-menu-item-color: #475569;
+  --p-menu-item-focus-background: transparent;
+  --p-menu-item-focus-color: #475569;
+  --p-menu-item-active-background: rgba(0, 145, 110, 0.08);
+  --p-menu-item-active-color: #00916e;
+  --p-menu-separator-border-color: rgba(0, 0, 0, 0.08);
+  --p-focus-ring-color: transparent;
+  --p-focus-ring-shadow: none;
+  --p-focus-ring-width: 0;
 }

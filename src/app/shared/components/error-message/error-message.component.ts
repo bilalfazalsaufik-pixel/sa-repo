@@ -9,9 +9,7 @@ import { ErrorService } from '../../../core/services/error.service';
   standalone: true,
   imports: [CommonModule, ToastModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <p-toast></p-toast>
-  `,
+  template: `<p-toast></p-toast>`,
   styles: []
 })
 export class ErrorMessageComponent {
@@ -20,7 +18,7 @@ export class ErrorMessageComponent {
   private messageService = inject(MessageService);
 
   constructor() {
-    // Watch for error changes and show toast
+    // Watch for errors and show error toast
     effect(() => {
       const error = this.errorService.error();
       if (error) {
@@ -30,12 +28,25 @@ export class ErrorMessageComponent {
           detail: error.message,
           life: 5000
         });
-        // Clear error after showing toast
         if (this.onDismiss) {
           this.onDismiss();
         } else {
           this.errorService.clearError();
         }
+      }
+    });
+
+    // Watch for success events and show success toast
+    effect(() => {
+      const success = this.errorService.success();
+      if (success) {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: success,
+          life: 3000
+        });
+        this.errorService.clearSuccess();
       }
     });
   }

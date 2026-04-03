@@ -87,17 +87,22 @@
   z-index: 1;
 }
 
-.logo-section i {
-  font-size: 32px;
-  color: var(--brand-primary);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.sidebar-logo-img {
+  height: 56px;
+  width: auto;
   flex-shrink: 0;
-  background: rgba(var(--bg-active-rgb), 0.1);
-  border-radius: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 5px;
+  object-fit: contain;
+  transition: all 0.2s ease;
+}
+
+.sidebar-logo-img.collapsed {
+  height: 40px;
+  width: 40px;
+  padding: 4px;
+  object-fit: contain;
 }
 
 .logo-text {
@@ -454,6 +459,8 @@
   cursor: pointer;
   transition: all var(--transition-base);
   border-bottom: 1px solid var(--border-color);
+  text-decoration: none;
+  color: inherit;
 }
 
 .user-profile:hover {
@@ -684,3 +691,87 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================
+   PERMISSIONS LOADING SKELETON
+   ============================================ */
+.menu-loading {
+  padding: 8px 0;
+}
+
+.menu-skeleton-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  margin: 2px 8px;
+  border-radius: 8px;
+}
+
+.skeleton-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.08) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-text {
+  height: 14px;
+  border-radius: 4px;
+  flex: 1;
+  background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.08) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   KEEP SIDEBAR DARK IN LIGHT THEME
+   ViewEncapsulation.None = styles are global, so we
+   scope to .sidebar directly instead of :host-context().
+   html.light-theme .sidebar (specificity 0,2,1) beats
+   the global html.light-theme (0,1,1) overrides.
+   ============================================ */
+html.light-theme .sidebar {
+  --bg-surface: #1d293c;
+  --bg-surface-light: #1f2937;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-active: #1dd1a1;
+  --bg-active-rgb: 29, 209, 161;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --brand-primary: #00d9a3;
+  --brand-secondary: #1dd1a1;
+  --brand-gradient-start: #00d9a3;
+  --brand-gradient-end: #1dd1a1;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d3d7;
+  --text-tertiary: #6b7280;
+  --text-on-active: #1a2332;
+  --state-hover: rgba(255, 255, 255, 0.05);
+  --state-active: #1dd1a1;
+  --state-active-bg: #1dd1a1;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Collapsed popup submenu stays dark too */
+html.light-theme .sidebar.collapsed .submenu-list {
+  background: #1d293c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Keep skeleton shimmer dark-on-dark inside sidebar */
+html.light-theme .sidebar .skeleton-icon,
+html.light-theme .sidebar .skeleton-text {
+  background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.08) 75%);
+  background-size: 200% 100%;
+}
+
