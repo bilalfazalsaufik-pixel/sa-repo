@@ -9,7 +9,9 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ConfirmationService } from 'primeng/api';
 import { NotificationService } from '../../services/notification.service';
 import {
@@ -41,7 +43,9 @@ import { ErrorMessageComponent } from '../../../../shared/components/error-messa
     InputIconModule,
     SelectModule,
     CheckboxModule,
+    ToggleSwitchModule,
     TooltipModule,
+    DatePickerModule,
     ModalComponent,
     ErrorMessageComponent
   ],
@@ -55,6 +59,8 @@ export class NotificationListComponent implements OnInit {
   pageSize = signal(10);
   showModal = signal(false);
   editingRule = signal<NotificationRule | null>(null);
+  startTime = signal<Date | null>(null);
+  endTime = signal<Date | null>(null);
   formData: {
     userId: number | undefined;
     zoneId: number | undefined;
@@ -216,6 +222,8 @@ export class NotificationListComponent implements OnInit {
       notificationValueId: undefined,
       active: true
     };
+    this.startTime.set(null);
+    this.endTime.set(null);
     this.showModal.set(true);
   }
 
@@ -228,6 +236,14 @@ export class NotificationListComponent implements OnInit {
       notificationValueId: rule.notificationValueId,
       active: rule.active
     };
+    if (rule.timeframe) {
+      const parts = rule.timeframe.split('-');
+      this.startTime.set(this.parseTimeString(parts[0]));
+      this.endTime.set(this.parseTimeString(parts.slice(1).join('-')));
+    } else {
+      this.startTime.set(null);
+      this.endTime.set(null);
+    }
     this.showModal.set(true);
   }
 
@@ -245,10 +261,11 @@ export class NotificationListComponent implements OnInit {
       this.errorService.setError('Zone is required');
       return;
     }
-    if (!this.formData.timeframe.trim()) {
-      this.errorService.setError('Timeframe is required (e.g. 8:00 pm-5:00 am)');
+    if (!this.startTime() || !this.endTime()) {
+      this.errorService.setError('Start time and end time are required');
       return;
     }
+    this.formData.timeframe = `${this.formatTimeToString(this.startTime()!)}-${this.formatTimeToString(this.endTime()!)}`;
     if (!this.formData.notificationValueId) {
       this.errorService.setError('Notification channel is required');
       return;
@@ -332,6 +349,27 @@ export class NotificationListComponent implements OnInit {
           });
       }
     });
+  }
+
+  private parseTimeString(timeStr: string): Date | null {
+    const match = timeStr?.trim().match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/i);
+    if (!match) return null;
+    let hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const period = match[3].toLowerCase();
+    if (period === 'pm' && hours !== 12) hours += 12;
+    if (period === 'am' && hours === 12) hours = 0;
+    const d = new Date();
+    d.setHours(hours, minutes, 0, 0);
+    return d;
+  }
+
+  private formatTimeToString(date: Date): string {
+    let h = date.getHours();
+    const m = date.getMinutes();
+    const period = h >= 12 ? 'pm' : 'am';
+    h = h % 12 || 12;
+    return `${h}:${m.toString().padStart(2, '0')} ${period}`;
   }
 
   clearError = (): void => this.errorService.clearError();

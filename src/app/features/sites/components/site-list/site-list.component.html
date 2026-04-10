@@ -101,10 +101,9 @@
             </span>
           </td>
           <td>
-            <p-tag
-              [value]="site.siteStatus?.currentStatus || 'Green'"
-              [severity]="getStatusSeverity(site.siteStatus?.currentStatus || 'Green')">
-            </p-tag>
+            <span class="status-badge" [class]="'status-' + (site.siteStatus?.currentStatus || 'Green').toLowerCase()">
+              {{ site.siteStatus?.currentStatus || 'Green' }}
+            </span>
           </td>
           <td>
             @if (site.latitude && site.longitude) {
@@ -118,16 +117,8 @@
           </td>
           @if (canManageSites()) {
             <td class="actions-col">
-              <button type="button" class="action-icon edit-icon"
-                (click)="editSite(site)"
-                pTooltip="Edit" tooltipPosition="top">
-                <i class="pi pi-pencil"></i>
-              </button>
-              <button type="button" class="action-icon delete-icon"
-                (click)="deleteSite(site.id)"
-                pTooltip="Delete" tooltipPosition="top">
-                <i class="pi pi-trash"></i>
-              </button>
+              <p-button icon="pi pi-pencil" [outlined]="true" size="small" pTooltip="Edit" tooltipPosition="top" (onClick)="editSite(site)"></p-button>
+              <p-button icon="pi pi-trash" [outlined]="true" size="small" severity="danger" pTooltip="Delete" tooltipPosition="top" (onClick)="deleteSite(site.id)"></p-button>
             </td>
           }
         </tr>

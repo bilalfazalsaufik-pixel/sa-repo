@@ -192,36 +192,8 @@
   width: 120px;
 }
 
-.action-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.85rem;
+.actions-col p-button {
   margin: 0 3px;
-}
-
-.edit-icon {
-  background: rgba(0, 217, 163, 0.1);
-  color: #00d9a3;
-}
-
-.edit-icon:hover {
-  background: rgba(0, 217, 163, 0.2);
-}
-
-.delete-icon {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-}
-
-.delete-icon:hover {
-  background: rgba(239, 68, 68, 0.2);
 }
 
 /* ── Paginator ── */

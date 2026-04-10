@@ -54,7 +54,8 @@ const SECTION_MAP: Record<string, SectionInfo> = {
             <button
               class="theme-toggle-btn"
               (click)="themeService.toggle()"
-              [title]="themeService.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+              [pTooltip]="themeService.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+              tooltipPosition="bottom"
               aria-label="Toggle theme">
               <i class="pi" [class.pi-sun]="themeService.isDark()" [class.pi-moon]="!themeService.isDark()"></i>
             </button>

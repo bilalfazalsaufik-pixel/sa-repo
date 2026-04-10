@@ -101,16 +101,8 @@
           </td>
           @if (canManageSensors()) {
             <td class="actions-col">
-              <button type="button" class="action-icon edit-icon"
-                (click)="editSensor(sensor)"
-                pTooltip="Edit" tooltipPosition="top">
-                <i class="pi pi-pencil"></i>
-              </button>
-              <button type="button" class="action-icon delete-icon"
-                (click)="deleteSensor(sensor.id)"
-                pTooltip="Delete" tooltipPosition="top">
-                <i class="pi pi-trash"></i>
-              </button>
+              <p-button icon="pi pi-pencil" [outlined]="true" size="small" pTooltip="Edit" tooltipPosition="top" (onClick)="editSensor(sensor)"></p-button>
+              <p-button icon="pi pi-trash" [outlined]="true" size="small" severity="danger" pTooltip="Delete" tooltipPosition="top" (onClick)="deleteSensor(sensor.id)"></p-button>
             </td>
           }
         </tr>

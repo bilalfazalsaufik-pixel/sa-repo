@@ -67,22 +67,10 @@
           </td>
           @if (canManagePermissions()) {
             <td class="actions-col">
-              <a [routerLink]="['/roles', 'permissions', role.id]"
-                 class="action-icon permissions-icon"
-                 pTooltip="Manage Permissions" tooltipPosition="top">
-                <i class="pi pi-key"></i>
-              </a>
+              <p-button icon="pi pi-key" [outlined]="true" size="small" pTooltip="Manage Permissions" tooltipPosition="top" [routerLink]="['/roles', 'permissions', role.id]"></p-button>
               @if (canManageRoles() && !role.isSystemRole) {
-                <button type="button" class="action-icon edit-icon"
-                  (click)="editRole(role)"
-                  pTooltip="Edit" tooltipPosition="top">
-                  <i class="pi pi-pencil"></i>
-                </button>
-                <button type="button" class="action-icon delete-icon"
-                  (click)="deleteRole(role)"
-                  pTooltip="Delete" tooltipPosition="top">
-                  <i class="pi pi-trash"></i>
-                </button>
+                <p-button icon="pi pi-pencil" [outlined]="true" size="small" pTooltip="Edit" tooltipPosition="top" (onClick)="editRole(role)"></p-button>
+                <p-button icon="pi pi-trash" [outlined]="true" size="small" severity="danger" pTooltip="Delete" tooltipPosition="top" (onClick)="deleteRole(role)"></p-button>
               }
             </td>
           }

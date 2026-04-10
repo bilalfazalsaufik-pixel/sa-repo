@@ -76,17 +76,9 @@
             @if (canManageUsers()) {
               <td class="actions-col">
                 @if (canActOnUser(user)) {
-                  <button type="button" class="action-icon edit-icon"
-                    (click)="editUser(user)"
-                    pTooltip="Edit" tooltipPosition="top">
-                    <i class="pi pi-pencil"></i>
-                  </button>
+                  <p-button icon="pi pi-pencil" [outlined]="true" size="small" pTooltip="Edit" tooltipPosition="top" (onClick)="editUser(user)"></p-button>
                   @if (!isCurrentUser(user)) {
-                    <button type="button" class="action-icon delete-icon"
-                      (click)="deleteUser(user.userId)"
-                      pTooltip="Delete" tooltipPosition="top">
-                      <i class="pi pi-trash"></i>
-                    </button>
+                    <p-button icon="pi pi-trash" [outlined]="true" size="small" severity="danger" pTooltip="Delete" tooltipPosition="top" (onClick)="deleteUser(user.userId)"></p-button>
                   }
                 }
               </td>

@@ -199,20 +199,17 @@ form label {
 /* ── Filter bar — consistent element sizing & borders ── */
 .filter-bar .p-inputtext,
 .filter-bar p-iconfield .p-inputtext {
-  height: 38px;
   min-width: 170px;
   border-radius: 6px;
 }
 
 .filter-bar p-select .p-select {
-  height: 38px;
   min-width: 200px;
   border-radius: 6px;
 }
 
 .filter-bar p-datepicker .p-datepicker,
 .filter-bar p-calendar .p-datepicker {
-  height: 38px;
   min-width: 150px;
   border-radius: 6px;
 }
@@ -220,6 +217,17 @@ form label {
 .filter-bar .p-button {
   height: 38px;
 }
+
+/* ── PrimeNG field height — 38px global (grids, modals, filter bars) ── */
+.p-inputtext {
+  height: 38px !important;
+  box-sizing: border-box !important;
+}
+
+.p-select {
+  height: 38px !important;
+}
+
 
 html.light-theme .filter-bar .p-inputtext,
 html.light-theme .filter-bar p-select .p-select,
@@ -249,37 +257,25 @@ button.p-button.p-button-outlined {
   box-shadow: 0 4px 16px rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Icon-only text buttons (edit/delete icons in tables) — glow ring on hover */
+/* Icon-only text buttons (edit/delete icons in tables) */
 .p-button.p-button-text.p-button-rounded:hover {
   transform: scale(1.12);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-  box-shadow: 0 0 0 3px rgba(0, 217, 163, 0.25), 0 0 16px rgba(0, 217, 163, 0.4) !important;
+  transition: transform 0.15s ease, background 0.15s ease;
   background: rgba(0, 217, 163, 0.1) !important;
 }
 
 .p-button.p-button-text.p-button-rounded:active {
   transform: scale(1.0);
-  box-shadow: 0 0 0 2px rgba(0, 217, 163, 0.15), 0 0 8px rgba(0, 217, 163, 0.25) !important;
 }
 
-/* Danger icon buttons (delete) — red glow ring */
+/* Danger icon buttons (delete) */
 .p-button.p-button-text.p-button-rounded.p-button-danger:hover {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25), 0 0 16px rgba(239, 68, 68, 0.4) !important;
   background: rgba(239, 68, 68, 0.1) !important;
 }
 
-.p-button.p-button-text.p-button-rounded.p-button-danger:active {
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15), 0 0 8px rgba(239, 68, 68, 0.25) !important;
-}
-
-/* Info icon buttons (edit) — blue glow ring */
+/* Info icon buttons (edit) */
 .p-button.p-button-text.p-button-rounded.p-button-info:hover {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 0 16px rgba(59, 130, 246, 0.4) !important;
   background: rgba(59, 130, 246, 0.1) !important;
-}
-
-.p-button.p-button-text.p-button-rounded.p-button-info:active {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15), 0 0 8px rgba(59, 130, 246, 0.25) !important;
 }
 
 .p-button.p-button-primary {
@@ -677,11 +673,28 @@ html.light-theme .p-calendar .p-datepicker-trigger {
   border: none !important;
 }
 
+/* Datepicker input wrapper — consistent height & single border */
+.p-datepicker.p-inputwrapper {
+  height: 38px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  background: transparent;
+}
+
+/* Remove inner input's own border to prevent double-border effect */
+.p-datepicker .p-datepicker-input {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  height: 100% !important;
+}
+
 /* Calendar - Date Picker Panel (Dark Theme)
    appendTo="body" is set on all calendars so the panel escapes
    overflow:hidden containers. PrimeNG auto-flips upward when
    there is not enough space below. */
-.p-datepicker {
+.p-datepicker:not(.p-inputwrapper) {
   border-radius: 8px;
   box-shadow: none;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -719,6 +732,48 @@ html.light-theme .p-calendar .p-datepicker-trigger {
 
 .p-datepicker .p-datepicker-buttonbar {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Time picker increment/decrement buttons — remove all hover/focus effects */
+.p-datepicker-time-picker {
+  --p-button-text-primary-hover-background: transparent;
+  --p-button-text-primary-active-background: transparent;
+  --p-focus-ring-shadow: none;
+  --p-button-focus-ring-shadow: none;
+}
+
+.p-datepicker-time-picker button,
+.p-datepicker-time-picker .p-button,
+.p-datepicker-increment-button,
+.p-datepicker-decrement-button {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  outline: none !important;
+}
+
+.p-datepicker-time-picker button:hover,
+.p-datepicker-time-picker button:focus,
+.p-datepicker-time-picker button:active,
+.p-datepicker-time-picker button.p-focus,
+.p-datepicker-time-picker .p-button:hover,
+.p-datepicker-time-picker .p-button:focus,
+.p-datepicker-time-picker .p-button:active,
+.p-datepicker-time-picker .p-button.p-focus,
+.p-datepicker-increment-button:hover,
+.p-datepicker-increment-button:focus,
+.p-datepicker-increment-button:active,
+.p-datepicker-increment-button.p-focus,
+.p-datepicker-decrement-button:hover,
+.p-datepicker-decrement-button:focus,
+.p-datepicker-decrement-button:active,
+.p-datepicker-decrement-button.p-focus {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Dialog - Enterprise Dialog (Dark Theme) */
@@ -1896,7 +1951,13 @@ html.light-theme .p-multiselect-overlay .p-multiselect-filter {
 }
 
 /* --- Datepicker --- */
-html.light-theme .p-datepicker {
+html.light-theme .p-datepicker.p-inputwrapper {
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+html.light-theme .p-datepicker:not(.p-inputwrapper) {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: none;

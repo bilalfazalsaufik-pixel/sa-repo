@@ -193,10 +193,9 @@
                     <span class="level-badge">{{ site.level || 'NA' }}</span>
                   </td>
                   <td>
-                    <p-tag
-                      [value]="site.status"
-                      [severity]="getStatusSeverity(site.status)">
-                    </p-tag>
+                    <span class="status-badge" [class]="'status-' + site.status?.toLowerCase()">
+                      {{ site.status }}
+                    </span>
                   </td>
                   <td>
                     <div class="region-cell">
@@ -207,7 +206,6 @@
                   <td class="action-column">
                     <p-button
                       icon="pi pi-eye"
-                      [rounded]="true"
                       [outlined]="true"
                       size="small"
                       pTooltip="View"

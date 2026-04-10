@@ -8,12 +8,10 @@
   <!-- Header -->
   <div class="sidebar-header">
     <div class="logo-section">
-      <img src="assets/images/logo.png" alt="ETSW" class="sidebar-logo-img" [class.collapsed]="isCollapsed()" />
-      @if (!isCollapsed()) {
-        <div class="logo-text">
-          <div class="logo-title">{{ tenantName() || 'ETSW' }}</div>
-          <div class="logo-subtitle">Remote Monitoring</div>
-        </div>
+      @if (isCollapsed()) {
+        <img src="assets/images/logo.png" alt="ETSW" class="sidebar-logo-img sidebar-logo-collapsed" />
+      } @else {
+        <img src="assets/images/uncollap-loogo.png" alt="ETSW" class="sidebar-logo-img sidebar-logo-expanded" />
       }
     </div>
   </div>

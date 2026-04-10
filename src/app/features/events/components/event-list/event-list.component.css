@@ -79,37 +79,6 @@
   font-size: 0.75rem;
 }
 
-.auto-refresh-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 100px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.8rem;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.auto-refresh-toggle:hover {
-  background: rgba(0, 217, 163, 0.12);
-  border-color: rgba(0, 217, 163, 0.4);
-  color: #00d9a3;
-}
-
-.auto-refresh-toggle.active {
-  background: rgba(0, 217, 163, 0.1);
-  border-color: rgba(0, 217, 163, 0.35);
-  color: #00d9a3;
-}
-
-.auto-refresh-toggle i {
-  font-size: 0.75rem;
-}
 
 /* ── Data Card ── */
 .data-card {
@@ -237,6 +206,68 @@
   white-space: nowrap;
 }
 
+/* ── Severity Badges ── */
+.severity-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.severity-badge.severity-critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.severity-badge.severity-high {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.severity-badge.severity-medium {
+  background: rgba(234, 179, 8, 0.15);
+  color: #ca8a04;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.severity-badge.severity-low {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* ── Status Badges ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.status-badge.status-resolved {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-badge.status-unresolved {
+  background: rgba(234, 179, 8, 0.15);
+  color: #ca8a04;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
 /* ── Action Buttons ── */
 .actions-col {
   text-align: center;
@@ -250,37 +281,8 @@
   gap: 6px;
 }
 
-.action-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.85rem;
-  flex-shrink: 0;
-}
-
-.resolve-btn {
-  background: rgba(0, 217, 163, 0.15);
-  color: #00d9a3;
-  border: 1px solid rgba(0, 217, 163, 0.3);
-}
-
-.resolve-btn:hover {
-  background: rgba(0, 217, 163, 0.25);
-}
-
-.delete-icon {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-}
-
-.delete-icon:hover {
-  background: rgba(239, 68, 68, 0.2);
+.actions-col p-button {
+  margin: 0 3px;
 }
 
 /* ── Paginator ── */
@@ -368,23 +370,6 @@
   color: #94a3b8;
 }
 
-:host-context(html.light-theme) .auto-refresh-toggle {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.12);
-  color: #475569;
-}
-
-:host-context(html.light-theme) .auto-refresh-toggle:hover {
-  background: rgba(0, 217, 163, 0.08);
-  border-color: rgba(0, 217, 163, 0.3);
-  color: #059669;
-}
-
-:host-context(html.light-theme) .auto-refresh-toggle.active {
-  background: rgba(0, 217, 163, 0.08);
-  border-color: rgba(0, 217, 163, 0.3);
-  color: #059669;
-}
 
 :host-context(html.light-theme) .data-card {
   background: #ffffff;

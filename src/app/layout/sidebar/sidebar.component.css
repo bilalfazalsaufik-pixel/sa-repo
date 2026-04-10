@@ -88,53 +88,28 @@
 }
 
 .sidebar-logo-img {
-  height: 56px;
-  width: auto;
   flex-shrink: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.92);
-  padding: 5px;
   object-fit: contain;
   transition: all 0.2s ease;
 }
 
-.sidebar-logo-img.collapsed {
+.sidebar-logo-collapsed {
   height: 40px;
   width: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
   padding: 4px;
-  object-fit: contain;
 }
 
-.logo-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-width: 0;
+.sidebar-logo-expanded {
+  height: 56px;
+  width: auto;
+  max-width: 100%;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 5px;
 }
 
-.logo-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-  line-height: 1.4;
-  letter-spacing: 0.5px;
-  font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
-  text-transform: uppercase;
-}
-
-.logo-subtitle {
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text-secondary);
-  margin: 0;
-  line-height: 1.2;
-  font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
-}
-
-.sidebar.collapsed .logo-text {
-  display: none;
-}
 
 /* Toggle Button */
 .toggle-button {

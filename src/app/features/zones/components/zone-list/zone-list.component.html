@@ -76,16 +76,8 @@
           </td>
           @if (canManageZones()) {
             <td class="actions-col">
-              <button type="button" class="action-icon edit-icon"
-                (click)="editZone(zone)"
-                pTooltip="Edit" tooltipPosition="top">
-                <i class="pi pi-pencil"></i>
-              </button>
-              <button type="button" class="action-icon delete-icon"
-                (click)="deleteZone(zone.id)"
-                pTooltip="Delete" tooltipPosition="top">
-                <i class="pi pi-trash"></i>
-              </button>
+              <p-button icon="pi pi-pencil" [outlined]="true" size="small" pTooltip="Edit" tooltipPosition="top" (onClick)="editZone(zone)"></p-button>
+              <p-button icon="pi pi-trash" [outlined]="true" size="small" severity="danger" pTooltip="Delete" tooltipPosition="top" (onClick)="deleteZone(zone.id)"></p-button>
             </td>
           }
         </tr>

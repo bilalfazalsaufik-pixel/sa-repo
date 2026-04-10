@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { RolesService } from '../../services/roles.service';
 import {
   ScreenPermissionDto,
@@ -30,6 +31,7 @@ interface Row {
     RouterLink,
     TableModule,
     ButtonModule,
+    ToggleSwitchModule,
     ErrorMessageComponent
   ],
   templateUrl: './manage-permissions.component.html',

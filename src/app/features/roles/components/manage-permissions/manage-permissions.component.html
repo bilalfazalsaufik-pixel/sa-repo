@@ -48,16 +48,13 @@
         <tr>
           <td>{{ row.displayName }}</td>
           <td class="access-col">
-            <input type="radio" [name]="'access-' + row.screenKey" [value]="None"
-              [checked]="row.access === None" (change)="setAccess(row, None)" />
+            <p-toggleswitch size="small" [ngModel]="row.access === None" (ngModelChange)="$event && setAccess(row, None)"></p-toggleswitch>
           </td>
           <td class="access-col">
-            <input type="radio" [name]="'access-' + row.screenKey" [value]="View"
-              [checked]="row.access === View" (change)="setAccess(row, View)" />
+            <p-toggleswitch size="small" [ngModel]="row.access === View" (ngModelChange)="$event && setAccess(row, View)"></p-toggleswitch>
           </td>
           <td class="access-col">
-            <input type="radio" [name]="'access-' + row.screenKey" [value]="Manage"
-              [checked]="row.access === Manage" (change)="setAccess(row, Manage)" />
+            <p-toggleswitch size="small" [ngModel]="row.access === Manage" (ngModelChange)="$event && setAccess(row, Manage)"></p-toggleswitch>
           </td>
         </tr>
       </ng-template>

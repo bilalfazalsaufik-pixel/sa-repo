@@ -23,10 +23,12 @@
           {{ unresolvedCount() }} Unresolved
         </span>
       }
-      <button type="button" class="auto-refresh-toggle" [class.active]="autoRefreshEnabled()" (click)="toggleAutoRefresh()">
-        <i [class]="autoRefreshEnabled() ? 'pi pi-pause' : 'pi pi-play'"></i>
-        <span>{{ autoRefreshEnabled() ? 'Auto (30s)' : 'Paused' }}</span>
-      </button>
+      <p-button
+        [icon]="autoRefreshEnabled() ? 'pi pi-pause' : 'pi pi-play'"
+        [label]="autoRefreshEnabled() ? 'Auto (30s)' : 'Paused'"
+        [outlined]="!autoRefreshEnabled()"
+        (onClick)="toggleAutoRefresh()">
+      </p-button>
     </div>
   </div>
 
@@ -138,15 +140,15 @@
           </td>
           <td class="type-text">{{ event.eventTypeName }}</td>
           <td>
-            <p-tag [value]="event.eventTypeSeverity" [severity]="getSeverityBadge(event.eventTypeSeverity)"></p-tag>
+            <span class="severity-badge" [class]="'severity-' + event.eventTypeSeverity?.toLowerCase()">{{ event.eventTypeSeverity }}</span>
           </td>
           <td class="msg-cell" [pTooltip]="event.message" tooltipPosition="top" [tooltipOptions]="{tooltipStyleClass: 'msg-tooltip'}">
             {{ event.message }}
           </td>
           <td>
-            <p-tag [value]="event.resolved ? 'Resolved' : 'Unresolved'"
-                   [severity]="event.resolved ? 'success' : 'warn'">
-            </p-tag>
+            <span class="status-badge" [class]="event.resolved ? 'status-resolved' : 'status-unresolved'">
+              {{ event.resolved ? 'Resolved' : 'Unresolved' }}
+            </span>
           </td>
           <td>
             @if (event.resolved) {
@@ -162,16 +164,10 @@
             <td class="actions-col">
               <div class="action-row">
                 @if (canResolveEvents() && !event.resolved) {
-                  <button type="button" class="action-icon resolve-btn" (click)="showResolveForm(event)"
-                    pTooltip="Resolve" tooltipPosition="top">
-                    <i class="pi pi-check-circle"></i>
-                  </button>
+                  <p-button icon="pi pi-check-circle" [outlined]="true" size="small" pTooltip="Resolve" tooltipPosition="top" (onClick)="showResolveForm(event)"></p-button>
                 }
                 @if (canManageEvents()) {
-                  <button type="button" class="action-icon delete-icon" (click)="deleteEvent(event.id)"
-                    pTooltip="Delete" tooltipPosition="top">
-                    <i class="pi pi-trash"></i>
-                  </button>
+                  <p-button icon="pi pi-trash" [outlined]="true" size="small" severity="danger" pTooltip="Delete" tooltipPosition="top" (onClick)="deleteEvent(event.id)"></p-button>
                 }
               </div>
             </td>
@@ -215,19 +211,8 @@
       </div>
     </form>
     <div class="form-actions" footer>
-      <p-button
-        label="Cancel"
-        [outlined]="true"
-        (onClick)="closeResolveModal()"
-        type="button">
-      </p-button>
-      <p-button
-        label="Resolve"
-        type="button"
-        (onClick)="resolveEvent()"
-        severity="success"
-        [style]="{'margin-left': '0.5rem'}">
-      </p-button>
+      <p-button label="Cancel" [outlined]="true" (onClick)="closeResolveModal()" type="button"></p-button>
+      <p-button label="Resolve" type="button" (onClick)="resolveEvent()" [style]="{'margin-left': '0.5rem'}"></p-button>
     </div>
   </app-modal>
 </div>

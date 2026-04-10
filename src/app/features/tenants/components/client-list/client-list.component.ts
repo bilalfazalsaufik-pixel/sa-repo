@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 
@@ -31,6 +32,7 @@ import { ErrorMessageComponent } from '../../../../shared/components/error-messa
     InputTextModule,
     TextareaModule,
     CheckboxModule,
+    ToggleSwitchModule,
     TooltipModule,
     ModalComponent,
     ErrorMessageComponent

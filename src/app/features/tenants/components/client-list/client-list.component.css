@@ -102,26 +102,6 @@
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: 100px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-}
-
-.status-active {
-  background: rgba(0, 217, 163, 0.1);
-  color: #00d9a3;
-  border: 1px solid rgba(0, 217, 163, 0.2);
-}
-
-.status-inactive {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
 
 .date-badge {
   display: inline-flex;
@@ -143,25 +123,14 @@
   width: 120px;
 }
 
-.action-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.85rem;
+.actions-col p-button {
   margin: 0 3px;
-  text-decoration: none;
 }
 
-.edit-icon { background: rgba(0, 217, 163, 0.1); color: #00d9a3; }
-.edit-icon:hover { background: rgba(0, 217, 163, 0.2); }
-.delete-icon { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-.delete-icon:hover { background: rgba(239, 68, 68, 0.2); }
+/* Status toggle — display only, not interactive */
+td p-toggleswitch {
+  pointer-events: none;
+}
 
 ::ng-deep .tenant-table .p-paginator {
   background: transparent !important;
@@ -247,7 +216,6 @@
 :host-context(html.light-theme) ::ng-deep .tenant-table .p-datatable-tbody > tr > td { color: #475569 !important; }
 :host-context(html.light-theme) .name-text { color: #1e293b; }
 :host-context(html.light-theme) .desc-text { color: #64748b !important; }
-:host-context(html.light-theme) .status-inactive { background: #f1f5f9; border-color: #e2e8f0; color: #94a3b8; }
 :host-context(html.light-theme) .date-badge { background: #f1f5f9; border-color: #e2e8f0; color: #475569; }
 :host-context(html.light-theme) ::ng-deep .tenant-table .p-paginator { border-top-color: rgba(0,0,0,0.06) !important; color: #64748b !important; }
 :host-context(html.light-theme) ::ng-deep .tenant-table .p-paginator .p-paginator-pages .p-paginator-page.p-highlight { color: #ffffff !important; background: #00d9a3 !important; }

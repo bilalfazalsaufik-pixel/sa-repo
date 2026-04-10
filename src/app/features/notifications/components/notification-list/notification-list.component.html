@@ -96,16 +96,19 @@
           </td>
           <td class="sub-text">{{ rule.timeframe }}</td>
           <td>
-            <span class="channel-tag" [class]="'channel-' + rule.notificationValueName?.toLowerCase()">
-              {{ rule.notificationValueName }}
-            </span>
+            @if (rule.notificationValueName?.toLowerCase() === 'both') {
+              <span class="channel-tag channel-sms">SMS</span>
+              <span class="channel-tag channel-email" style="margin-left: 4px;">Email</span>
+            } @else if (rule.notificationValueName?.toLowerCase() === 'none' || !rule.notificationValueName) {
+              <span class="channel-dash">—</span>
+            } @else {
+              <span class="channel-tag" [class]="'channel-' + rule.notificationValueName?.toLowerCase()">
+                {{ rule.notificationValueName }}
+              </span>
+            }
           </td>
           <td>
-            @if (rule.active) {
-              <span class="status-badge status-active">Active</span>
-            } @else {
-              <span class="status-badge status-inactive">Inactive</span>
-            }
+            <p-toggleswitch size="small" [ngModel]="rule.active" (click)="$event.preventDefault(); $event.stopPropagation()"></p-toggleswitch>
           </td>
           <td>
             <span class="date-badge">
@@ -115,16 +118,8 @@
           </td>
           @if (canManageNotifications()) {
             <td class="actions-col">
-              <button type="button" class="action-icon edit-icon"
-                (click)="editRule(rule)"
-                pTooltip="Edit" tooltipPosition="top">
-                <i class="pi pi-pencil"></i>
-              </button>
-              <button type="button" class="action-icon delete-icon"
-                (click)="deleteRule(rule.id)"
-                pTooltip="Delete" tooltipPosition="top">
-                <i class="pi pi-trash"></i>
-              </button>
+              <p-button icon="pi pi-pencil" [outlined]="true" size="small" pTooltip="Edit" tooltipPosition="top" (onClick)="editRule(rule)"></p-button>
+              <p-button icon="pi pi-trash" [outlined]="true" size="small" severity="danger" pTooltip="Delete" tooltipPosition="top" (onClick)="deleteRule(rule.id)"></p-button>
             </td>
           }
         </tr>
@@ -185,18 +180,33 @@
       </div>
 
       <div class="p-field">
-        <label for="timeframe">Timeframe *</label>
-        <input
-          id="timeframe"
-          type="text"
-          pInputText
-          [(ngModel)]="formData.timeframe"
-          name="timeframe"
-          required
-          maxlength="50"
-          class="full-width"
-          placeholder="e.g. 8:00 pm-5:00 am" />
-        <small>Enter the active notification window. Use 12-hour format with am/pm, e.g. <em>8:00 pm-5:00 am</em>. Overnight spans are supported.</small>
+        <label>Timeframe *</label>
+        <div class="time-range-row">
+          <div class="time-picker-wrap">
+            <p-datepicker
+              [timeOnly]="true"
+              [hourFormat]="'12'"
+              appendTo="body"
+              [ngModel]="startTime()"
+              (ngModelChange)="startTime.set($event)"
+              name="startTime"
+              placeholder="Start time">
+            </p-datepicker>
+          </div>
+          <span class="time-sep">to</span>
+          <div class="time-picker-wrap">
+            <p-datepicker
+              [timeOnly]="true"
+              [hourFormat]="'12'"
+              appendTo="body"
+              [ngModel]="endTime()"
+              (ngModelChange)="endTime.set($event)"
+              name="endTime"
+              placeholder="End time">
+            </p-datepicker>
+          </div>
+        </div>
+        <small>Select start and end times for the notification window. Overnight spans are supported.</small>
       </div>
 
       <div class="p-field">

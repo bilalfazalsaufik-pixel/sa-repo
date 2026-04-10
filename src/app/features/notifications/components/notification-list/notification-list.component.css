@@ -208,26 +208,14 @@
   border: 1px solid rgba(249, 115, 22, 0.2);
 }
 
-/* Status badges */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: 100px;
-  font-size: 0.8125rem;
-  font-weight: 500;
+.channel-dash {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 1rem;
 }
 
-.status-active {
-  background: rgba(0, 217, 163, 0.1);
-  color: #00d9a3;
-  border: 1px solid rgba(0, 217, 163, 0.2);
-}
-
-.status-inactive {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Status toggle — display only */
+td p-toggleswitch {
+  pointer-events: none;
 }
 
 .date-badge {
@@ -254,36 +242,8 @@
   width: 120px;
 }
 
-.action-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.85rem;
+.actions-col p-button {
   margin: 0 3px;
-}
-
-.edit-icon {
-  background: rgba(0, 217, 163, 0.1);
-  color: #00d9a3;
-}
-
-.edit-icon:hover {
-  background: rgba(0, 217, 163, 0.2);
-}
-
-.delete-icon {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-}
-
-.delete-icon:hover {
-  background: rgba(239, 68, 68, 0.2);
 }
 
 /* ── Paginator ── */
@@ -356,6 +316,32 @@
   margin: 0;
 }
 
+/* ── Time range pickers ── */
+.time-range-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.time-picker-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.time-picker-wrap ::ng-deep .p-datepicker {
+  width: 100%;
+}
+
+.time-sep {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+:host-context(html.light-theme) .time-sep {
+  color: #64748b;
+}
+
 /* ── Form checkbox field ── */
 .p-field-checkbox {
   display: flex;
@@ -419,15 +405,14 @@
   color: #475569;
 }
 
-:host-context(html.light-theme) .status-inactive {
+
+:host-context(html.light-theme) .channel-tag.channel-none {
   background: #f1f5f9;
   border-color: #e2e8f0;
   color: #94a3b8;
 }
 
-:host-context(html.light-theme) .channel-tag.channel-none {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
+:host-context(html.light-theme) .channel-dash {
   color: #94a3b8;
 }
 
