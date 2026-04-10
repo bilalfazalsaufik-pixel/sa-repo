@@ -3,13 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { CardModule } from 'primeng/card';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 
@@ -25,7 +23,6 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
-import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-user-list',
@@ -33,17 +30,14 @@ import { LoadingSpinnerComponent } from '../../../../shared/components/loading-s
   imports: [
     CommonModule,
     FormsModule,
-    CardModule,
     TableModule,
     ButtonModule,
     InputTextModule,
-    DropdownModule,
+    SelectModule,
     MultiSelectModule,
-    TagModule,
     TooltipModule,
     ModalComponent,
-    ErrorMessageComponent,
-    LoadingSpinnerComponent
+    ErrorMessageComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-list.component.html',
@@ -177,6 +171,12 @@ export class UserListComponent implements OnInit {
 
   trackByUserId(_index: number, user: UserListItem): number {
     return user.userId;
+  }
+
+  getUserInitials(user: UserListItem): string {
+    const f = user.firstName?.[0] ?? '';
+    const l = user.lastName?.[0] ?? '';
+    return (f + l).toUpperCase() || user.email[0].toUpperCase();
   }
 
   displayName(user: UserListItem): string {

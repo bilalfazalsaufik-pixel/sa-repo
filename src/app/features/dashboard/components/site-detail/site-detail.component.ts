@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TabViewModule, TabViewChangeEvent } from 'primeng/tabview';
-import { DropdownModule, DropdownChangeEvent } from 'primeng/dropdown';
+import { SelectModule, SelectChangeEvent } from 'primeng/select';
 import { MultiSelectModule, MultiSelectChangeEvent } from 'primeng/multiselect';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
@@ -36,7 +36,7 @@ import { EventsChartComponent } from '../events-chart/events-chart.component';
     RouterModule,
     ButtonModule,
     TabViewModule,
-    DropdownModule,
+    SelectModule,
     MultiSelectModule,
     CardModule,
     TagModule,
@@ -201,14 +201,14 @@ export class SiteDetailComponent implements OnInit {
     this.currentView.set(event.index);
   }
 
-  onSiteChange(event: DropdownChangeEvent): void {
+  onSiteChange(event: SelectChangeEvent): void {
     const siteId = event.value;
     this.siteId.set(siteId);
     this.loadSite(siteId);
     this.loadDashboardData();
   }
 
-  onTimeRangeSelect(event: DropdownChangeEvent): void {
+  onTimeRangeSelect(event: SelectChangeEvent): void {
     this.timeRange.set(event.value);
     this.onTimeRangeChange();
   }

@@ -179,7 +179,6 @@ form label {
 /* Primary / default buttons — teal glow */
 .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(0, 217, 163, 0.45) !important;
 }
 
 .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):active {
@@ -195,6 +194,52 @@ form label {
 /* Success buttons — green glow */
 .p-button.p-button-success:not(.p-button-text):not(.p-button-outlined):hover {
   box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* ── Filter bar — consistent element sizing & borders ── */
+.filter-bar .p-inputtext,
+.filter-bar p-iconfield .p-inputtext {
+  height: 38px;
+  min-width: 170px;
+  border-radius: 6px;
+}
+
+.filter-bar p-select .p-select {
+  height: 38px;
+  min-width: 200px;
+  border-radius: 6px;
+}
+
+.filter-bar p-datepicker .p-datepicker,
+.filter-bar p-calendar .p-datepicker {
+  height: 38px;
+  min-width: 150px;
+  border-radius: 6px;
+}
+
+.filter-bar .p-button {
+  height: 38px;
+}
+
+html.light-theme .filter-bar .p-inputtext,
+html.light-theme .filter-bar p-select .p-select,
+html.light-theme .filter-bar p-datepicker .p-datepicker,
+html.light-theme .filter-bar p-calendar .p-datepicker {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Dashboard — red status row highlight */
+.enterprise-table .p-datatable-tbody > tr.red-row > td,
+.enterprise-table .p-datatable-tbody > tr.red-row > td.ng-star-inserted {
+  background: #ff00000f !important;
+  background-color: #ff00000f !important;
+}
+
+/* Secondary/outlined buttons — white background */
+.p-button.p-button-outlined,
+button.p-button.p-button-outlined {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
 }
 
 /* Secondary/outlined buttons — subtle white glow */
@@ -349,6 +394,12 @@ form label {
   color: #ffffff !important;
 }
 
+.p-tag-danger,
+.p-tag-warn,
+.p-tag-info {
+  min-width: 80px;
+}
+
 /* Table cells containing tags — prevent stretch */
 .p-datatable .p-datatable-tbody > tr > td:has(p-tag),
 .p-datatable .p-datatable-tbody > tr > td:has(.p-tag) {
@@ -370,6 +421,13 @@ p-tag {
   font-size: 0.75rem;
 }
 
+/* Message column tooltip — max width + wrap */
+.msg-tooltip .p-tooltip-text {
+  max-width: 280px;
+  white-space: normal;
+  text-align: center;
+}
+
 /* Menus - Dark Theme (Exclude sidebar menus from default styling) */
 .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu),
 .p-menu.p-menu-overlay {
@@ -384,8 +442,15 @@ p-tag {
 
 .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menu-list,
 .p-menu.p-menu-overlay .p-menu-list {
-  padding: 0.5rem;
+  padding: 0.6rem 0.5rem;
   margin: 0;
+}
+
+/* Ensure the menuitem-content wrapper fills the full row width */
+.p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menuitem-content,
+.p-menu.p-menu-overlay .p-menuitem-content {
+  display: block;
+  width: 100%;
 }
 
 .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menuitem-link,
@@ -401,6 +466,8 @@ p-tag {
   gap: 0.75rem;
   text-decoration: none;
   cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .p-menu:not(app-sidebar .p-menu):not(.sidebar-menu) .p-menuitem-link:hover,
@@ -529,6 +596,53 @@ p-tag {
   color: #00d9a3 !important;
 }
 
+/* ── Dropdown panel width fix ──
+   PrimeNG sets min-width on .p-overlay (the outer wrapper) to match the trigger's
+   offsetWidth, but the inner panel defaults to content-width and ignores it.
+   width: 100% resolves to the rendered width of .p-overlay (already trigger-sized),
+   so the panel always matches the trigger. box-sizing keeps padding inside. */
+.p-overlay > .p-overlay-content {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.p-overlay > .p-overlay-content > .p-select-overlay,
+.p-overlay .p-overlay-content .p-select-overlay {
+  min-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.p-overlay > .p-overlay-content > .p-dropdown-panel,
+.p-overlay .p-overlay-content .p-dropdown-panel {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.p-overlay > .p-overlay-content > .p-multiselect-overlay,
+.p-overlay .p-overlay-content .p-multiselect-overlay {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ── Paginator rows-per-page dropdown: force panel to open ABOVE ──
+   The paginator sits at the bottom of its container, so the dropdown
+   must flip upward. Panel renders inline (no appendTo). */
+.p-paginator .p-dropdown,
+.p-paginator .p-select {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.p-paginator .p-dropdown .p-dropdown-panel,
+.p-paginator .p-dropdown-panel,
+.p-paginator .p-select .p-select-overlay,
+.p-paginator .p-select-overlay {
+  top: auto !important;
+  bottom: 100% !important;
+  margin-bottom: 4px !important;
+  position: absolute !important;
+}
+
 /* Multiselect header (select all checkbox row) */
 .p-multiselect-overlay .p-multiselect-header {
   background: #1a2d3f !important;
@@ -544,16 +658,34 @@ p-tag {
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
+/* Calendar input — remove bold separator on icon trigger button (all pages, both themes) */
+.p-calendar .p-datepicker-trigger {
+  border: none !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+html.light-theme .p-calendar .p-datepicker-trigger {
+  border-left: 1px solid #e2e8f0 !important;
+  color: #94a3b8 !important;
+}
+
+/* Datepicker dropdown toggle button — remove all borders (both themes) */
+.p-datepicker-dropdown {
+  border: none !important;
+}
+
 /* Calendar - Date Picker Panel (Dark Theme)
    appendTo="body" is set on all calendars so the panel escapes
    overflow:hidden containers. PrimeNG auto-flips upward when
    there is not enough space below. */
 .p-datepicker {
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #1a2d3f;
-  z-index: 9999 !important;
 }
 
 .p-datepicker .p-datepicker-header {
@@ -615,12 +747,35 @@ p-tag {
   padding: 1.5rem;
   background: #0d1f2d;
   color: rgba(255, 255, 255, 0.85);
+  max-height: 65vh;
+  overflow-y: auto;
 }
 
 .p-dialog .p-dialog-footer {
   background: #0d1f2d;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0 0 12px 12px;
+  padding: 1rem 1.5rem;
+}
+
+/* Close (X) button — remove border and glow ring */
+.p-dialog .p-dialog-header .p-dialog-close-button {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+.p-dialog .p-dialog-header .p-dialog-close-button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: none !important;
+}
+.p-dialog .p-dialog-header .p-dialog-close-button:focus {
+  box-shadow: none !important;
+}
+
+/* Form actions inside dialog footer — reset top margin since p-dialog-footer has its own padding */
+.p-dialog .form-actions {
+  margin-top: 0;
 }
 
 /* Divider - Dark Theme */
@@ -755,6 +910,30 @@ a:hover {
   font-size: 0.875rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.5);
+}
+
+/* Remove cell padding when emptymessage is rendered inside p-table */
+.p-datatable .p-datatable-tbody > tr.p-datatable-emptymessage > td {
+  padding: 0 !important;
+  border: none !important;
+}
+
+.table-loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem 2rem;
+}
+
+.table-loading-state .pi {
+  font-size: 1.75rem;
+  color: var(--p-primary-color, #10b981);
+  animation: tableSpinnerAnim 0.75s linear infinite;
+}
+
+@keyframes tableSpinnerAnim {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 .empty-state {
@@ -1100,11 +1279,11 @@ p-inputNumber.ng-invalid.ng-touched .p-inputnumber-input {
 .enterprise-table .p-datatable-tbody > tr.alarmed-row,
 .enterprise-table .p-datatable-tbody > tr.alarmed-row:nth-child(even),
 .enterprise-table .p-datatable-tbody > tr.alarmed-row:nth-child(odd) {
-  background: rgba(239, 68, 68, 0.08) !important;
+  background: rgb(27, 41, 56) !important;
 }
 
 .enterprise-table .p-datatable-tbody > tr.alarmed-row:hover {
-  background: rgba(239, 68, 68, 0.13) !important;
+  background: #1f2d3b !important;
 }
 
 .enterprise-table .p-datatable-tbody > tr.alarmed-row > td,
@@ -1124,6 +1303,18 @@ p-inputNumber.ng-invalid.ng-touched .p-inputnumber-input {
 .enterprise-table .p-paginator .p-paginator-next,
 .enterprise-table .p-paginator .p-paginator-last {
   color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* All paginator nav buttons: pointer cursor */
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last,
+.p-paginator .p-paginator-first *,
+.p-paginator .p-paginator-prev *,
+.p-paginator .p-paginator-next *,
+.p-paginator .p-paginator-last * {
+  cursor: pointer !important;
 }
 
 .enterprise-table .p-paginator .p-paginator-page {
@@ -1184,6 +1375,12 @@ p-inputNumber.ng-invalid.ng-touched .p-inputnumber-input {
   padding: 0 !important;
 }
 
+/* Align user dropdown to the right edge of the trigger button */
+.p-menu.p-menu-overlay.user-dropdown-menu {
+  right: 24px !important;
+  left: auto !important;
+}
+
 .p-menu.p-menu-overlay .p-menu-list {
   padding: 0.25rem !important;
   background: transparent !important;
@@ -1210,6 +1407,7 @@ p-inputNumber.ng-invalid.ng-touched .p-inputnumber-input {
   padding: 0 !important;
   display: flex !important;
   align-items: stretch !important;
+  width: 100% !important;
 }
 .p-menu.p-menu-overlay li.p-focus .p-menu-item-content {
   box-shadow: none !important;
@@ -1446,7 +1644,7 @@ html.light-theme {
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   /* Layout component variables */
-  --main-bg: #f0f4f8;
+  --main-bg: #f6f6f6;
   --header-bg: rgba(248, 250, 252, 0.95);
   --header-shadow: rgba(0, 0, 0, 0.08);
   --user-btn-bg: rgba(0, 0, 0, 0.04);
@@ -1519,7 +1717,6 @@ html.light-theme .p-datatable .p-datatable-tbody > tr:nth-child(odd) > td {
 html.light-theme .p-card {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 html.light-theme .p-card .p-card-header {
@@ -1564,6 +1761,10 @@ html.light-theme .p-paginator {
   background: rgba(0, 0, 0, 0.02);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   color: #64748b;
+}
+
+html.light-theme .p-paginator .p-paginator-page:not(.p-highlight):not(.p-paginator-page-selected) {
+  color: #1e293b !important;
 }
 
 html.light-theme .p-paginator .p-paginator-page.p-highlight,
@@ -1620,8 +1821,8 @@ html.light-theme .p-overlay .p-select-overlay,
 html.light-theme .p-overlay-content .p-select-overlay,
 html.light-theme .p-overlay .p-overlay-content .p-select-overlay {
   background: #ffffff !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  border: none !important;
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12) !important;
 }
 
 html.light-theme .p-select-overlay .p-select-list-container,
@@ -1698,7 +1899,7 @@ html.light-theme .p-multiselect-overlay .p-multiselect-filter {
 html.light-theme .p-datepicker {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: none;
 }
 
 html.light-theme .p-datepicker .p-datepicker-header {
@@ -1753,7 +1954,18 @@ html.light-theme .p-dialog .p-dialog-content {
 html.light-theme .p-dialog .p-dialog-footer {
   background: #ffffff;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.5rem;
 }
+
+html.light-theme .p-dialog .p-dialog-header .p-dialog-close-button {
+  border: none !important;
+  box-shadow: none !important;
+}
+html.light-theme .p-dialog .p-dialog-header .p-dialog-close-button:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+  box-shadow: none !important;
+}
+
 
 /* --- Confirm Dialog (overrides the hardcoded dark !important rules) --- */
 html.light-theme .p-confirmdialog,
@@ -1832,7 +2044,11 @@ html.light-theme .last-updated i {
 }
 
 html.light-theme .empty-state {
-  color: rgba(0, 0, 0, 0.35);
+  color: #1e293b;
+}
+
+html.light-theme .empty-state p {
+  color: #64748b;
 }
 
 html.light-theme .empty-state i {

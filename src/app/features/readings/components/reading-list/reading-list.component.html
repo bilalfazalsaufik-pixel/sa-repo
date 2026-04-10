@@ -1,106 +1,120 @@
-<div class="reading-list">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>Sensor Readings</h2>
-          <p class="subtitle">View sensor reading data</p>
-        </div>
+<div class="reading-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-chart-line"></i>
       </div>
-    </ng-template>
-
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
-
-    <!-- Filters -->
-    <div class="filters">
-      <p-dropdown
-                appendTo="body"
-        [options]="sensorOptions()"
-        [(ngModel)]="selectedSensorId"
-        (onChange)="applyFilters()"
-        placeholder="Select a Sensor"
-        optionLabel="label"
-        optionValue="value"
-        [showClear]="true"
-        styleClass="filter-item">
-      </p-dropdown>
-
-      <p-calendar
-                appendTo="body"
-        [(ngModel)]="startDate"
-        (onSelect)="applyFilters()"
-        placeholder="Start Date"
-        dateFormat="yy-mm-dd"
-        [showIcon]="true"
-        styleClass="filter-item">
-      </p-calendar>
-
-      <p-calendar
-                appendTo="body"
-        [(ngModel)]="endDate"
-        (onSelect)="applyFilters()"
-        placeholder="End Date"
-        dateFormat="yy-mm-dd"
-        [showIcon]="true"
-        styleClass="filter-item">
-      </p-calendar>
-
-      <p-button 
-        label="Clear Filters" 
-        icon="pi pi-filter-slash"
-        severity="secondary"
-        (onClick)="clearFilters()">
-      </p-button>
+      <div>
+        <h1 class="page-title">Sensor Readings</h1>
+        <p class="page-subtitle">View sensor reading data</p>
+      </div>
     </div>
+  </div>
+
+  <app-error-message [onDismiss]="clearError" />
+
+  <!-- Data Card -->
+  <div class="data-card">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-inputs">
+        <div class="filter-field">
+          <p-select
+            appendTo="body"
+            [options]="sensorOptions()"
+            [(ngModel)]="selectedSensorId"
+            (onChange)="applyFilters()"
+            [style]="{'min-width': '230px'}"
+            placeholder="Select a Sensor"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true">
+          </p-select>
+        </div>
+        <div class="filter-field">
+          <p-calendar
+            appendTo="body"
+            [(ngModel)]="startDate"
+            (onSelect)="applyFilters()"
+            placeholder="Start Date"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true">
+          </p-calendar>
+        </div>
+        <div class="filter-field">
+          <p-calendar
+            appendTo="body"
+            [(ngModel)]="endDate"
+            (onSelect)="applyFilters()"
+            placeholder="End Date"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true">
+          </p-calendar>
+        </div>
+        <p-button label="Clear Filters" icon="pi pi-filter-slash" [outlined]="true" (onClick)="clearFilters()"></p-button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loadingService.loading()) {
+      <div class="table-loading-state">
+        <i class="pi pi-spinner"></i>
+      </div>
+    }
 
     <!-- Latest Reading Summary -->
     @if (latestReading() && !loadingService.loading()) {
-      <p-card class="latest-reading-card">
-        <ng-template pTemplate="header">
-          <h3>Latest Reading</h3>
-        </ng-template>
+      <div class="latest-reading-section">
+        <div class="section-header">
+          <i class="pi pi-bolt"></i>
+          <span>Latest Reading</span>
+        </div>
         <div class="reading-summary">
           <div class="summary-item">
-            <span class="label">Sensor:</span>
-            <span class="value">{{ latestReading()!.sensorName }}</span>
+            <span class="summary-label">Sensor</span>
+            <span class="summary-value">{{ latestReading()!.sensorName }}</span>
           </div>
           <div class="summary-item">
-            <span class="label">Timestamp:</span>
-            <span class="value">{{ latestReading()!.timestamp | date:'dd MMM yyyy, HH:mm' }}</span>
+            <span class="summary-label">Timestamp</span>
+            <span class="summary-value">{{ latestReading()!.timestamp | date:'dd MMM yyyy, HH:mm' }}</span>
           </div>
           <div class="summary-item">
-            <span class="label">Values:</span>
+            <span class="summary-label">Values</span>
             <div class="values-list">
               @for (value of latestReading()!.values; track value.id) {
-                <p-tag [value]="'Index ' + value.valueIndex + ': ' + formatValue(value.value, value.valueType)" severity="info"></p-tag>
+                <span class="value-tag">
+                  <i class="pi pi-hashtag"></i>
+                  Index {{ value.valueIndex }}: {{ formatValue(value.value, value.valueType) }}
+                </span>
               }
             </div>
           </div>
         </div>
-      </p-card>
+      </div>
     }
 
-    <!-- Readings Chart -->
+    <!-- Chart -->
     @if (!loadingService.loading() && readings().length > 0) {
-      <p-card class="readings-chart-card">
-        <ng-template pTemplate="header">
-          <div class="card-header">
-            <h3>Value Trend</h3>
-            <span class="chart-count">{{ readings().length }} readings shown</span>
-          </div>
-        </ng-template>
-        <app-reading-chart [readings]="readings()"></app-reading-chart>
-      </p-card>
+      <div class="chart-section">
+        <div class="section-header">
+          <i class="pi pi-chart-line"></i>
+          <span>Value Trend</span>
+          <span class="chart-count">{{ readings().length }} readings</span>
+        </div>
+        <div class="chart-wrapper">
+          <app-reading-chart [readings]="readings()"></app-reading-chart>
+        </div>
+      </div>
     }
 
-    <!-- Readings Table -->
+    <!-- Table -->
     @if (!loadingService.loading() && selectedSensorId()) {
-      <p-table [value]="readings()" dataKey="id" [rowTrackBy]="trackByReadingId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
-               [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-               [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
-               styleClass="enterprise-table">
+      <p-table [value]="readings()" dataKey="id" [rowTrackBy]="trackByReadingId" [paginator]="true" [rows]="10"
+               [showCurrentPageReport]="true" [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
+               currentPageReportTemplate="Showing {first}&ndash;{last} of {totalRecords} readings"
+               [rowsPerPageOptions]="[10, 25, 50]"
+               styleClass="reading-table">
         <ng-template pTemplate="header">
           <tr>
             <th>Timestamp</th>
@@ -110,12 +124,19 @@
         </ng-template>
         <ng-template pTemplate="body" let-reading>
           <tr>
-            <td>{{ reading.timestamp | date:'dd MMM yyyy, HH:mm' }}</td>
-            <td>{{ reading.sensorName }}</td>
+            <td>
+              <span class="date-badge">
+                <i class="pi pi-clock"></i>
+                {{ reading.timestamp | date:'dd MMM yyyy, HH:mm' }}
+              </span>
+            </td>
+            <td class="sensor-text">{{ reading.sensorName }}</td>
             <td>
               <div class="values-list">
                 @for (value of reading.values; track value.id) {
-                  <p-tag [value]="'[' + value.valueIndex + ']: ' + formatValue(value.value, value.valueType)" severity="info"></p-tag>
+                  <span class="value-tag">
+                    [{{ value.valueIndex }}]: {{ formatValue(value.value, value.valueType) }}
+                  </span>
                 }
               </div>
             </td>
@@ -133,5 +154,5 @@
         <p>Please select a sensor to view readings.</p>
       </div>
     }
-  </p-card>
+  </div>
 </div>

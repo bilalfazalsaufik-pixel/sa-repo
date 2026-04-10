@@ -2,13 +2,11 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject, DestroyR
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { CalendarModule } from 'primeng/calendar';
 import { TagModule } from 'primeng/tag';
-import { BadgeModule } from 'primeng/badge';
 import { TooltipModule } from 'primeng/tooltip';
 import { TextareaModule } from 'primeng/textarea';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
@@ -23,27 +21,23 @@ import { LoadingService } from '../../../../core/services/loading.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
-import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    CardModule,
+    CommonModule,
+    FormsModule,
     TableModule,
     ButtonModule,
-    DropdownModule,
+    SelectModule,
     CalendarModule,
     TagModule,
-    BadgeModule,
     TooltipModule,
     TextareaModule,
     ModalComponent,
-    ErrorMessageComponent, 
-    LoadingSpinnerComponent
+    ErrorMessageComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './event-list.component.html',

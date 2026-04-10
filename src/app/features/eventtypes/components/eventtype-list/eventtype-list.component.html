@@ -1,29 +1,41 @@
-<div class="eventtype-list">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>Event Types</h2>
-        </div>
-        @if (canManageEventTypes()) {
-          <p-button 
-            label="Create Event Type" 
-            icon="pi pi-plus" 
-            (onClick)="showCreateForm()" 
-            [style]="{'margin-left': 'auto'}">
-          </p-button>
-        }
+<div class="eventtype-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-tag"></i>
       </div>
-    </ng-template>
+      <div>
+        <h1 class="page-title">Event Types</h1>
+        <p class="page-subtitle">Define and manage the types of events tracked by the system</p>
+      </div>
+    </div>
+    @if (canManageEventTypes()) {
+      <p-button
+        label="Create Event Type"
+        icon="pi pi-plus"
+        (onClick)="showCreateForm()">
+      </p-button>
+    }
+  </div>
 
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
+  <app-error-message [onDismiss]="clearError" />
 
-    <p-table [value]="eventTypes()" dataKey="id" [rowTrackBy]="trackByEventTypeId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
-             [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
-             styleClass="enterprise-table">
+  <!-- Data Card -->
+  <div class="data-card">
+    <p-table
+      [value]="loadingService.loading() ? [] : eventTypes()"
+      dataKey="id"
+      [rowTrackBy]="trackByEventTypeId"
+      [paginator]="true"
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      [lazy]="true"
+      (onLazyLoad)="onLazyLoad($event)"
+      [totalRecords]="totalRecords()"
+      currentPageReportTemplate="Showing {first}&ndash;{last} of {totalRecords} entries"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="eventtype-table">
       <ng-template pTemplate="header">
         <tr>
           <th>Name</th>
@@ -31,52 +43,62 @@
           <th>Category</th>
           <th>Severity</th>
           @if (canManageEventTypes()) {
-            <th>Actions</th>
+            <th class="actions-col">Actions</th>
           }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-eventType>
         <tr>
-          <td>{{ eventType.name }}</td>
-          <td>{{ eventType.description || '-' }}</td>
-          <td>{{ eventType.category || '-' }}</td>
           <td>
-            <p-tag [value]="eventType.severity" [severity]="getSeveritySeverity(eventType.severity)"></p-tag>
+            <span class="name-text">{{ eventType.name }}</span>
+          </td>
+          <td class="desc-text">{{ eventType.description || '-' }}</td>
+          <td>
+            @if (eventType.category) {
+              <span class="category-tag">{{ eventType.category }}</span>
+            } @else {
+              <span class="sub-text">-</span>
+            }
+          </td>
+          <td>
+            <span class="severity-badge" [class]="'severity-' + eventType.severity?.toLowerCase()">
+              {{ eventType.severity }}
+            </span>
           </td>
           @if (canManageEventTypes()) {
-            <td>
-              <p-button
-                icon="pi pi-pencil"
-                [text]="true"
-                [rounded]="true"
-                severity="info"
-                (onClick)="editEventType(eventType)"
-                pTooltip="Edit Event Type"
-                tooltipPosition="top"
-                ariaLabel="Edit event type">
-              </p-button>
-              <p-button
-                icon="pi pi-trash"
-                [text]="true"
-                [rounded]="true"
-                severity="danger"
-                (onClick)="deleteEventType(eventType.id)"
-                pTooltip="Delete Event Type"
-                tooltipPosition="top"
-                ariaLabel="Delete event type">
-              </p-button>
+            <td class="actions-col">
+              <button type="button" class="action-icon edit-icon"
+                (click)="editEventType(eventType)"
+                pTooltip="Edit" tooltipPosition="top">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button type="button" class="action-icon delete-icon"
+                (click)="deleteEventType(eventType.id)"
+                pTooltip="Delete" tooltipPosition="top">
+                <i class="pi pi-trash"></i>
+              </button>
             </td>
           }
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="100">
+            @if (loadingService.loading()) {
+              <div class="table-loading-state">
+                <i class="pi pi-spinner"></i>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <p>No event types found. Create your first event type to get started.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
-    @if (!loadingService.loading() && eventTypes().length === 0) {
-      <div class="empty-state">
-        <i class="pi pi-inbox" aria-hidden="true"></i>
-        <p>No event types found. Create your first event type to get started.</p>
-      </div>
-    }
-  </p-card>
+  </div>
 
   <app-modal
     [isOpen]="showModal()"
@@ -85,23 +107,23 @@
     <form (ngSubmit)="saveEventType()">
       <div class="p-field">
         <label for="name">Name *</label>
-        <input 
+        <input
           id="name"
-          type="text" 
-          pInputText 
-          [(ngModel)]="formData.name" 
-          name="name" 
-          required 
+          type="text"
+          pInputText
+          [(ngModel)]="formData.name"
+          name="name"
+          required
           class="full-width" />
       </div>
 
       <div class="p-field">
         <label for="description">Description</label>
-        <textarea 
+        <textarea
           id="description"
-          pTextarea 
-          [(ngModel)]="formData.description" 
-          name="description" 
+          pTextarea
+          [(ngModel)]="formData.description"
+          name="description"
           rows="3"
           class="full-width">
         </textarea>
@@ -109,41 +131,42 @@
 
       <div class="p-field">
         <label for="category">Category</label>
-        <input 
+        <input
           id="category"
-          type="text" 
-          pInputText 
-          [(ngModel)]="formData.category" 
-          name="category" 
+          type="text"
+          pInputText
+          [(ngModel)]="formData.category"
+          name="category"
           class="full-width" />
       </div>
 
       <div class="p-field">
         <label for="severity">Severity *</label>
-        <p-dropdown
-                appendTo="body" 
+        <p-select
+          appendTo="body"
           id="severity"
-          [options]="severities" 
-          [(ngModel)]="formData.severity" 
+          [options]="severities"
+          [(ngModel)]="formData.severity"
           name="severity"
           placeholder="Select severity"
           class="full-width">
-        </p-dropdown>
+        </p-select>
       </div>
 
-      <div class="form-actions">
-        <p-button 
-          label="Cancel" 
-          [text]="true"
-          (onClick)="closeModal()" 
-          type="button">
-        </p-button>
-        <p-button 
-          label="Save" 
-          type="submit"
-          [style]="{'margin-left': '0.5rem'}">
-        </p-button>
-      </div>
     </form>
+    <div class="form-actions" footer>
+      <p-button
+        label="Cancel"
+        [outlined]="true"
+        (onClick)="closeModal()"
+        type="button">
+      </p-button>
+      <p-button
+        label="Save"
+        type="button"
+        (onClick)="saveEventType()"
+        [style]="{'margin-left': '0.5rem'}">
+      </p-button>
+    </div>
   </app-modal>
 </div>

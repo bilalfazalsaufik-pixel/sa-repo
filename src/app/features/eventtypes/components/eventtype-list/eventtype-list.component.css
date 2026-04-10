@@ -1,1 +1,350 @@
-/* Component-specific styles only — shared styles in styles.css */
+/* ============================================
+   EVENT TYPES PAGE - MODERN LAYOUT
+   ============================================ */
+
+/* ── Page Header ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.page-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 217, 163, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #00d9a3;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.page-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Data Card ── */
+.data-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  overflow: visible;
+}
+
+/* ── Table ── */
+::ng-deep .eventtype-table {
+  border: none !important;
+  background: transparent !important;
+}
+
+::ng-deep .eventtype-table .p-datatable-wrapper {
+  background: transparent !important;
+}
+
+::ng-deep .eventtype-table .p-datatable-table {
+  background: transparent !important;
+}
+
+::ng-deep .eventtype-table .p-datatable-thead > tr > th {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  padding: 12px 20px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+::ng-deep .eventtype-table .p-datatable-tbody > tr {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  transition: background 0.15s ease;
+}
+
+::ng-deep .eventtype-table .p-datatable-tbody > tr:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+::ng-deep .eventtype-table .p-datatable-tbody > tr > td {
+  padding: 14px 20px !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 0.875rem !important;
+  border: none !important;
+  background: transparent !important;
+  vertical-align: middle;
+}
+
+/* ── Table Cells ── */
+.name-text {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.desc-text {
+  color: rgba(255, 255, 255, 0.6) !important;
+  max-width: 340px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub-text {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* ── Severity Badges ── */
+.severity-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.severity-badge.severity-critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.severity-badge.severity-high {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.severity-badge.severity-medium {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.severity-badge.severity-low {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+/* ── Action Icons ── */
+.actions-col {
+  text-align: center;
+  width: 120px;
+}
+
+.action-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  margin: 0 3px;
+}
+
+.edit-icon {
+  background: rgba(0, 217, 163, 0.1);
+  color: #00d9a3;
+}
+
+.edit-icon:hover {
+  background: rgba(0, 217, 163, 0.2);
+}
+
+.delete-icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.delete-icon:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* ── Paginator ── */
+::ng-deep .eventtype-table .p-paginator {
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  padding: 14px 20px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  overflow: visible !important;
+}
+
+::ng-deep .eventtype-table .p-paginator .p-paginator-pages .p-paginator-page {
+  min-width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-weight: 500 !important;
+}
+
+::ng-deep .eventtype-table .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background: #00d9a3 !important;
+  color: #ffffff !important;
+  border-color: #00d9a3 !important;
+}
+
+::ng-deep .eventtype-table .p-paginator .p-paginator-current {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+::ng-deep .eventtype-table .p-paginator .p-paginator-first,
+::ng-deep .eventtype-table .p-paginator .p-paginator-prev,
+::ng-deep .eventtype-table .p-paginator .p-paginator-next,
+::ng-deep .eventtype-table .p-paginator .p-paginator-last {
+  color: rgba(255, 255, 255, 0.5) !important;
+  display: inline-flex !important;
+  min-width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+}
+
+::ng-deep .eventtype-table .p-paginator .p-paginator-prev:hover,
+::ng-deep .eventtype-table .p-paginator .p-paginator-next:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ── Empty State ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+:host-context(html.light-theme) .page-title {
+  color: #1e293b;
+}
+
+:host-context(html.light-theme) .page-subtitle {
+  color: #64748b;
+}
+
+:host-context(html.light-theme) .data-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-datatable-thead > tr > th {
+  color: #64748b !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-datatable-tbody > tr {
+  border-bottom-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-datatable-tbody > tr:hover {
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-datatable-tbody > tr > td {
+  color: #475569 !important;
+}
+
+:host-context(html.light-theme) .name-text {
+  color: #1e293b;
+}
+
+:host-context(html.light-theme) .desc-text {
+  color: #64748b !important;
+}
+
+:host-context(html.light-theme) .sub-text {
+  color: #94a3b8 !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-paginator {
+  border-top-color: rgba(0, 0, 0, 0.06) !important;
+  color: #64748b !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  color: #ffffff !important;
+  background: #00d9a3 !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-paginator .p-paginator-first,
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-paginator .p-paginator-prev,
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-paginator .p-paginator-next,
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-paginator .p-paginator-last {
+  color: #1e293b !important;
+  cursor: pointer !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .eventtype-table .p-paginator .p-paginator-current {
+  color: #94a3b8 !important;
+}
+
+:host-context(html.light-theme) .empty-state {
+  color: #94a3b8;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}

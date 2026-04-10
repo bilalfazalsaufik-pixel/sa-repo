@@ -3,13 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CheckboxModule } from 'primeng/checkbox';
-import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 import { RolesService } from '../../services/roles.service';
@@ -19,7 +17,6 @@ import { PermissionService } from '../../../../core/services/permission.service'
 import { ErrorService } from '../../../../core/services/error.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
-import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 
 @Component({
@@ -29,16 +26,13 @@ import { ModalComponent } from '../../../../shared/components/modal/modal.compon
     CommonModule,
     FormsModule,
     RouterLink,
-    CardModule,
     TableModule,
     ButtonModule,
     InputTextModule,
     TextareaModule,
     CheckboxModule,
-    TagModule,
     TooltipModule,
     ErrorMessageComponent,
-    LoadingSpinnerComponent,
     ModalComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

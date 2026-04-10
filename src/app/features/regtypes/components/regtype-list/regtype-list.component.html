@@ -1,30 +1,41 @@
-<div class="regtype-list">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>RegTypes</h2>
-          <p class="subtitle">Manage register types for sensor data</p>
-        </div>
-        @if (canManageRegTypes()) {
-          <p-button 
-            label="Create RegType" 
-            icon="pi pi-plus" 
-            (onClick)="showCreateForm()" 
-            [style]="{'margin-left': 'auto'}">
-          </p-button>
-        }
+<div class="regtype-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-list"></i>
       </div>
-    </ng-template>
+      <div>
+        <h1 class="page-title">RegTypes</h1>
+        <p class="page-subtitle">Manage register types for sensor data</p>
+      </div>
+    </div>
+    @if (canManageRegTypes()) {
+      <p-button
+        label="Create RegType"
+        icon="pi pi-plus"
+        (onClick)="showCreateForm()">
+      </p-button>
+    }
+  </div>
 
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
+  <app-error-message [onDismiss]="clearError" />
 
-    <p-table [value]="regTypes()" dataKey="id" [rowTrackBy]="trackByRegTypeId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
-             [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
-             styleClass="enterprise-table">
+  <!-- Data Card -->
+  <div class="data-card">
+    <p-table
+      [value]="loadingService.loading() ? [] : regTypes()"
+      dataKey="id"
+      [rowTrackBy]="trackByRegTypeId"
+      [paginator]="true"
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      [lazy]="true"
+      (onLazyLoad)="onLazyLoad($event)"
+      [totalRecords]="totalRecords()"
+      currentPageReportTemplate="Showing {first}&ndash;{last} of {totalRecords} entries"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="regtype-table">
       <ng-template pTemplate="header">
         <tr>
           <th>Name</th>
@@ -32,52 +43,59 @@
           <th>Data Type</th>
           <th>Created</th>
           @if (canManageRegTypes()) {
-            <th>Actions</th>
+            <th class="actions-col">Actions</th>
           }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-regType>
         <tr>
-          <td>{{ regType.name }}</td>
-          <td>{{ regType.count }}</td>
           <td>
-            <p-tag [value]="regType.dataType" severity="info"></p-tag>
+            <span class="name-text">{{ regType.name }}</span>
           </td>
-          <td>{{ regType.createdDate | date:'dd MMM yyyy, HH:mm' }}</td>
+          <td class="sub-text">{{ regType.count }}</td>
+          <td>
+            <span class="datatype-tag">{{ regType.dataType }}</span>
+          </td>
+          <td>
+            <span class="date-badge">
+              <i class="pi pi-calendar"></i>
+              {{ regType.createdDate | date:'dd MMM yyyy, HH:mm' }}
+            </span>
+          </td>
           @if (canManageRegTypes()) {
-            <td>
-              <p-button
-                icon="pi pi-pencil"
-                [text]="true"
-                [rounded]="true"
-                severity="info"
-                (onClick)="editRegType(regType)"
-                pTooltip="Edit"
-                tooltipPosition="top"
-                ariaLabel="Edit register type">
-              </p-button>
-              <p-button
-                icon="pi pi-trash"
-                [text]="true"
-                [rounded]="true"
-                severity="danger"
-                (onClick)="deleteRegType(regType.id)"
-                pTooltip="Delete"
-                tooltipPosition="top"
-                ariaLabel="Delete register type">
-              </p-button>
+            <td class="actions-col">
+              <button type="button" class="action-icon edit-icon"
+                (click)="editRegType(regType)"
+                pTooltip="Edit" tooltipPosition="top">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button type="button" class="action-icon delete-icon"
+                (click)="deleteRegType(regType.id)"
+                pTooltip="Delete" tooltipPosition="top">
+                <i class="pi pi-trash"></i>
+              </button>
             </td>
           }
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="100">
+            @if (loadingService.loading()) {
+              <div class="table-loading-state">
+                <i class="pi pi-spinner"></i>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <p>No register types found. Create your first register type to get started.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
-    @if (!loadingService.loading() && regTypes().length === 0) {
-      <div class="empty-state">
-        <i class="pi pi-inbox" aria-hidden="true"></i>
-        <p>No register types found. Create your first register type to get started.</p>
-      </div>
-    }
-  </p-card>
+  </div>
 
   <app-modal
     [isOpen]="showModal()"
@@ -86,13 +104,13 @@
     <form (ngSubmit)="saveRegType()">
       <div class="p-field">
         <label for="name">Name *</label>
-        <input 
+        <input
           id="name"
-          type="text" 
-          pInputText 
-          [(ngModel)]="formData.name" 
-          name="name" 
-          required 
+          type="text"
+          pInputText
+          [(ngModel)]="formData.name"
+          name="name"
+          required
           maxlength="50"
           class="full-width" />
         <small>Unique name for the RegType (e.g., Level, Amps, Fault)</small>
@@ -100,10 +118,10 @@
 
       <div class="p-field">
         <label for="count">Count *</label>
-        <p-inputNumber 
+        <p-inputNumber
           id="count"
-          [(ngModel)]="formData.count" 
-          name="count" 
+          [(ngModel)]="formData.count"
+          name="count"
           [min]="1"
           [showButtons]="true"
           class="full-width">
@@ -113,31 +131,32 @@
 
       <div class="p-field">
         <label for="dataType">Data Type *</label>
-        <p-dropdown
-                appendTo="body" 
+        <p-select
+          appendTo="body"
           id="dataType"
-          [options]="dataTypes" 
-          [(ngModel)]="formData.dataType" 
+          [options]="dataTypes"
+          [(ngModel)]="formData.dataType"
           name="dataType"
           placeholder="Select data type"
           class="full-width">
-        </p-dropdown>
+        </p-select>
         <small>Data type for the values (float, int, or bool)</small>
       </div>
 
-      <div class="form-actions">
-        <p-button 
-          label="Cancel" 
-          [text]="true"
-          (onClick)="closeModal()" 
-          type="button">
-        </p-button>
-        <p-button 
-          label="Save" 
-          type="submit"
-          [style]="{'margin-left': '0.5rem'}">
-        </p-button>
-      </div>
     </form>
+    <div class="form-actions" footer>
+      <p-button
+        label="Cancel"
+        [outlined]="true"
+        (onClick)="closeModal()"
+        type="button">
+      </p-button>
+      <p-button
+        label="Save"
+        type="button"
+        (onClick)="saveRegType()"
+        [style]="{'margin-left': '0.5rem'}">
+      </p-button>
+    </div>
   </app-modal>
 </div>

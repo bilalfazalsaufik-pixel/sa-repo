@@ -13,7 +13,8 @@
       [rounded]="true"
       (onClick)="goBack()"
       pTooltip="Back to Dashboard"
-      tooltipPosition="right">
+      tooltipPosition="right"
+      styleClass="back-btn">
     </p-button>
     <div class="header-content">
       <h1>{{ selectedSite()?.name || 'Site Details' }}</h1>
@@ -23,10 +24,12 @@
       @if (lastUpdated()) {
         <span class="last-updated">Updated {{ lastUpdated() | date:'HH:mm:ss' }}</span>
       }
-      <button class="auto-refresh-toggle" [class.active]="autoRefresh.enabled()" (click)="toggleAutoRefresh()">
-        <i [class]="autoRefresh.enabled() ? 'pi pi-pause' : 'pi pi-play'"></i>
-        <span>{{ autoRefresh.enabled() ? 'Auto (30s)' : 'Paused' }}</span>
-      </button>
+      <p-button
+        [icon]="autoRefresh.enabled() ? 'pi pi-pause' : 'pi pi-play'"
+        [label]="autoRefresh.enabled() ? 'Auto (30s)' : 'Paused'"
+        [outlined]="!autoRefresh.enabled()"
+        (onClick)="toggleAutoRefresh()">
+      </p-button>
     </div>
   </div>
 
@@ -36,7 +39,7 @@
       <div class="engineering-view">
         <!-- Site Selector and Time Range -->
         <div class="view-controls">
-          <p-dropdown
+          <p-select
                 appendTo="body"
             [options]="siteOptions()"
             [ngModel]="siteId()"
@@ -46,9 +49,9 @@
             optionLabel="label"
             optionValue="value"
             class="w-300">
-          </p-dropdown>
+          </p-select>
 
-          <p-dropdown
+          <p-select
                 appendTo="body"
             [options]="timeRangeOptions"
             [ngModel]="timeRange()"
@@ -58,7 +61,7 @@
             optionLabel="label"
             optionValue="value"
             class="w-200">
-          </p-dropdown>
+          </p-select>
         </div>
 
         <!-- Charts Grid -->
@@ -124,7 +127,7 @@
               <ng-template pTemplate="header">
                 <div class="card-header chart-header">
                   <h3>State Transition</h3>
-                  <p-dropdown
+                  <p-select
                 appendTo="body"
                     [options]="stateVariableOptions"
                     [ngModel]="selectedStateVariable()"
@@ -133,7 +136,7 @@
                     optionLabel="label"
                     optionValue="value"
                     class="w-200-ml-1">
-                  </p-dropdown>
+                  </p-select>
                 </div>
               </ng-template>
               @if (loadingService.loading() && !dashboardData()) {
@@ -157,22 +160,6 @@
               }
             </p-card>
         </div>
-
-        <!-- Maintenance Log -->
-        <p-card class="maintenance-log-card">
-          <ng-template pTemplate="header">
-            <div class="card-header">
-              <h3>Maintenance Log</h3>
-              <p-button 
-                label="View Maintenance" 
-                icon="pi pi-wrench"
-                [routerLink]="['/maintenance']" 
-                [queryParams]="{siteId: siteId()}">
-              </p-button>
-            </div>
-          </ng-template>
-          <p>View and manage maintenance logs for this site on the Maintenance page.</p>
-        </p-card>
       </div>
     </p-tabPanel>
 
@@ -180,7 +167,7 @@
       <div class="operator-view">
         <!-- Simplified controls for Operator View -->
         <div class="view-controls">
-          <p-dropdown
+          <p-select
                 appendTo="body"
             [options]="siteOptions()"
             [ngModel]="siteId()"
@@ -190,9 +177,9 @@
             optionLabel="label"
             optionValue="value"
             class="w-300">
-          </p-dropdown>
+          </p-select>
 
-          <p-dropdown
+          <p-select
                 appendTo="body"
             [options]="timeRangeOptions"
             [ngModel]="timeRange()"
@@ -202,7 +189,7 @@
             optionLabel="label"
             optionValue="value"
             class="w-200">
-          </p-dropdown>
+          </p-select>
         </div>
 
         <!-- Simplified charts for Operator View -->

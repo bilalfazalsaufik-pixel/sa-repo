@@ -37,7 +37,7 @@
         [showIcon]="true"
         [style]="{'width': '160px'}">
       </p-calendar>
-      <p-dropdown
+      <p-select
                 appendTo="body"
         [options]="ruleOptions()"
         [(ngModel)]="filterRuleId"
@@ -47,8 +47,8 @@
         placeholder="Rule"
         [showClear]="true"
         [style]="{'width': '180px'}">
-      </p-dropdown>
-      <p-dropdown
+      </p-select>
+      <p-select
                 appendTo="body"
         [options]="recipientOptions()"
         [(ngModel)]="filterRecipientUserId"
@@ -58,8 +58,8 @@
         placeholder="Recipient"
         [showClear]="true"
         [style]="{'width': '180px'}">
-      </p-dropdown>
-      <p-dropdown
+      </p-select>
+      <p-select
                 appendTo="body"
         [options]="channelOptions"
         [(ngModel)]="filterChannel"
@@ -69,8 +69,8 @@
         placeholder="Channel"
         [showClear]="true"
         [style]="{'width': '140px'}">
-      </p-dropdown>
-      <p-dropdown
+      </p-select>
+      <p-select
                 appendTo="body"
         [options]="statusFilterOptions"
         [(ngModel)]="filterStatus"
@@ -80,7 +80,7 @@
         placeholder="Status"
         [showClear]="true"
         [style]="{'width': '140px'}">
-      </p-dropdown>
+      </p-select>
       <p-button label="Apply" icon="pi pi-filter" (onClick)="applyFilters()"></p-button>
       <p-button label="Clear" icon="pi pi-filter-slash" severity="secondary" (onClick)="clearFilters()"></p-button>
     </div>

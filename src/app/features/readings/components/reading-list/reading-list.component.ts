@@ -2,13 +2,10 @@ import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef, signal,
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { CalendarModule } from 'primeng/calendar';
-import { TagModule } from 'primeng/tag';
-import { TooltipModule } from 'primeng/tooltip';
 import { ReadingService } from '../../services/reading.service';
 import { SensorService } from '../../../sensors/services/sensor.service';
 import { Reading, GetReadingsQueryParams } from '../../../../shared/models/reading.model';
@@ -18,24 +15,19 @@ import { LoadingService } from '../../../../core/services/loading.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
-import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { ReadingChartComponent } from '../reading-chart/reading-chart.component';
 
 @Component({
   selector: 'app-reading-list',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    CardModule,
+    CommonModule,
+    FormsModule,
     TableModule,
     ButtonModule,
-    DropdownModule,
+    SelectModule,
     CalendarModule,
-    TagModule,
-    TooltipModule,
     ErrorMessageComponent,
-    LoadingSpinnerComponent,
     ReadingChartComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

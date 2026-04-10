@@ -1,104 +1,110 @@
-<div class="event-list">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>Events</h2>
-        </div>
-        <div class="header-actions">
-          @if (lastUpdated()) {
-            <span class="last-updated">
-              <i class="pi pi-clock"></i>
-              Updated {{ lastUpdated() | date:'HH:mm:ss' }}
-            </span>
-          }
-          @if (unresolvedCount() > 0) {
-            <span class="unresolved-badge">
-              <i class="pi pi-exclamation-triangle"></i>
-              {{ unresolvedCount() }} Unresolved
-            </span>
-          }
-          <button class="auto-refresh-toggle" [class.active]="autoRefreshEnabled()" (click)="toggleAutoRefresh()">
-            <i [class]="autoRefreshEnabled() ? 'pi pi-pause' : 'pi pi-play'"></i>
-            <span>{{ autoRefreshEnabled() ? 'Auto (30s)' : 'Paused' }}</span>
-          </button>
-        </div>
+<div class="event-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-exclamation-triangle"></i>
       </div>
-    </ng-template>
+      <div>
+        <h1 class="page-title">Events</h1>
+        <p class="page-subtitle">Monitor and manage system events</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      @if (lastUpdated()) {
+        <span class="last-updated">
+          <i class="pi pi-clock"></i>
+          Updated {{ lastUpdated() | date:'HH:mm:ss' }}
+        </span>
+      }
+      @if (unresolvedCount() > 0) {
+        <span class="unresolved-badge">
+          <i class="pi pi-exclamation-triangle"></i>
+          {{ unresolvedCount() }} Unresolved
+        </span>
+      }
+      <button type="button" class="auto-refresh-toggle" [class.active]="autoRefreshEnabled()" (click)="toggleAutoRefresh()">
+        <i [class]="autoRefreshEnabled() ? 'pi pi-pause' : 'pi pi-play'"></i>
+        <span>{{ autoRefreshEnabled() ? 'Auto (30s)' : 'Paused' }}</span>
+      </button>
+    </div>
+  </div>
 
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
+  <app-error-message [onDismiss]="clearError" />
 
-    <!-- Filters -->
-    <div class="filters">
-      <p-dropdown
-                appendTo="body"
-        [options]="statusOptions"
-        [(ngModel)]="filterResolved"
-        (onChange)="applyFilters()"
-        placeholder="Status"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="filter-item">
-      </p-dropdown>
-
-      <p-dropdown
-                appendTo="body"
-        [options]="sensorOptions()"
-        [(ngModel)]="selectedSensorId"
-        (onChange)="applyFilters()"
-        placeholder="Sensor"
-        optionLabel="label"
-        optionValue="value"
-        [showClear]="true"
-        styleClass="filter-item">
-      </p-dropdown>
-
-      <p-dropdown
-                appendTo="body"
-        [options]="eventTypeOptions()"
-        [(ngModel)]="selectedEventTypeId"
-        (onChange)="applyFilters()"
-        placeholder="Event Type"
-        optionLabel="label"
-        optionValue="value"
-        [showClear]="true"
-        styleClass="filter-item">
-      </p-dropdown>
-
-      <p-calendar
-                appendTo="body"
-        [(ngModel)]="startDate"
-        (onSelect)="applyFilters()"
-        placeholder="Start Date"
-        dateFormat="yy-mm-dd"
-        [showIcon]="true"
-        styleClass="filter-item">
-      </p-calendar>
-
-      <p-calendar
-                appendTo="body"
-        [(ngModel)]="endDate"
-        (onSelect)="applyFilters()"
-        placeholder="End Date"
-        dateFormat="yy-mm-dd"
-        [showIcon]="true"
-        styleClass="filter-item">
-      </p-calendar>
-
-      <p-button
-        label="Clear Filters"
-        icon="pi pi-filter-slash"
-        severity="secondary"
-        (onClick)="clearFilters()">
-      </p-button>
+  <!-- Data Card -->
+  <div class="data-card">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-inputs">
+        <div class="filter-field">
+          <p-select
+            appendTo="body"
+            [style]="{'min-width': '230px'}"
+            [options]="statusOptions"
+            [(ngModel)]="filterResolved"
+            (onChange)="applyFilters()"
+            placeholder="Status"
+            optionLabel="label"
+            optionValue="value">
+          </p-select>
+        </div>
+        <div class="filter-field">
+          <p-select
+            appendTo="body"
+            [style]="{'min-width': '230px'}"
+            [options]="sensorOptions()"
+            [(ngModel)]="selectedSensorId"
+            (onChange)="applyFilters()"
+            placeholder="Sensor"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true">
+          </p-select>
+        </div>
+        <div class="filter-field">
+          <p-select
+            appendTo="body"
+            [style]="{'min-width': '230px'}"
+            [options]="eventTypeOptions()"
+            [(ngModel)]="selectedEventTypeId"
+            (onChange)="applyFilters()"
+            placeholder="Event Type"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true">
+          </p-select>
+        </div>
+        <div class="filter-field">
+          <p-calendar
+            appendTo="body"
+            [(ngModel)]="startDate"
+            (onSelect)="applyFilters()"
+            placeholder="Start Date"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true">
+          </p-calendar>
+        </div>
+        <div class="filter-field">
+          <p-calendar
+            appendTo="body"
+            [(ngModel)]="endDate"
+            (onSelect)="applyFilters()"
+            placeholder="End Date"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true">
+          </p-calendar>
+        </div>
+        <p-button label="Clear Filters" icon="pi pi-filter-slash" [outlined]="true" (onClick)="clearFilters()"></p-button>
+      </div>
     </div>
 
-    <p-table [value]="events()" dataKey="id" [rowTrackBy]="trackByEventId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+    <!-- Table -->
+    <p-table [value]="loadingService.loading() ? [] : events()" dataKey="id" [rowTrackBy]="trackByEventId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
              [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
-             styleClass="enterprise-table">
+             currentPageReportTemplate="Showing {first}&ndash;{last} of {totalRecords} events"
+             [rowsPerPageOptions]="[10, 25, 50]"
+             styleClass="event-table">
       <ng-template pTemplate="header">
         <tr>
           <th>Time Raised</th>
@@ -110,26 +116,33 @@
           <th>Status</th>
           <th>Resolution</th>
           @if (canResolveEvents() || canManageEvents()) {
-            <th>Actions</th>
+            <th class="actions-col">Actions</th>
           }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-event>
         <tr>
-          <td style="white-space:nowrap">{{ event.timeRaised | date:'dd MMM yyyy, HH:mm' }}</td>
+          <td style="white-space:nowrap">
+            <span class="date-badge">
+              <i class="pi pi-clock"></i>
+              {{ event.timeRaised | date:'dd MMM yyyy, HH:mm' }}
+            </span>
+          </td>
           <td>
-            <div>{{ event.sensorName }}</div>
+            <div class="cell-primary">{{ event.sensorName }}</div>
             <div class="cell-sub">{{ event.deviceName }}</div>
           </td>
           <td>
-            <div>{{ event.siteName }}</div>
+            <div class="cell-primary">{{ event.siteName }}</div>
             <div class="cell-sub">{{ event.zoneName }}</div>
           </td>
-          <td>{{ event.eventTypeName }}</td>
+          <td class="type-text">{{ event.eventTypeName }}</td>
           <td>
             <p-tag [value]="event.eventTypeSeverity" [severity]="getSeverityBadge(event.eventTypeSeverity)"></p-tag>
           </td>
-          <td class="msg-cell" [pTooltip]="event.message" tooltipPosition="top">{{ event.message }}</td>
+          <td class="msg-cell" [pTooltip]="event.message" tooltipPosition="top" [tooltipOptions]="{tooltipStyleClass: 'msg-tooltip'}">
+            {{ event.message }}
+          </td>
           <td>
             <p-tag [value]="event.resolved ? 'Resolved' : 'Unresolved'"
                    [severity]="event.resolved ? 'success' : 'warn'">
@@ -138,7 +151,7 @@
           <td>
             @if (event.resolved) {
               <div>
-                <div>{{ event.resolvedByName }}</div>
+                <div class="cell-primary">{{ event.resolvedByName }}</div>
                 <div class="cell-sub">{{ event.resolvedAt | date:'dd MMM yyyy, HH:mm' }}</div>
               </div>
             } @else {
@@ -146,42 +159,43 @@
             }
           </td>
           @if (canResolveEvents() || canManageEvents()) {
-            <td>
-              @if (canResolveEvents() && !event.resolved) {
-                <p-button
-                  label="Resolve"
-                  icon="pi pi-check-circle"
-                  severity="success"
-                  [size]="'small'"
-                  (onClick)="showResolveForm(event)"
-                  [style]="{'margin-right': '0.5rem'}"
-                  ariaLabel="Resolve event">
-                </p-button>
-              }
-              @if (canManageEvents()) {
-                <p-button
-                  icon="pi pi-trash"
-                  [text]="true"
-                  [rounded]="true"
-                  severity="danger"
-                  (onClick)="deleteEvent(event.id)"
-                  pTooltip="Delete Event"
-                  tooltipPosition="top"
-                  ariaLabel="Delete event">
-                </p-button>
-              }
+            <td class="actions-col">
+              <div class="action-row">
+                @if (canResolveEvents() && !event.resolved) {
+                  <button type="button" class="action-icon resolve-btn" (click)="showResolveForm(event)"
+                    pTooltip="Resolve" tooltipPosition="top">
+                    <i class="pi pi-check-circle"></i>
+                  </button>
+                }
+                @if (canManageEvents()) {
+                  <button type="button" class="action-icon delete-icon" (click)="deleteEvent(event.id)"
+                    pTooltip="Delete" tooltipPosition="top">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                }
+              </div>
             </td>
           }
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="100">
+            @if (loadingService.loading()) {
+              <div class="table-loading-state">
+                <i class="pi pi-spinner"></i>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <p>No events found matching your filters.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
-    @if (!loadingService.loading() && events().length === 0) {
-      <div class="empty-state">
-        <i class="pi pi-inbox" aria-hidden="true"></i>
-        <p>No events found matching your filters.</p>
-      </div>
-    }
-  </p-card>
+  </div>
 
   <app-modal
     [isOpen]="showResolveModal()"
@@ -190,29 +204,30 @@
     <form (ngSubmit)="resolveEvent()">
       <div class="p-field">
         <label for="resolutionNotes">Resolution Notes (Optional)</label>
-        <textarea 
+        <textarea
           id="resolutionNotes"
-          pTextarea 
-          [(ngModel)]="resolutionNotes" 
-          name="resolutionNotes" 
+          pTextarea
+          [(ngModel)]="resolutionNotes"
+          name="resolutionNotes"
           rows="4"
           class="full-width">
         </textarea>
       </div>
-      <div class="form-actions">
-        <p-button 
-          label="Cancel" 
-          [text]="true"
-          (onClick)="closeResolveModal()" 
-          type="button">
-        </p-button>
-        <p-button 
-          label="Resolve" 
-          type="submit"
-          severity="success"
-          [style]="{'margin-left': '0.5rem'}">
-        </p-button>
-      </div>
     </form>
+    <div class="form-actions" footer>
+      <p-button
+        label="Cancel"
+        [outlined]="true"
+        (onClick)="closeResolveModal()"
+        type="button">
+      </p-button>
+      <p-button
+        label="Resolve"
+        type="button"
+        (onClick)="resolveEvent()"
+        severity="success"
+        [style]="{'margin-left': '0.5rem'}">
+      </p-button>
+    </div>
   </app-modal>
 </div>

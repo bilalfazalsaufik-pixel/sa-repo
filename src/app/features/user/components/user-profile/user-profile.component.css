@@ -1,51 +1,480 @@
-.user-profile {
-  max-width: 900px;
+/* ============================================
+   USER PROFILE - MODERN CARD-BASED LAYOUT
+   Uses existing project theme tokens
+   ============================================ */
+
+/* ── Container ── */
+.profile-container {
+  max-width: 820px;
   margin: 0 auto;
+  animation: fadeUp 0.5s ease-out;
 }
 
-.profile-content {
-  padding: 0;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.profile-section-card h3 {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
-}
-
-.info-item {
+/* ── Profile Header Card ── */
+.profile-header {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
 }
 
-.info-item label {
+
+.avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  background: rgba(0, 217, 163, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1dd1a1;
+  flex-shrink: 0;
+}
+
+.header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.header-email {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.role-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 14px;
+  background: rgb(29 209 161);
+  color: #fff;
+  border-radius: 100px;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: rgba(0, 217, 163, 0.7);
-  font-size: 14px;
+  letter-spacing: 0.4px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
-.info-item .value {
-  font-size: 16px;
+.role-inline i {
+  font-size: 0.7rem;
+}
+
+
+.editing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  animation: fadeIn 0.3s ease;
+}
+
+.editing-badge i {
+  font-size: 0.8rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Cards ── */
+.card {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.profile-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.profile-card-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.profile-card-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.profile-card-header-icon.personal {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.profile-card-header-icon.prefs {
+  background: #fff7ed;
+  color: #f97316;
+}
+
+.profile-card-header-icon.perms {
+  background: #f0fdf4;
+  color: #22c55e;
+}
+
+.card-body {
+  padding: 24px 28px;
+}
+
+/* ── Field Grid ── */
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.field {
+  position: relative;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+}
+
+.required-star {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.field-value {
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.85);
+  padding: 11px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
-.tags-list {
+.field-value.empty {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.field-value.readonly {
+  opacity: 0.6;
+}
+
+.field-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 11px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  min-height: 44px;
+  outline: none;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+.field-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 400;
+}
+
+.field-input:focus {
+  border-color: #00d9a3;
+  box-shadow: 0 0 0 3px rgba(0, 217, 163, 0.12);
+}
+
+.field-helper {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1.4;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ── Dropdown Override ── */
+::ng-deep .profile-dropdown {
+  width: 100% !important;
+}
+
+/* ── Action Buttons ── */
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  animation: fadeIn 0.3s ease;
+}
+
+
+/* ── Roles & Permissions ── */
+.permissions-layout {
+  display: flex;
+  gap: 36px;
+}
+
+.perm-column-role {
+  flex-shrink: 0;
+  min-width: 160px;
+}
+
+.perm-column-perms {
+  flex: 1;
+}
+
+.perm-section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 14px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #1dcfa0;
+  color: #ffffff; 
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.role-badge i {
+  font-size: 0.8rem;
+}
+
+.perm-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.text-muted {
-  color: rgba(255, 255, 255, 0.35);
+.perm-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(0, 217, 163, 0.08);
+  color: #00d9a3;
+  border-radius: 100px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid rgba(0, 217, 163, 0.15);
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.perm-tag:hover {
+  background: rgba(0, 217, 163, 0.15);
+  transform: translateY(-1px);
+}
+
+.perm-tag i {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.text-empty {
+  color: rgba(255, 255, 255, 0.3);
   font-style: italic;
+  font-size: 0.875rem;
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+
+
+:host-context(html.light-theme) .header-name {
+  color: #1e293b;
+}
+
+:host-context(html.light-theme) .header-email {
+  color: #64748b;
+}
+
+:host-context(html.light-theme) .card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+:host-context(html.light-theme) .card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+:host-context(html.light-theme) .profile-card-header {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:host-context(html.light-theme) .profile-card-header h2 {
+  color: #1e293b;
+}
+
+:host-context(html.light-theme) .field-label {
+  color: #94a3b8;
+}
+
+:host-context(html.light-theme) .field-value {
+  color: #1e293b;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+:host-context(html.light-theme) .field-value.empty {
+  color: #94a3b8;
+}
+
+:host-context(html.light-theme) .field-input {
+  color: #1e293b;
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+:host-context(html.light-theme) .field-input::placeholder {
+  color: #94a3b8;
+}
+
+:host-context(html.light-theme) .field-input:focus {
+  border-color: #00d9a3;
+  box-shadow: 0 0 0 3px rgba(0, 217, 163, 0.12);
+}
+
+:host-context(html.light-theme) .field-helper {
+  color: #94a3b8;
+}
+
+:host-context(html.light-theme) .editing-badge {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+
+:host-context(html.light-theme) .card-actions {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+:host-context(html.light-theme) .perm-section-label {
+  color: #94a3b8;
+}
+
+:host-context(html.light-theme) .perm-tag {
+  background: #ccfbf1;
+  color: #0f766e;
+  border-color: rgba(13, 148, 136, 0.15);
+}
+
+:host-context(html.light-theme) .perm-tag:hover {
+  background: #99f6e4;
+}
+
+:host-context(html.light-theme) .text-empty {
+  color: #94a3b8;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+  }
+
+  .editing-badge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .field-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .profile-card-header {
+    padding: 16px 20px;
+  }
+
+  .permissions-layout {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .card-actions {
+    flex-direction: column-reverse;
+  }
+
+
+  .field {
+    max-width: 100% !important;
+  }
 }

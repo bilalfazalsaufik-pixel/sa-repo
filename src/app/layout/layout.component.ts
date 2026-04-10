@@ -48,7 +48,6 @@ const SECTION_MAP: Record<string, SectionInfo> = {
       <main class="main-content" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
         <div class="sticky-header">
           <div class="sticky-header-left">
-            <i class="pi {{ currentSection().icon }} section-icon"></i>
             <span class="section-label">{{ currentSection().label }}</span>
           </div>
           <div class="sticky-header-right">
@@ -67,9 +66,10 @@ const SECTION_MAP: Record<string, SectionInfo> = {
                 <span class="bell-badge">{{ unresolvedCount() > 99 ? '99+' : unresolvedCount() }}</span>
               }
             </button>
-            <p-menu #userMenu [model]="userMenuItems()" [popup]="true" appendTo="body" [baseZIndex]="1200"></p-menu>
+            <p-menu #userMenu [model]="userMenuItems()" [popup]="true" appendTo="body"
+                    styleClass="user-dropdown-menu"></p-menu>
             @if (currentUser(); as u) {
-              <button class="user-btn" (click)="userMenu.toggle($event)">
+              <button type="button" class="user-btn" (click)="userMenu.toggle($event)">
                 <span class="user-avatar"><i class="pi pi-user"></i></span>
                 <span class="user-name">{{ u.name }}</span>
                 <i class="pi pi-chevron-down user-chevron"></i>
@@ -96,7 +96,7 @@ const SECTION_MAP: Record<string, SectionInfo> = {
       flex-direction: column;
     }
     .main-content.sidebar-collapsed {
-      margin-left: 80px;
+      margin-left: 70px;
     }
     .sticky-header {
       position: sticky;
@@ -111,8 +111,7 @@ const SECTION_MAP: Record<string, SectionInfo> = {
       background: var(--header-bg, rgba(13, 31, 45, 0.92));
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-      box-shadow: 0 2px 16px var(--header-shadow, rgba(0, 0, 0, 0.3));
+      box-shadow: 0 0px 3px rgb(0 0 0 / 8%);
     }
     .sticky-header-left {
       display: flex;
@@ -153,7 +152,6 @@ const SECTION_MAP: Record<string, SectionInfo> = {
       background: rgba(0, 217, 163, 0.1);
       border-color: rgba(0, 217, 163, 0.35);
       color: var(--brand-primary, #00d9a3);
-      box-shadow: 0 4px 16px rgba(0, 217, 163, 0.2);
     }
     .user-btn {
       display: inline-flex;
@@ -175,7 +173,6 @@ const SECTION_MAP: Record<string, SectionInfo> = {
       background: rgba(0, 217, 163, 0.1);
       border-color: rgba(0, 217, 163, 0.35);
       color: #00d9a3;
-      box-shadow: 0 4px 16px rgba(0, 217, 163, 0.25);
     }
     .user-avatar {
       width: 24px;
@@ -218,7 +215,6 @@ const SECTION_MAP: Record<string, SectionInfo> = {
       background: rgba(0, 217, 163, 0.1);
       border-color: rgba(0, 217, 163, 0.35);
       color: #00d9a3;
-      box-shadow: 0 4px 16px rgba(0, 217, 163, 0.25);
     }
     .bell-badge {
       position: absolute;
@@ -245,17 +241,15 @@ const SECTION_MAP: Record<string, SectionInfo> = {
     :host ::ng-deep .p-card {
       box-shadow: none;
     }
-    /* ---- Keep sticky header dark in light theme ---- */
+    /* ---- Light theme sticky header ---- */
     :host-context(html.light-theme) .sticky-header {
-      --header-bg: rgba(13, 31, 45, 0.95);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --header-shadow: rgba(0, 0, 0, 0.3);
-      --brand-primary: #00d9a3;
-      --text-primary: #ffffff;
-      --text-secondary: rgba(255, 255, 255, 0.6);
-      --user-btn-bg: rgba(255, 255, 255, 0.06);
-      --user-btn-border: rgba(255, 255, 255, 0.12);
-      --user-btn-color: rgba(255, 255, 255, 0.85);
+      --header-bg: rgb(246, 246, 246);
+      --brand-primary: #00b890;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --user-btn-bg: rgba(0, 0, 0, 0.05);
+      --user-btn-border: rgba(0, 0, 0, 0.12);
+      --user-btn-color: #1e293b;
     }
   `]
 })
@@ -303,6 +297,7 @@ export class LayoutComponent implements OnInit {
   goToEvents(): void {
     this.router.navigate(['/events']);
   }
+
 
   private user$ = toSignal(this.authService.user$, { initialValue: null });
 

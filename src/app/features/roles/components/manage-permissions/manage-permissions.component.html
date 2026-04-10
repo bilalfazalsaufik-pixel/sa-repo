@@ -1,68 +1,82 @@
-<div class="manage-permissions">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>Manage permissions – {{ roleName() }}</h2>
-          <p class="subtitle">No access, View only, or View and Manage per screen</p>
-        </div>
-        <div class="header-actions">
-          <a pButton label="Back to roles" icon="pi pi-arrow-left" class="p-button-text" routerLink="/roles"></a>
-          @if (canSave()) {
-            <p-button
-              label="Save"
-              icon="pi pi-check"
-              [loading]="saving()"
-              (onClick)="save()">
-            </p-button>
-          }
-        </div>
+<div class="permissions-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-shield"></i>
       </div>
-    </ng-template>
+      <div>
+        <h1 class="page-title">Manage permissions – {{ roleName() }}</h1>
+        <p class="page-subtitle">No access, View only, or View and Manage per screen</p>
+      </div>
+    </div>
+    <div class="page-header-right">
+      <p-button
+        label="Back to roles"
+        icon="pi pi-arrow-left"
+        [outlined]="true"
+        [routerLink]="['/roles']">
+      </p-button>
+      @if (canSave()) {
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          [loading]="saving()"
+          (onClick)="save()">
+        </p-button>
+      }
+    </div>
+  </div>
 
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
+  <app-error-message [onDismiss]="clearError" />
 
-    @if (!loadingService.loading() && rows().length > 0) {
-      <p-table [value]="rows()" dataKey="screenKey" styleClass="enterprise-table p-datatable-sm p-datatable-gridlines">
-        <ng-template pTemplate="header">
-          <tr>
-            <th style="width: 40%">Screen</th>
-            <th style="width: 20%">No access</th>
-            <th style="width: 20%">View</th>
-            <th style="width: 20%">Manage</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-row>
-          <tr>
-            <td>{{ row.displayName }}</td>
-            <td>
-              <input
-                type="radio"
-                [name]="'access-' + row.screenKey"
-                [value]="None"
-                [checked]="row.access === None"
-                (change)="setAccess(row, None)" />
-            </td>
-            <td>
-              <input
-                type="radio"
-                [name]="'access-' + row.screenKey"
-                [value]="View"
-                [checked]="row.access === View"
-                (change)="setAccess(row, View)" />
-            </td>
-            <td>
-              <input
-                type="radio"
-                [name]="'access-' + row.screenKey"
-                [value]="Manage"
-                [checked]="row.access === Manage"
-                (change)="setAccess(row, Manage)" />
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    }
-  </p-card>
+  <!-- Data Card -->
+  <div class="data-card">
+    <p-table
+      [value]="loadingService.loading() ? [] : rows()"
+      dataKey="screenKey"
+      styleClass="permissions-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Screen</th>
+          <th class="access-col">No Access</th>
+          <th class="access-col">View</th>
+          <th class="access-col">Manage</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.displayName }}</td>
+          <td class="access-col">
+            <input type="radio" [name]="'access-' + row.screenKey" [value]="None"
+              [checked]="row.access === None" (change)="setAccess(row, None)" />
+          </td>
+          <td class="access-col">
+            <input type="radio" [name]="'access-' + row.screenKey" [value]="View"
+              [checked]="row.access === View" (change)="setAccess(row, View)" />
+          </td>
+          <td class="access-col">
+            <input type="radio" [name]="'access-' + row.screenKey" [value]="Manage"
+              [checked]="row.access === Manage" (change)="setAccess(row, Manage)" />
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4">
+            @if (loadingService.loading()) {
+              <div class="table-loading-state">
+                <i class="pi pi-spinner"></i>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <p>No permissions found.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>

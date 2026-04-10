@@ -1,27 +1,30 @@
-<div class="role-list">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>Roles</h2>
-          <p class="subtitle">Manage roles and their screen permissions</p>
-        </div>
-        @if (canManageRoles()) {
-          <p-button
-            label="Add Role"
-            icon="pi pi-plus"
-            (onClick)="showCreateForm()"
-            class="ml-auto">
-          </p-button>
-        }
+<div class="role-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-shield"></i>
       </div>
-    </ng-template>
+      <div>
+        <h1 class="page-title">Roles</h1>
+        <p class="page-subtitle">Manage roles and their screen permissions</p>
+      </div>
+    </div>
+    @if (canManageRoles()) {
+      <p-button
+        label="Add Role"
+        icon="pi pi-plus"
+        (onClick)="showCreateForm()">
+      </p-button>
+    }
+  </div>
 
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
+  <app-error-message [onDismiss]="clearError" />
 
+  <!-- Data Card -->
+  <div class="data-card">
     <p-table
-      [value]="roles()"
+      [value]="loadingService.loading() ? [] : roles()"
       dataKey="id"
       [rowTrackBy]="trackByRoleId"
       [paginator]="true"
@@ -30,87 +33,86 @@
       [lazy]="true"
       (onLazyLoad)="onLazyLoad($event)"
       [totalRecords]="totalRecords()"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
-      styleClass="enterprise-table">
+      currentPageReportTemplate="Showing {first}&ndash;{last} of {totalRecords} entries"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="role-table">
       <ng-template pTemplate="header">
         <tr>
           <th [pSortableColumn]="'name'">
-            <div class="flex align-items-center">
-              Name
-              <p-sortIcon [field]="'name'"></p-sortIcon>
-            </div>
+            Name <p-sortIcon [field]="'name'"></p-sortIcon>
           </th>
           <th>Description</th>
           <th>Scope</th>
           <th>Type</th>
           @if (canManagePermissions()) {
-            <th>Actions</th>
+            <th class="actions-col">Actions</th>
           }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-role>
         <tr>
-          <td>{{ role.name }}</td>
-          <td>{{ role.description || '-' }}</td>
           <td>
-            <p-tag [value]="role.isSystemWide ? 'System-wide' : (role.tenantName ?? 'Tenant')"
-                   [severity]="role.isSystemWide ? 'info' : 'success'">
-            </p-tag>
+            <span class="name-text">{{ role.name }}</span>
+          </td>
+          <td class="desc-text">{{ role.description || '-' }}</td>
+          <td>
+            <span class="scope-tag">
+              {{ role.isSystemWide ? 'System-wide' : (role.tenantName ?? 'Tenant') }}
+            </span>
           </td>
           <td>
-            <p-tag [value]="role.isSystemRole ? 'System' : 'Custom'"
-                   [severity]="role.isSystemRole ? 'warn' : 'info'">
-            </p-tag>
+            <span class="type-tag" [class.type-system]="role.isSystemRole" [class.type-custom]="!role.isSystemRole">
+              {{ role.isSystemRole ? 'System' : 'Custom' }}
+            </span>
           </td>
           @if (canManagePermissions()) {
-            <td>
-              <a
-                pButton
-                icon="pi pi-key"
-                pTooltip="Manage permissions"
-                aria-label="Manage permissions"
-                class="p-button-text p-button-sm"
-                [routerLink]="['/roles', 'permissions', role.id]">
+            <td class="actions-col">
+              <a [routerLink]="['/roles', 'permissions', role.id]"
+                 class="action-icon permissions-icon"
+                 pTooltip="Manage Permissions" tooltipPosition="top">
+                <i class="pi pi-key"></i>
               </a>
               @if (canManageRoles() && !role.isSystemRole) {
-                <p-button
-                  icon="pi pi-pencil"
-                  [text]="true"
-                  [rounded]="true"
-                  severity="info"
-                  (onClick)="editRole(role)"
-                  pTooltip="Edit"
-                  tooltipPosition="top"
-                  ariaLabel="Edit role">
-                </p-button>
-                <p-button
-                  icon="pi pi-trash"
-                  [text]="true"
-                  [rounded]="true"
-                  severity="danger"
-                  (onClick)="deleteRole(role)"
-                  pTooltip="Delete"
-                  tooltipPosition="top"
-                  ariaLabel="Delete role">
-                </p-button>
+                <button type="button" class="action-icon edit-icon"
+                  (click)="editRole(role)"
+                  pTooltip="Edit" tooltipPosition="top">
+                  <i class="pi pi-pencil"></i>
+                </button>
+                <button type="button" class="action-icon delete-icon"
+                  (click)="deleteRole(role)"
+                  pTooltip="Delete" tooltipPosition="top">
+                  <i class="pi pi-trash"></i>
+                </button>
               }
             </td>
           }
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="100">
+            @if (loadingService.loading()) {
+              <div class="table-loading-state">
+                <i class="pi pi-spinner"></i>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <p>No roles found. Create your first role to get started.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
-    @if (!loadingService.loading() && roles().length === 0) {
-      <div class="empty-state">
-        <i class="pi pi-inbox" aria-hidden="true"></i>
-        <p>No roles found. Create your first role to get started.</p>
-      </div>
-    }
-  </p-card>
+  </div>
 </div>
 
 @if (showModal()) {
-  <app-modal [isOpen]="showModal()" [title]="editingRole() ? 'Edit Role' : 'Create Role'" (close)="closeModal()">
+  <app-modal
+    [isOpen]="showModal()"
+    [title]="editingRole() ? 'Edit Role' : 'Create Role'"
+    (close)="closeModal()">
     <form (ngSubmit)="saveRole()">
       <div class="p-field">
         <label for="roleName">Name *</label>
@@ -137,25 +139,26 @@
       </div>
 
       @if (!editingRole()) {
-        <div class="p-field-checkbox">
+        <div class="p-field p-field-checkbox">
           <p-checkbox [(ngModel)]="formData.isSystemWide" name="isSystemWide" [binary]="true" inputId="isSystemWide"></p-checkbox>
           <label for="isSystemWide">System-wide role</label>
         </div>
       }
 
-      <div class="form-actions">
-        <p-button
-          label="Cancel"
-          [text]="true"
-          (onClick)="closeModal()"
-          type="button">
-        </p-button>
-        <p-button
-          label="Save"
-          type="submit"
-          [style]="{'margin-left': '0.5rem'}">
-        </p-button>
-      </div>
     </form>
+    <div class="form-actions" footer>
+      <p-button
+        label="Cancel"
+        [outlined]="true"
+        (onClick)="closeModal()"
+        type="button">
+      </p-button>
+      <p-button
+        label="Save"
+        type="button"
+        (onClick)="saveRole()"
+        [style]="{'margin-left': '0.5rem'}">
+      </p-button>
+    </div>
   </app-modal>
 }

@@ -14,6 +14,9 @@ export interface UserProfile {
 }
 
 export interface UpdateUserProfileRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
   defaultView: string;
   phoneNumber: string | null;
 }

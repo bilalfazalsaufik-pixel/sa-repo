@@ -21,11 +21,9 @@ import { ButtonModule } from 'primeng/button';
         <span class="p-text-bold">{{ title }}</span>
       </ng-template>
       <ng-content></ng-content>
-      @if (showFooter) {
-        <ng-template pTemplate="footer">
-          <ng-content select="[footer]"></ng-content>
-        </ng-template>
-      }
+      <ng-template pTemplate="footer">
+        <ng-content select="[footer]"></ng-content>
+      </ng-template>
     </p-dialog>
   `,
   styles: []

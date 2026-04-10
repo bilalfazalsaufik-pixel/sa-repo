@@ -14,7 +14,7 @@ import { RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { CalendarModule } from 'primeng/calendar';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
@@ -40,7 +40,7 @@ import { TableSkeletonComponent } from '../../../../shared/components/table-skel
     CardModule,
     TableModule,
     ButtonModule,
-    DropdownModule,
+    SelectModule,
     CalendarModule,
     TagModule,
     TooltipModule,

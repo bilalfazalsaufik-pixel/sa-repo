@@ -1,50 +1,61 @@
-<div class="notification-list">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>Notification Rules</h2>
-          <p class="subtitle">Configure when and how to notify users — specify the zone, timeframe window, and delivery channel (Email, SMS, Both, or None)</p>
-        </div>
-        @if (canManageNotifications()) {
-          <p-button
-            label="Create Rule"
-            icon="pi pi-plus"
-            (onClick)="showCreateForm()"
-            [style]="{'margin-left': 'auto'}">
-          </p-button>
-        }
+<div class="notification-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-bell"></i>
       </div>
-    </ng-template>
+      <div>
+        <h1 class="page-title">Notification Rules</h1>
+        <p class="page-subtitle">Configure when and how to notify users — specify the zone, timeframe window, and delivery channel</p>
+      </div>
+    </div>
+    @if (canManageNotifications()) {
+      <p-button
+        label="Create Rule"
+        icon="pi pi-plus"
+        (onClick)="showCreateForm()">
+      </p-button>
+    }
+  </div>
 
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
+  <app-error-message [onDismiss]="clearError" />
 
-    <div class="filters">
-      <input
-        type="text"
-        pInputText
-        [ngModel]="timeframeSearch()"
-        (ngModelChange)="timeframeSearch.set($event)"
-        placeholder="Search by timeframe"
-        (keyup.enter)="applyFilters()"
-        [style]="{'width': '200px'}" />
-      <p-dropdown
-                appendTo="body"
-        [options]="filterActiveOptions"
-        [ngModel]="activeFilter()"
-        (ngModelChange)="activeFilter.set($event)"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Status"
-        [style]="{'width': '120px'}">
-      </p-dropdown>
-      <p-button label="Apply" icon="pi pi-filter" (onClick)="applyFilters()"></p-button>
-      <p-button label="Clear" icon="pi pi-filter-slash" severity="secondary" (onClick)="clearFilters()"></p-button>
+  <!-- Data Card -->
+  <div class="data-card">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-inputs">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input
+            type="text"
+            pInputText
+            [ngModel]="timeframeSearch()"
+            (ngModelChange)="timeframeSearch.set($event)"
+            placeholder="Search by timeframe"
+            (keyup.enter)="applyFilters()" />
+        </p-iconfield>
+        <div class="filter-field">
+          <p-select
+            appendTo="body"
+            [style]="{'min-width': '230px'}"
+            [options]="filterActiveOptions"
+            [ngModel]="activeFilter()"
+            (ngModelChange)="activeFilter.set($event)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All">
+          </p-select>
+        </div>
+        <p-button label="Apply" icon="pi pi-check" (onClick)="applyFilters()"></p-button>
+        <p-button label="Clear Filters" icon="pi pi-filter-slash" [outlined]="true" (onClick)="clearFilters()"></p-button>
+      </div>
     </div>
 
+    <!-- Table -->
     <p-table
-      [value]="rules()"
+      [value]="loadingService.loading() ? [] : rules()"
       dataKey="id"
       [rowTrackBy]="trackById"
       [paginator]="true"
@@ -53,9 +64,9 @@
       [lazy]="true"
       (onLazyLoad)="onLazyLoad($event)"
       [totalRecords]="totalRecords()"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
-      styleClass="enterprise-table">
+      currentPageReportTemplate="Showing {first}&ndash;{last} of {totalRecords} rules"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="notification-table">
       <ng-template pTemplate="header">
         <tr>
           <th>Recipient</th>
@@ -65,62 +76,77 @@
           <th>Active</th>
           <th>Created</th>
           @if (canManageNotifications()) {
-            <th>Actions</th>
+            <th class="actions-col">Actions</th>
           }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rule>
         <tr>
-          <td>{{ rule.userName }}</td>
-          <td>{{ rule.zoneName }}</td>
-          <td>{{ rule.timeframe }}</td>
           <td>
-            <p-tag [value]="rule.notificationValueName"
-                   [severity]="rule.notificationValueName === 'None' ? 'secondary' : 'info'">
-            </p-tag>
+            <div class="recipient-cell">
+              <div class="recipient-avatar">{{ rule.userName?.[0]?.toUpperCase() || '?' }}</div>
+              <span class="recipient-name">{{ rule.userName }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="zone-tag">
+              <i class="pi pi-map"></i>
+              {{ rule.zoneName }}
+            </span>
+          </td>
+          <td class="sub-text">{{ rule.timeframe }}</td>
+          <td>
+            <span class="channel-tag" [class]="'channel-' + rule.notificationValueName?.toLowerCase()">
+              {{ rule.notificationValueName }}
+            </span>
           </td>
           <td>
             @if (rule.active) {
-              <p-tag value="Active" severity="success"></p-tag>
+              <span class="status-badge status-active">Active</span>
             } @else {
-              <p-tag value="Inactive" severity="secondary"></p-tag>
+              <span class="status-badge status-inactive">Inactive</span>
             }
           </td>
-          <td>{{ rule.createdDate | date:'dd MMM yyyy, HH:mm' }}</td>
+          <td>
+            <span class="date-badge">
+              <i class="pi pi-calendar"></i>
+              {{ rule.createdDate | date:'dd MMM yyyy, HH:mm' }}
+            </span>
+          </td>
           @if (canManageNotifications()) {
-            <td>
-              <p-button
-                icon="pi pi-pencil"
-                [text]="true"
-                [rounded]="true"
-                severity="info"
-                (onClick)="editRule(rule)"
-                pTooltip="Edit"
-                tooltipPosition="top"
-                ariaLabel="Edit notification rule">
-              </p-button>
-              <p-button
-                icon="pi pi-trash"
-                [text]="true"
-                [rounded]="true"
-                severity="danger"
-                (onClick)="deleteRule(rule.id)"
-                pTooltip="Delete"
-                tooltipPosition="top"
-                ariaLabel="Delete notification rule">
-              </p-button>
+            <td class="actions-col">
+              <button type="button" class="action-icon edit-icon"
+                (click)="editRule(rule)"
+                pTooltip="Edit" tooltipPosition="top">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button type="button" class="action-icon delete-icon"
+                (click)="deleteRule(rule.id)"
+                pTooltip="Delete" tooltipPosition="top">
+                <i class="pi pi-trash"></i>
+              </button>
             </td>
           }
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="100">
+            @if (loadingService.loading()) {
+              <div class="table-loading-state">
+                <i class="pi pi-spinner"></i>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="pi pi-bell" aria-hidden="true"></i>
+                <p>No notification rules found. Create your first rule to get started.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
-    @if (!loadingService.loading() && rules().length === 0) {
-      <div class="empty-state">
-        <i class="pi pi-bell" aria-hidden="true"></i>
-        <p>No notification rules found. Create your first rule to get started.</p>
-      </div>
-    }
-  </p-card>
+  </div>
 
   <app-modal
     [isOpen]="showModal()"
@@ -130,8 +156,8 @@
 
       <div class="p-field">
         <label for="recipient">Recipient *</label>
-        <p-dropdown
-                appendTo="body"
+        <p-select
+          appendTo="body"
           id="recipient"
           [options]="userOptions()"
           [(ngModel)]="formData.userId"
@@ -140,13 +166,13 @@
           optionValue="value"
           placeholder="Select user to notify"
           class="full-width">
-        </p-dropdown>
+        </p-select>
       </div>
 
       <div class="p-field">
         <label for="zone">Zone *</label>
-        <p-dropdown
-                appendTo="body"
+        <p-select
+          appendTo="body"
           id="zone"
           [options]="zoneOptions()"
           [(ngModel)]="formData.zoneId"
@@ -155,7 +181,7 @@
           optionValue="value"
           placeholder="Select zone"
           class="full-width">
-        </p-dropdown>
+        </p-select>
       </div>
 
       <div class="p-field">
@@ -175,8 +201,8 @@
 
       <div class="p-field">
         <label for="channel">Channel *</label>
-        <p-dropdown
-                appendTo="body"
+        <p-select
+          appendTo="body"
           id="channel"
           [options]="notificationValueOptions()"
           [(ngModel)]="formData.notificationValueId"
@@ -185,10 +211,10 @@
           optionValue="value"
           placeholder="Select channel (Email, SMS, Both, None)"
           class="full-width">
-        </p-dropdown>
+        </p-select>
       </div>
 
-      <div class="p-field">
+      <div class="p-field p-field-checkbox">
         <p-checkbox
           [(ngModel)]="formData.active"
           name="active"
@@ -198,10 +224,10 @@
         <label for="active">Active</label>
       </div>
 
-      <div class="form-actions">
-        <p-button label="Cancel" [text]="true" (onClick)="closeModal()" type="button"></p-button>
-        <p-button label="Save" type="submit" [style]="{'margin-left': '0.5rem'}"></p-button>
-      </div>
     </form>
+    <div class="form-actions" footer>
+      <p-button label="Cancel" [outlined]="true" (onClick)="closeModal()" type="button"></p-button>
+      <p-button label="Save" type="button" (onClick)="saveRule()" [style]="{'margin-left': '0.5rem'}"></p-button>
+    </div>
   </app-modal>
 </div>

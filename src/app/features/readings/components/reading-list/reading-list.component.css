@@ -1,51 +1,428 @@
-/* Component-specific styles only — shared styles in styles.css */
+/* ============================================
+   SENSOR READINGS PAGE - MODERN LAYOUT
+   ============================================ */
 
-.readings-chart-card {
-  margin-bottom: 1.5rem;
+/* ── Page Header ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.page-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 217, 163, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #00d9a3;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.page-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Data Card ── */
+.data-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  overflow: visible;
+}
+
+/* ── Filter Bar ── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Latest Reading Section ── */
+.latest-reading-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.section-header i {
+  color: #00d9a3;
+  font-size: 0.9rem;
 }
 
 .chart-count {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.4);
   margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
 }
 
-.reading-list .reading-summary {
+.reading-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  gap: 16px;
 }
 
-.reading-list .summary-item {
+.summary-item {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 6px;
 }
 
-.reading-list .summary-item .label {
-  font-size: 0.75rem;
+.summary-label {
+  font-size: 0.6875rem;
   font-weight: 600;
-  color: rgba(0, 217, 163, 0.7);
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
 }
 
-.reading-list .summary-item .value {
-  font-size: 0.875rem;
+.summary-value {
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.85);
 }
 
-.reading-list .values-list {
+.values-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 6px;
 }
 
-.reading-list .value-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-family: 'Courier New', monospace;
+.value-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 100px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: monospace;
+}
+
+.value-tag i {
+  font-size: 0.65rem;
+  opacity: 0.7;
+}
+
+/* ── Chart Section ── */
+.chart-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chart-wrapper {
+  margin-top: 8px;
+}
+
+/* ── Table ── */
+::ng-deep .reading-table {
+  border: none !important;
+  background: transparent !important;
+}
+
+::ng-deep .reading-table .p-datatable-wrapper {
+  background: transparent !important;
+}
+
+::ng-deep .reading-table .p-datatable-table {
+  background: transparent !important;
+}
+
+::ng-deep .reading-table .p-datatable-thead > tr > th {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  padding: 12px 20px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+::ng-deep .reading-table .p-datatable-tbody > tr {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  transition: background 0.15s ease;
+}
+
+::ng-deep .reading-table .p-datatable-tbody > tr:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+::ng-deep .reading-table .p-datatable-tbody > tr > td {
+  padding: 14px 20px !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 0.875rem !important;
+  border: none !important;
+  background: transparent !important;
+  vertical-align: middle;
+}
+
+/* ── Table Cells ── */
+.date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 0.8125rem;
   color: rgba(255, 255, 255, 0.7);
+}
+
+.date-badge i {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.sensor-text {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 500;
+}
+
+/* ── Paginator ── */
+::ng-deep .reading-table .p-paginator {
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  padding: 14px 20px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  overflow: visible !important;
+}
+
+::ng-deep .reading-table .p-paginator .p-paginator-pages .p-paginator-page {
+  min-width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-weight: 500 !important;
+}
+
+::ng-deep .reading-table .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background: #00d9a3 !important;
+  color: #ffffff !important;
+  border-color: #00d9a3 !important;
+}
+
+::ng-deep .reading-table .p-paginator .p-paginator-current {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+::ng-deep .reading-table .p-paginator .p-paginator-first,
+::ng-deep .reading-table .p-paginator .p-paginator-prev,
+::ng-deep .reading-table .p-paginator .p-paginator-next,
+::ng-deep .reading-table .p-paginator .p-paginator-last {
+  color: rgba(255, 255, 255, 0.5) !important;
+  display: inline-flex !important;
+  min-width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+}
+
+::ng-deep .reading-table .p-paginator .p-paginator-prev:hover,
+::ng-deep .reading-table .p-paginator .p-paginator-next:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ── Empty State ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+:host-context(html.light-theme) .page-title {
+  color: #1e293b;
+}
+
+:host-context(html.light-theme) .page-subtitle {
+  color: #64748b;
+}
+
+:host-context(html.light-theme) .data-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+:host-context(html.light-theme) .filter-bar {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+:host-context(html.light-theme) .latest-reading-section {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+:host-context(html.light-theme) .section-header {
+  color: #1e293b;
+}
+
+:host-context(html.light-theme) .chart-count {
+  color: #94a3b8;
+}
+
+:host-context(html.light-theme) .summary-label {
+  color: #94a3b8;
+}
+
+:host-context(html.light-theme) .summary-value {
+  color: #1e293b;
+}
+
+:host-context(html.light-theme) .value-tag {
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+  border-color: rgba(59, 130, 246, 0.15);
+}
+
+:host-context(html.light-theme) .chart-section {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+:host-context(html.light-theme) ::ng-deep .reading-table .p-datatable-thead > tr > th {
+  color: #64748b !important;
+  border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .reading-table .p-datatable-tbody > tr {
+  border-bottom-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .reading-table .p-datatable-tbody > tr:hover {
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .reading-table .p-datatable-tbody > tr > td {
+  color: #475569 !important;
+}
+
+:host-context(html.light-theme) .date-badge {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+:host-context(html.light-theme) .sensor-text {
+  color: #475569 !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .reading-table .p-paginator {
+  border-top-color: rgba(0, 0, 0, 0.06) !important;
+  color: #64748b !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .reading-table .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  color: #ffffff !important;
+  background: #00d9a3 !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .reading-table .p-paginator .p-paginator-first,
+:host-context(html.light-theme) ::ng-deep .reading-table .p-paginator .p-paginator-prev,
+:host-context(html.light-theme) ::ng-deep .reading-table .p-paginator .p-paginator-next,
+:host-context(html.light-theme) ::ng-deep .reading-table .p-paginator .p-paginator-last {
+  color: #1e293b !important;
+  cursor: pointer !important;
+}
+
+:host-context(html.light-theme) ::ng-deep .reading-table .p-paginator .p-paginator-current {
+  color: #94a3b8 !important;
+}
+
+:host-context(html.light-theme) .empty-state {
+  color: #94a3b8;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .filter-inputs {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filter-field {
+    width: 100%;
+  }
+
+  .reading-summary {
+    grid-template-columns: 1fr;
+  }
 }

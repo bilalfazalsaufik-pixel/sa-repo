@@ -35,6 +35,7 @@
             ],
             "styles": [
               "src/styles.css",
+              "src/utility.css",
               "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": []
@@ -129,7 +130,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/utility.css"
             ],
             "scripts": []
           }

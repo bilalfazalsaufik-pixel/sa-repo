@@ -3,7 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { RolesService } from '../../services/roles.service';
@@ -15,7 +14,6 @@ import {
 import { ErrorService } from '../../../../core/services/error.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
-import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 interface Row {
   screenKey: string;
@@ -30,11 +28,9 @@ interface Row {
     CommonModule,
     FormsModule,
     RouterLink,
-    CardModule,
     TableModule,
     ButtonModule,
-    ErrorMessageComponent,
-    LoadingSpinnerComponent
+    ErrorMessageComponent
   ],
   templateUrl: './manage-permissions.component.html',
   styleUrls: ['./manage-permissions.component.css']

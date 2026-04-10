@@ -1,81 +1,105 @@
-<div class="site-list">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>Sites</h2>
-          <p class="subtitle">Manage sites within zones</p>
-        </div>
-        @if (canManageSites()) {
-          <p-button 
-            label="Create Site" 
-            icon="pi pi-plus" 
-            (onClick)="showCreateForm()"
-            class="ml-auto">
-          </p-button>
-        }
+<div class="site-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-building"></i>
       </div>
-    </ng-template>
+      <div>
+        <h1 class="page-title">Sites</h1>
+        <p class="page-subtitle">Manage sites within zones</p>
+      </div>
+    </div>
+    @if (canManageSites()) {
+      <p-button
+        label="Create Site"
+        icon="pi pi-plus"
+        (onClick)="showCreateForm()">
+      </p-button>
+    }
+  </div>
 
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
+  <app-error-message [onDismiss]="clearError" />
 
-    <p-table [value]="sites()" dataKey="id" [rowTrackBy]="trackBySiteId" [paginator]="true" [rows]="10" [first]="tableFirst()"
+  <!-- Data Card -->
+  <div class="data-card">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-inputs">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input type="text" pInputText [(ngModel)]="filterName" (input)="onFilterChange()" placeholder="Filter by name..." />
+        </p-iconfield>
+        <div class="filter-field">
+          <p-select
+            appendTo="body"
+            [style]="{'min-width': '230px'}"
+            [options]="zoneFilterOptions()"
+            [(ngModel)]="zoneFilterValue"
+            (onChange)="onFilterChange()"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All Zones"
+            [showClear]="false">
+          </p-select>
+        </div>
+        <div class="filter-field">
+          <p-select
+            appendTo="body"
+            [style]="{'min-width': '230px'}"
+            [options]="statusFilterOptions"
+            [(ngModel)]="statusFilterValue"
+            (onChange)="onFilterChange()"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All Statuses"
+            [showClear]="false">
+          </p-select>
+        </div>
+      </div>
+      <div class="filter-count">
+        <span class="count-number">{{ totalRecords() }}</span> sites found
+      </div>
+    </div>
+
+    <!-- Table -->
+    <p-table [value]="loadingService.loading() ? [] : sites()" dataKey="id" [rowTrackBy]="trackBySiteId" [paginator]="true" [rows]="10" [first]="tableFirst()"
              [showCurrentPageReport]="true" [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
              [sortField]="sortField()" [sortOrder]="sortOrder()"
-             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
-             styleClass="enterprise-table">
+             currentPageReportTemplate="Showing {first}&ndash;{last} of {totalRecords} sites"
+             [rowsPerPageOptions]="[10, 25, 50]"
+             styleClass="site-table">
       <ng-template pTemplate="header">
         <tr>
-          <th [pSortableColumn]="'name'">Name <p-sortIcon [field]="'name'" /></th>
-          <th [pSortableColumn]="'zoneName'">Zone <p-sortIcon [field]="'zoneName'" /></th>
-          <th [pSortableColumn]="'status'">Status <p-sortIcon [field]="'status'" /></th>
+          <th [pSortableColumn]="'name'">
+            Name
+            <p-sortIcon [field]="'name'" />
+          </th>
+          <th [pSortableColumn]="'zoneName'">
+            Zone
+            <p-sortIcon [field]="'zoneName'" />
+          </th>
+          <th [pSortableColumn]="'status'">
+            Status
+            <p-sortIcon [field]="'status'" />
+          </th>
           <th>Location</th>
           @if (canManageSites()) {
-            <th>Actions</th>
-          }
-        </tr>
-        <tr class="filter-row">
-          <th>
-            <input type="text" pInputText [(ngModel)]="filterName" (input)="onFilterChange()" placeholder="Filter name" class="filter-input" />
-          </th>
-          <th>
-            <p-dropdown
-              appendTo="body"
-              [options]="zoneFilterOptions()"
-              [(ngModel)]="zoneFilterValue"
-              (onChange)="onFilterChange()"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="All zones"
-              [showClear]="true"
-              class="filter-dropdown-inline">
-            </p-dropdown>
-          </th>
-          <th>
-            <p-dropdown
-              appendTo="body"
-              [options]="statusFilterOptions"
-              [(ngModel)]="statusFilterValue"
-              (onChange)="onFilterChange()"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="All statuses"
-              [showClear]="true"
-              class="filter-dropdown-inline">
-            </p-dropdown>
-          </th>
-          <th></th>
-          @if (canManageSites()) {
-            <th></th>
+            <th class="actions-col">Actions</th>
           }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-site>
         <tr>
-          <td>{{ site.name }}</td>
-          <td>{{ site.zoneName }}</td>
+          <td>
+            <span class="site-name">{{ site.name }}</span>
+          </td>
+          <td>
+            <span class="zone-tag" [class.zone-north]="site.zoneName?.toLowerCase().includes('north')" [class.zone-south]="site.zoneName?.toLowerCase().includes('south')">
+              <i class="pi pi-map"></i>
+              {{ site.zoneName }}
+            </span>
+          </td>
           <td>
             <p-tag
               [value]="site.siteStatus?.currentStatus || 'Green'"
@@ -84,45 +108,48 @@
           </td>
           <td>
             @if (site.latitude && site.longitude) {
-              <span>{{ site.latitude }}, {{ site.longitude }}</span>
+              <span class="location-badge">
+                <i class="pi pi-map-marker"></i>
+                {{ site.latitude }}, {{ site.longitude }}
+              </span>
             } @else {
-              <span>-</span>
+              <span class="location-empty">-</span>
             }
           </td>
           @if (canManageSites()) {
-            <td>
-              <p-button
-                icon="pi pi-pencil"
-                [text]="true"
-                [rounded]="true"
-                severity="info"
-                (onClick)="editSite(site)"
-                pTooltip="Edit"
-                tooltipPosition="top"
-                ariaLabel="Edit site">
-              </p-button>
-              <p-button
-                icon="pi pi-trash"
-                [text]="true"
-                [rounded]="true"
-                severity="danger"
-                (onClick)="deleteSite(site.id)"
-                pTooltip="Delete"
-                tooltipPosition="top"
-                ariaLabel="Delete site">
-              </p-button>
+            <td class="actions-col">
+              <button type="button" class="action-icon edit-icon"
+                (click)="editSite(site)"
+                pTooltip="Edit" tooltipPosition="top">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button type="button" class="action-icon delete-icon"
+                (click)="deleteSite(site.id)"
+                pTooltip="Delete" tooltipPosition="top">
+                <i class="pi pi-trash"></i>
+              </button>
             </td>
           }
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="100">
+            @if (loadingService.loading()) {
+              <div class="table-loading-state">
+                <i class="pi pi-spinner"></i>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <p>No sites found. Create your first site to get started.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
-    @if (!loadingService.loading() && sites().length === 0) {
-      <div class="empty-state">
-        <i class="pi pi-inbox" aria-hidden="true"></i>
-        <p>No sites found. Create your first site to get started.</p>
-      </div>
-    }
-  </p-card>
+  </div>
 
   <app-modal
     [isOpen]="showModal()"
@@ -131,70 +158,71 @@
     <form (ngSubmit)="saveSite()">
       <div class="p-field">
         <label for="name">Name *</label>
-        <input 
+        <input
           id="name"
-          type="text" 
-          pInputText 
-          [(ngModel)]="formData.name" 
-          name="name" 
-          required 
+          type="text"
+          pInputText
+          [(ngModel)]="formData.name"
+          name="name"
+          required
           class="full-width" />
       </div>
 
       <div class="p-field">
         <label for="zoneId">Zone *</label>
-        <p-dropdown
-                appendTo="body" 
+        <p-select
+          appendTo="body"
           id="zoneId"
-          [options]="zoneOptions()" 
-          [(ngModel)]="formData.zoneId" 
+          [options]="zoneOptions()"
+          [(ngModel)]="formData.zoneId"
           name="zoneId"
-          optionLabel="label" 
+          optionLabel="label"
           optionValue="value"
           placeholder="Select Zone"
           [showClear]="true"
           class="full-width"
           required>
-        </p-dropdown>
+        </p-select>
       </div>
 
       <div class="p-field">
         <label for="latitude">Latitude</label>
-        <input 
+        <input
           id="latitude"
-          type="number" 
-          step="any" 
-          pInputText 
-          [(ngModel)]="formData.latitude" 
+          type="number"
+          step="any"
+          pInputText
+          [(ngModel)]="formData.latitude"
           name="latitude"
           class="full-width" />
       </div>
 
       <div class="p-field">
         <label for="longitude">Longitude</label>
-        <input 
+        <input
           id="longitude"
-          type="number" 
-          step="any" 
-          pInputText 
-          [(ngModel)]="formData.longitude" 
+          type="number"
+          step="any"
+          pInputText
+          [(ngModel)]="formData.longitude"
           name="longitude"
           class="full-width" />
       </div>
 
-      <div class="form-actions">
-        <p-button 
-          label="Cancel" 
-          [text]="true"
-          (onClick)="closeModal()" 
-          type="button">
-        </p-button>
-        <p-button 
-          label="Save" 
-          type="submit"
-          [style]="{'margin-left': '0.5rem'}">
-        </p-button>
-      </div>
     </form>
+    <div class="form-actions" footer>
+      <p-button
+        label="Cancel"
+        [outlined]="true"
+        (onClick)="closeModal()"
+        type="button">
+      </p-button>
+      <p-button
+        label="Save"
+        type="button"
+        (onClick)="saveSite()"
+        [style]="{'margin-left': '0.5rem'}">
+      </p-button>
+    </div>
   </app-modal>
 </div>

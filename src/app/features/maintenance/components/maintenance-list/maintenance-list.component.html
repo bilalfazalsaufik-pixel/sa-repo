@@ -1,64 +1,67 @@
-<div class="maintenance-list">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <div>
-          <h2>Maintenance Log</h2>
-          <p class="subtitle">View and manage maintenance records</p>
-        </div>
+<div class="maintenance-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <i class="pi pi-wrench"></i>
       </div>
-    </ng-template>
+      <div>
+        <h1 class="page-title">Maintenance Log</h1>
+        <p class="page-subtitle">View and manage maintenance records</p>
+      </div>
+    </div>
+  </div>
 
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
+  <app-error-message [onDismiss]="clearError" />
 
-    <!-- Filters -->
-    <div class="filters">
-      <p-dropdown
-                appendTo="body"
-        [options]="sensorOptions()"
-        [(ngModel)]="selectedSensorId"
-        (onChange)="applyFilters()"
-        placeholder="All Sensors"
-        optionLabel="label"
-        optionValue="value"
-        [showClear]="true"
-        styleClass="filter-item">
-      </p-dropdown>
-
-      <p-calendar
-                appendTo="body"
-        [(ngModel)]="startDate"
-        (onSelect)="applyFilters()"
-        placeholder="Start Date"
-        dateFormat="yy-mm-dd"
-        [showIcon]="true"
-        styleClass="filter-item">
-      </p-calendar>
-
-      <p-calendar
-                appendTo="body"
-        [(ngModel)]="endDate"
-        (onSelect)="applyFilters()"
-        placeholder="End Date"
-        dateFormat="yy-mm-dd"
-        [showIcon]="true"
-        styleClass="filter-item">
-      </p-calendar>
-
-      <p-button
-        label="Clear Filters"
-        icon="pi pi-filter-slash"
-        severity="secondary"
-        (onClick)="clearFilters()">
-      </p-button>
+  <!-- Data Card -->
+  <div class="data-card">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-inputs">
+        <div class="filter-field">
+          <p-select
+            appendTo="body"
+            [style]="{'min-width': '230px'}"
+            [options]="sensorOptions()"
+            [(ngModel)]="selectedSensorId"
+            (onChange)="applyFilters()"
+            placeholder="All Sensors"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true">
+          </p-select>
+        </div>
+        <div class="filter-field">
+          <p-calendar
+            appendTo="body"
+            [(ngModel)]="startDate"
+            (onSelect)="applyFilters()"
+            placeholder="Start Date"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true">
+          </p-calendar>
+        </div>
+        <div class="filter-field">
+          <p-calendar
+            appendTo="body"
+            [(ngModel)]="endDate"
+            (onSelect)="applyFilters()"
+            placeholder="End Date"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true">
+          </p-calendar>
+        </div>
+        <p-button label="Clear Filters" icon="pi pi-filter-slash" [outlined]="true" (onClick)="clearFilters()"></p-button>
+      </div>
     </div>
 
-    <p-table [value]="maintenances()" dataKey="id" [rowTrackBy]="trackByMaintenanceId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+    <!-- Table -->
+    <p-table [value]="loadingService.loading() ? [] : maintenances()" dataKey="id" [rowTrackBy]="trackByMaintenanceId" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
              [lazy]="true" (onLazyLoad)="onLazyLoad($event)" [totalRecords]="totalRecords()"
-             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-             [rowsPerPageOptions]="[10, 25, 50]" [paginatorDropdownAppendTo]="'body'"
-             styleClass="enterprise-table">
+             currentPageReportTemplate="Showing {first}&ndash;{last} of {totalRecords} records"
+             [rowsPerPageOptions]="[10, 25, 50]"
+             styleClass="maintenance-table">
       <ng-template pTemplate="header">
         <tr>
           <th>Sensor</th>
@@ -69,53 +72,69 @@
           <th>Message</th>
           <th>Date</th>
           @if (canManageMaintenance()) {
-            <th>Actions</th>
+            <th class="actions-col">Actions</th>
           }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-maintenance>
         <tr>
-          <td>{{ maintenance.sensorName }}</td>
-          <td>{{ maintenance.deviceName }}</td>
-          <td>{{ maintenance.siteName }}</td>
-          <td>{{ maintenance.zoneName }}</td>
-          <td>{{ maintenance.userName }}</td>
-          <td>{{ maintenance.message }}</td>
-          <td>{{ maintenance.createdDate | date:'dd MMM yyyy, HH:mm' }}</td>
+          <td>
+            <div class="sensor-name-cell">
+              <span class="sensor-dot"></span>
+              <span class="sensor-name">{{ maintenance.sensorName }}</span>
+            </div>
+          </td>
+          <td class="sub-text">{{ maintenance.deviceName }}</td>
+          <td class="sub-text">{{ maintenance.siteName }}</td>
+          <td>
+            <span class="zone-tag" [class.zone-north]="maintenance.zoneName?.toLowerCase().includes('north')"
+                  [class.zone-south]="maintenance.zoneName?.toLowerCase().includes('south')">
+              <i class="pi pi-map"></i>
+              {{ maintenance.zoneName }}
+            </span>
+          </td>
+          <td class="sub-text">{{ maintenance.userName }}</td>
+          <td class="msg-cell">{{ maintenance.message }}</td>
+          <td>
+            <span class="date-badge">
+              <i class="pi pi-calendar"></i>
+              {{ maintenance.createdDate | date:'dd MMM yyyy, HH:mm' }}
+            </span>
+          </td>
           @if (canManageMaintenance()) {
-            <td>
-              <p-button
-                icon="pi pi-pencil"
-                [text]="true"
-                [rounded]="true"
-                severity="info"
-                (onClick)="showEditForm(maintenance)"
-                pTooltip="Edit"
-                tooltipPosition="top"
-                ariaLabel="Edit maintenance record">
-              </p-button>
-              <p-button
-                icon="pi pi-trash"
-                [text]="true"
-                [rounded]="true"
-                severity="danger"
-                (onClick)="deleteMaintenance(maintenance.id)"
-                pTooltip="Delete"
-                tooltipPosition="top"
-                ariaLabel="Delete maintenance record">
-              </p-button>
+            <td class="actions-col">
+              <button type="button" class="action-icon edit-icon"
+                (click)="showEditForm(maintenance)"
+                pTooltip="Edit" tooltipPosition="top">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button type="button" class="action-icon delete-icon"
+                (click)="deleteMaintenance(maintenance.id)"
+                pTooltip="Delete" tooltipPosition="top">
+                <i class="pi pi-trash"></i>
+              </button>
             </td>
           }
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="100">
+            @if (loadingService.loading()) {
+              <div class="table-loading-state">
+                <i class="pi pi-spinner"></i>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <p>No maintenance records found.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
-    @if (!loadingService.loading() && maintenances().length === 0) {
-      <div class="empty-state">
-        <i class="pi pi-inbox" aria-hidden="true"></i>
-        <p>No maintenance records found.</p>
-      </div>
-    }
-  </p-card>
+  </div>
 
   <app-modal
     [isOpen]="showModal()"
@@ -135,20 +154,20 @@
           class="full-width">
         </textarea>
       </div>
-
-      <div class="form-actions">
-        <p-button
-          label="Cancel"
-          [text]="true"
-          (onClick)="closeModal()"
-          type="button">
-        </p-button>
-        <p-button
-          label="Save"
-          type="submit"
-          [style]="{'margin-left': '0.5rem'}">
-        </p-button>
-      </div>
     </form>
+    <div class="form-actions" footer>
+      <p-button
+        label="Cancel"
+        [outlined]="true"
+        (onClick)="closeModal()"
+        type="button">
+      </p-button>
+      <p-button
+        label="Save"
+        type="button"
+        (onClick)="saveMaintenance()"
+        [style]="{'margin-left': '0.5rem'}">
+      </p-button>
+    </div>
   </app-modal>
 </div>

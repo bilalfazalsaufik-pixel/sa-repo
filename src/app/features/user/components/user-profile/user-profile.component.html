@@ -1,145 +1,172 @@
-<div class="user-profile">
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <h2>User Profile</h2>
-        @if (!isEditing()) {
-          <p-button 
-            label="Edit Profile" 
-            icon="pi pi-pencil"
-            (onClick)="startEdit()">
-          </p-button>
-        }
+<app-error-message [onDismiss]="clearError" />
+<app-loading-spinner />
+
+@if (!loadingService.loading() && profile(); as userProfile) {
+<div class="profile-container">
+
+  <!-- ═══ PROFILE HEADER CARD ═══ -->
+  <div class="profile-header">
+    <div class="avatar">{{ initials() }}</div>
+    <div class="header-info">
+      <h1 class="header-name">{{ fullName() }}</h1>
+      <div class="header-email">{{ userProfile.email }}</div>
+      @if (userProfile.roles.length > 0) {
+        <span class="role-inline">
+          <i class="pi pi-star"></i>
+          {{ userProfile.roles[0] }}
+        </span>
+      }
+    </div>
+    @if (!isEditing()) {
+      <p-button label="Edit Profile" icon="pi pi-pencil" (onClick)="startEdit()"></p-button>
+    } @else {
+      <span class="editing-badge">
+        <i class="pi pi-pencil"></i>
+        Editing
+      </span>
+    }
+  </div>
+
+  <!-- ═══ PERSONAL INFORMATION CARD ═══ -->
+  <div class="card">
+    <div class="profile-card-header">
+      <div class="profile-card-header-icon personal">
+        <i class="pi pi-user"></i>
       </div>
-    </ng-template>
-
-    <app-error-message [onDismiss]="clearError" />
-    <app-loading-spinner />
-
-    @if (!loadingService.loading() && profile(); as userProfile) {
-      <div class="profile-content">
-        <!-- Personal Information -->
-        <p-card class="profile-section-card">
-          <ng-template pTemplate="header">
-            <h3>Personal Information</h3>
-          </ng-template>
-          <div class="info-grid">
-            <div class="p-field">
-              <label>Name</label>
-              <input pInputText [value]="fullName()" readonly class="full-width" />
-            </div>
-            <div class="p-field">
-              <label>Email</label>
-              <input pInputText [value]="userProfile.email" readonly class="full-width" />
-            </div>
-            <div class="p-field">
-              <label>Phone Number</label>
-              @if (isEditing()) {
-                <input pInputText
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  [ngModel]="phoneNumber()"
-                  (ngModelChange)="phoneNumber.set($event)"
-                  placeholder="+1 555 000 0000"
-                  class="full-width" />
-                <small>Used for SMS notifications.</small>
-              } @else {
-                <input pInputText [value]="userProfile.phoneNumber || '—'" readonly class="full-width" />
-              }
-            </div>
-            <div class="p-field">
-              <label>User ID</label>
-              <input pInputText [value]="userProfile.userId" readonly class="full-width" />
-            </div>
-          </div>
-        </p-card>
-
-        <p-divider></p-divider>
-
-        <!-- Preferences -->
-        <p-card class="profile-section-card">
-          <ng-template pTemplate="header">
-            <h3>Preferences</h3>
-          </ng-template>
+      <h2>Personal Information</h2>
+    </div>
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field">
+          <label class="field-label">Full Name</label>
           @if (isEditing()) {
-            <form (ngSubmit)="saveProfile()">
-              <div class="p-field">
-                <label for="defaultView">Default View *</label>
-                <p-dropdown
-                appendTo="body"
-                  id="defaultView"
-                  [options]="viewOptions"
-                  [ngModel]="defaultView()"
-                  (onChange)="defaultView.set($event.value)"
-                  name="defaultView"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Select default view"
-                  class="full-width">
-                </p-dropdown>
-                <small>This determines your default view when opening site detail pages.</small>
-              </div>
-              <div class="form-actions">
-                <p-button 
-                  label="Cancel" 
-                  icon="pi pi-times"
-                  severity="secondary"
-                  type="button"
-                  (onClick)="cancelEdit()">
-                </p-button>
-                <p-button 
-                  label="Save Changes" 
-                  icon="pi pi-check"
-                  type="submit"
-                  [style]="{'margin-left': '0.5rem'}">
-                </p-button>
-              </div>
-            </form>
+            <input type="text"
+                   class="field-input"
+                   [ngModel]="fullNameEdit()"
+                   (ngModelChange)="fullNameEdit.set($event)"
+                   placeholder="Enter full name" />
           } @else {
-            <div class="info-grid">
-              <div class="p-field">
-                <label>Default View</label>
-                <input pInputText [value]="userProfile.defaultView" readonly class="full-width" />
-              </div>
+            <div class="field-value">{{ fullName() }}</div>
+          }
+        </div>
+        <div class="field">
+          <label class="field-label">Email Address</label>
+          @if (isEditing()) {
+            <input type="email"
+                   class="field-input"
+                   [ngModel]="email()"
+                   (ngModelChange)="email.set($event)"
+                   placeholder="Enter email address" />
+          } @else {
+            <div class="field-value">{{ userProfile.email }}</div>
+          }
+        </div>
+        <div class="field">
+          <label class="field-label">Phone Number</label>
+          @if (isEditing()) {
+            <input type="tel"
+                   class="field-input"
+                   [ngModel]="phoneNumber()"
+                   (ngModelChange)="phoneNumber.set($event)"
+                   placeholder="+1 555 000 0000" />
+            <span class="field-helper">Used for SMS notifications.</span>
+          } @else {
+            <div class="field-value" [class.empty]="!userProfile.phoneNumber">
+              {{ userProfile.phoneNumber || 'Not provided' }}
             </div>
           }
-        </p-card>
-
-        <p-divider></p-divider>
-
-        <!-- Roles & Permissions -->
-        <p-card class="profile-section-card">
-          <ng-template pTemplate="header">
-            <h3>Roles & Permissions</h3>
-          </ng-template>
-          <div class="info-grid">
-            <div class="p-field">
-              <label>Roles</label>
-              <div class="tags-list">
-                @if (userProfile.roles.length > 0) {
-                  @for (role of userProfile.roles; track role) {
-                    <p-tag [value]="role" severity="info"></p-tag>
-                  }
-                } @else {
-                  <span class="text-muted">No roles assigned</span>
-                }
-              </div>
-            </div>
-            <div class="p-field">
-              <label>Permissions</label>
-              <div class="tags-list">
-                @if (filteredPermissions().length > 0) {
-                  @for (permission of filteredPermissions(); track permission) {
-                    <p-tag [value]="permission" severity="info"></p-tag>
-                  }
-                } @else {
-                  <span class="text-muted">No permissions assigned</span>
-                }
-              </div>
-            </div>
-          </div>
-        </p-card>
+        </div>
+        <div class="field">
+          <label class="field-label">User ID</label>
+          <div class="field-value readonly">{{ userProfile.userId }}</div>
+        </div>
       </div>
-    }
-  </p-card>
+    </div>
+  </div>
+
+  <!-- ═══ PREFERENCES CARD ═══ -->
+  <div class="card">
+    <div class="profile-card-header">
+      <div class="profile-card-header-icon prefs">
+        <i class="pi pi-cog"></i>
+      </div>
+      <h2>Preferences</h2>
+    </div>
+    <div class="card-body">
+      <div class="field" style="max-width: 480px;">
+        <label class="field-label">
+          Default View
+          @if (isEditing()) {
+            <span class="required-star">*</span>
+          }
+        </label>
+        @if (isEditing()) {
+          <p-select
+            appendTo="body"
+            [options]="viewOptions"
+            [ngModel]="defaultView()"
+            (onChange)="defaultView.set($event.value)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select default view"
+            styleClass="profile-dropdown">
+          </p-select>
+          <span class="field-helper">This determines your default view when opening site detail pages.</span>
+        } @else {
+          <div class="field-value">{{ userProfile.defaultView }}</div>
+        }
+      </div>
+
+      @if (isEditing()) {
+        <div class="card-actions">
+          <p-button label="Cancel" icon="pi pi-times" [outlined]="true" (onClick)="cancelEdit()"></p-button>
+          <p-button label="Save Changes" icon="pi pi-check" (onClick)="saveProfile()" [loading]="isSaving()" [disabled]="isSaving()"></p-button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ═══ ROLES & PERMISSIONS CARD ═══ -->
+  <div class="card">
+    <div class="profile-card-header">
+      <div class="profile-card-header-icon perms">
+        <i class="pi pi-shield"></i>
+      </div>
+      <h2>Roles & Permissions</h2>
+    </div>
+    <div class="card-body">
+      <div class="permissions-layout">
+        <div class="perm-column-role">
+          <div class="perm-section-label">Assigned Role</div>
+          @if (userProfile.roles.length > 0) {
+            @for (role of userProfile.roles; track role) {
+              <div class="role-badge">
+                <i class="pi pi-star"></i>
+                {{ role }}
+              </div>
+            }
+          } @else {
+            <span class="text-empty">No roles assigned</span>
+          }
+        </div>
+        <div class="perm-column-perms">
+          <div class="perm-section-label">Permissions ({{ filteredPermissions().length }})</div>
+          <div class="perm-tags">
+            @if (filteredPermissions().length > 0) {
+              @for (perm of filteredPermissions(); track perm) {
+                <span class="perm-tag">
+                  <i class="pi pi-check-square"></i>
+                  {{ perm }}
+                </span>
+              }
+            } @else {
+              <span class="text-empty">No permissions assigned</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+}

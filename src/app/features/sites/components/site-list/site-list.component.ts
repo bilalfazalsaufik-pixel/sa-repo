@@ -2,11 +2,12 @@ import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef, signal,
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
@@ -19,24 +20,23 @@ import { LoadingService } from '../../../../core/services/loading.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
-import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-site-list',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    CardModule,
+    CommonModule,
+    FormsModule,
     TableModule,
     ButtonModule,
     InputTextModule,
-    DropdownModule,
+    IconFieldModule,
+    InputIconModule,
+    SelectModule,
     TagModule,
     TooltipModule,
-    ModalComponent, 
-    ErrorMessageComponent, 
-    LoadingSpinnerComponent
+    ModalComponent,
+    ErrorMessageComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './site-list.component.html',

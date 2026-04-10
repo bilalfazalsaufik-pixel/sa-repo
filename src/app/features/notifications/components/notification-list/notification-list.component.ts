@@ -2,14 +2,14 @@ import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef, signal,
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
-import { TagModule } from 'primeng/tag';
-import { TooltipModule } from 'primeng/tooltip';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 import { NotificationService } from '../../services/notification.service';
 import {
@@ -27,7 +27,6 @@ import { LoadingService } from '../../../../core/services/loading.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
-import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-notification-list',
@@ -35,17 +34,16 @@ import { LoadingSpinnerComponent } from '../../../../shared/components/loading-s
   imports: [
     CommonModule,
     FormsModule,
-    CardModule,
     TableModule,
     ButtonModule,
     InputTextModule,
-    DropdownModule,
-    TagModule,
-    TooltipModule,
+    IconFieldModule,
+    InputIconModule,
+    SelectModule,
     CheckboxModule,
+    TooltipModule,
     ModalComponent,
-    ErrorMessageComponent,
-    LoadingSpinnerComponent
+    ErrorMessageComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './notification-list.component.html',

@@ -463,10 +463,6 @@
   color: inherit;
 }
 
-.user-profile:hover {
-  background: var(--state-hover);
-}
-
 .user-avatar {
   width: 36px;
   height: 36px;

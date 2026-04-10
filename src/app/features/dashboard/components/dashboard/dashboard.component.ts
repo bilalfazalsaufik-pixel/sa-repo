@@ -17,7 +17,6 @@ import { ErrorService } from '../../../../core/services/error.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { PermissionService } from '../../../../core/services/permission.service';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
-import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { SitesMapComponent } from '../../../../shared/components/sites-map/sites-map.component';
 import { SiteMapItem } from '../../../../shared/models/site-map.model';
 import { AutoRefreshService } from '../../../../shared/services/auto-refresh.service';
@@ -35,7 +34,6 @@ import { getStatusSeverity } from '../../../../shared/utils/site-status';
     TagModule,
     TooltipModule,
     ErrorMessageComponent,
-    LoadingSpinnerComponent,
     SitesMapComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

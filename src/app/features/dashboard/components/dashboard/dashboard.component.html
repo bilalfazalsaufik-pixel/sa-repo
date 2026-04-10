@@ -13,23 +13,35 @@
             Updated {{ lastUpdated() | date:'HH:mm:ss' }}
           </span>
         }
-        <button class="action-button auto-refresh-btn"
-                [class.active]="autoRefresh.enabled()"
-                (click)="toggleAutoRefresh()"
-                [title]="autoRefresh.enabled() ? 'Auto-refresh ON (60s)' : 'Auto-refresh OFF'">
-          <i class="pi pi-sync" [class.spinning]="autoRefresh.enabled()"></i>
-          <span>Auto</span>
-        </button>
-        <button class="action-button refresh-btn" (click)="loadDashboardData()" title="Refresh Data">
-          <i class="pi pi-refresh"></i>
-          <span>Refresh</span>
-        </button>
+        <p-button
+          [label]="autoRefresh.enabled() ? 'Auto (30s)' : 'Auto'"
+          [icon]="'pi pi-sync' + (autoRefresh.enabled() ? ' spinning' : '')"
+          [outlined]="!autoRefresh.enabled()"
+          [pTooltip]="autoRefresh.enabled() ? 'Auto-refresh ON (30s)' : 'Auto-refresh OFF'"
+          tooltipPosition="bottom"
+          (onClick)="toggleAutoRefresh()">
+        </p-button>
+        <p-button
+          label="Refresh"
+          icon="pi pi-refresh"
+          [outlined]="true"
+          pTooltip="Refresh Data"
+          tooltipPosition="bottom"
+          (onClick)="loadDashboardData()">
+        </p-button>
       </div>
     </div>
   </div>
 
   <app-error-message [onDismiss]="clearError" />
-  <app-loading-spinner />
+
+  @if (loadingService.loading()) {
+    <div class="dashboard-loading">
+      <div class="table-loading-state">
+        <i class="pi pi-spinner"></i>
+      </div>
+    </div>
+  }
 
   @if (summary() && !loadingService.loading()) {
     <div class="dashboard-content">
@@ -140,7 +152,7 @@
             <p class="section-subtitle">View and manage all monitored sites</p>
           </div>
           <div class="section-header-right">
-            <span class="data-count">{{ siteOverview().length }} sites</span>
+            <span class="data-count"><span class="count-number">{{ siteOverview().length }}</span> sites</span>
           </div>
         </div>
 
@@ -161,40 +173,16 @@
               styleClass="enterprise-table">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>
-                    <div class="th-content">
-                      <i class="pi pi-building th-icon"></i>
-                      <span>Site Name</span>
-                    </div>
-                  </th>
-                  <th>
-                    <div class="th-content">
-                      <i class="pi pi-chart-bar th-icon"></i>
-                      <span>Level</span>
-                    </div>
-                  </th>
-                  <th>
-                    <div class="th-content">
-                      <i class="pi pi-info-circle th-icon"></i>
-                      <span>Status</span>
-                    </div>
-                  </th>
-                  <th>
-                    <div class="th-content">
-                      <i class="pi pi-map-marker th-icon"></i>
-                      <span>Region</span>
-                    </div>
-                  </th>
-                  <th class="action-column">
-                    <div class="th-content">
-                      <i class="pi pi-cog th-icon"></i>
-                      <span>Actions</span>
-                    </div>
-                  </th>
+                  <th><span>Site Name</span></th>
+                  <th><span>Level</span></th>
+                  <th><span>Status</span></th>
+                  <th><span>Region</span></th>
+                  <th class="action-column"><span>Actions</span></th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-site>
-                <tr [class.alarmed-row]="site.status === 'Red' || site.status === 'Yellow'">
+                <tr [class.red-row]="site.status === 'Red'"
+                    [style.background-color]="site.status === 'Red' ? '#ff00000f !important' : null">
                   <td>
                     <div class="site-name-cell">
                       <i class="pi pi-building cell-icon"></i>
@@ -217,13 +205,15 @@
                     </div>
                   </td>
                   <td class="action-column">
-                    <button
-                      class="action-btn view-btn"
-                      (click)="viewSiteDetails(site.siteId)"
-                      title="View Site Details">
-                      <i class="pi pi-eye"></i>
-                      <span>View</span>
-                    </button>
+                    <p-button
+                      icon="pi pi-eye"
+                      [rounded]="true"
+                      [outlined]="true"
+                      size="small"
+                      pTooltip="View"
+                      tooltipPosition="top"
+                      (onClick)="viewSiteDetails(site.siteId)">
+                    </p-button>
                   </td>
                 </tr>
               </ng-template>
